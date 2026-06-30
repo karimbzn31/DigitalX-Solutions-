@@ -18,6 +18,7 @@ import {
   Bell,
 } from "lucide-react";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { Logo } from "@/components/shared/Logo";
 
 const navItems = [
   { icon: Home, label: "Accueil", href: "/dashboard" },
@@ -42,10 +43,7 @@ export function Sidebar() {
       <div className="p-4 border-b border-white/5">
         <div className="flex items-center justify-between mb-2">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <svg width="28" height="28" viewBox="0 0 32 32" fill="none" className="text-violet">
-              <rect width="32" height="32" rx="8" fill="currentColor" fillOpacity="0.15" />
-              <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fill="#7C5CFF" fontSize="14" fontWeight="600" fontFamily="system-ui">DX</text>
-            </svg>
+            <Logo size={28} />
             <span className="font-display text-star-white font-semibold text-sm">Academy</span>
           </Link>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Logo } from "@/components/shared/Logo";
 
 const footerLinks = {
   formation: [
@@ -31,10 +32,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12 mb-12">
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" className="text-violet">
-                <rect width="32" height="32" rx="8" fill="currentColor" fillOpacity="0.15" />
-                <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fill="#7C5CFF" fontSize="14" fontWeight="600" fontFamily="system-ui">DX</text>
-              </svg>
+              <Logo size={28} />
               <span className="font-display text-star-white font-semibold">DX Academy</span>
             </Link>
             <p className="text-sm text-mist leading-relaxed mb-6">

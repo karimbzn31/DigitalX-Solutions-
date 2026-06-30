@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Home, Users, BookOpen, Bell, Settings } from "lucide-react";
+import { Logo } from "@/components/shared/Logo";
 
 const adminNav = [
   { icon: Home, label: "Vue d'ensemble", href: "/admin" },
@@ -19,10 +20,7 @@ export function AdminSidebar() {
     <aside className="hidden md:flex md:w-60 lg:w-64 flex-col bg-surface border-r border-white/5 h-screen sticky top-0">
       <div className="p-4 border-b border-white/5">
         <Link href="/" className="flex items-center gap-2 mb-2">
-          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" className="text-violet">
-            <rect width="32" height="32" rx="8" fill="currentColor" fillOpacity="0.15" />
-            <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fill="#7C5CFF" fontSize="14" fontWeight="600" fontFamily="system-ui">DX</text>
-          </svg>
+          <Logo size={28} />
           <span className="font-display text-star-white font-semibold text-sm">Admin</span>
         </Link>
         <span className="text-xs text-violet">● Panel admin</span>

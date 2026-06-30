@@ -8,6 +8,7 @@ import { useScrolled } from "@/hooks/useScrolled";
 import { useSearchStore } from "@/store/useSearchStore";
 import { cn } from "@/lib/utils";
 import { NebulaButton } from "@/components/shared/NebulaButton";
+import { Logo } from "@/components/shared/Logo";
 
 const links = [
   { label: "Accueil", href: "/" },
@@ -38,11 +39,8 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link href="/" className="flex items-center gap-3 group">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="text-violet">
-              <rect width="32" height="32" rx="8" fill="currentColor" fillOpacity="0.15" />
-              <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fill="#7C5CFF" fontSize="14" fontWeight="600" fontFamily="system-ui">DX</text>
-            </svg>
-            <span className="hidden sm:block text-sm text-mist">
+            <Logo size={32} />
+            <span className="hidden sm:block text-sm text-mist font-medium">
               DigitalXSolutions Academy
             </span>
           </Link>
