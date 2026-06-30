@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
@@ -56,7 +57,9 @@ export function Pricing() {
                 <p className="text-xs text-mist mt-2">Paiement sécurisé · Accès immédiat</p>
               </div>
 
-              <NebulaButton className="w-full">Rejoindre la formation →</NebulaButton>
+              <Link href="/register">
+                <NebulaButton className="w-full">Rejoindre la formation →</NebulaButton>
+              </Link>
 
               <p className="text-xs text-mist/50 text-center mt-4">Paiement sécurisé · Accès immédiat</p>
             </div>
