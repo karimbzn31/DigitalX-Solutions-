@@ -19,7 +19,7 @@ const itemVariants = {
 
 export function Testimonials() {
   return (
-    <section className="py-24 lg:py-32 bg-surface/30">
+    <section className="py-24 lg:py-32 bg-surface/30 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           eyebrow="Témoignages"
@@ -27,12 +27,39 @@ export function Testimonials() {
           subtitle="Découvrez ce que nos apprenants disent de leur expérience."
         />
 
+        {/* Mobile: horizontal swipe */}
+        <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-none -mx-4 px-4 gap-4">
+          {testimonials.map((t) => (
+            <div key={t.id} className="snap-start shrink-0 w-[280px]">
+              <NebulaCard className="p-5 h-full flex flex-col">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet/20 to-magenta/20 border border-violet/20 flex items-center justify-center text-sm font-medium text-violet">
+                    {getInitials(t.name)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-star-white">{t.name}</p>
+                    <p className="text-xs text-mist">{t.role}</p>
+                  </div>
+                </div>
+                <div className="text-violet text-sm mb-3">★★★★★</div>
+                <p className="text-sm text-star-white/80 leading-relaxed flex-1 italic">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div className="mt-4">
+                  <NebulaBadge variant="violet">{t.badge}</NebulaBadge>
+                </div>
+              </NebulaCard>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           {testimonials.map((t) => (
             <motion.div key={t.id} variants={itemVariants}>
@@ -46,13 +73,10 @@ export function Testimonials() {
                     <p className="text-xs text-mist">{t.role}</p>
                   </div>
                 </div>
-
                 <div className="text-violet text-sm tracking-wider mb-3">★★★★★</div>
-
                 <p className="text-sm text-star-white/80 leading-relaxed flex-1 italic">
                   &ldquo;{t.quote}&rdquo;
                 </p>
-
                 <div className="mt-4">
                   <NebulaBadge variant="violet">{t.badge}</NebulaBadge>
                 </div>
@@ -60,6 +84,16 @@ export function Testimonials() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Mobile dots indicator */}
+        <div className="flex md:hidden items-center justify-center gap-1.5 mt-6">
+          {testimonials.map((_, i) => (
+            <div
+              key={i}
+              className="w-1.5 h-1.5 rounded-full bg-violet/30"
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -18,10 +18,24 @@ const links = [
   { label: "Tarifs", href: "/#pricing" },
 ];
 
+const menuVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+};
+
+const linkItemVariants = {
+  hidden: { x: -30, opacity: 0 },
+  visible: (i: number) => ({
+    x: 0,
+    opacity: 1,
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const, delay: i * 0.06 },
+  }),
+};
+
 export function Navbar() {
   const scrolled = useScrolled(40);
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const openSearch = () => useSearchStore.getState().setOpen(true);
 
   return (
@@ -40,7 +54,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link href="/" className="flex items-center gap-3 group">
             <Logo size={32} />
-            <span className="text-sm text-mist font-medium">
+            <span className="hidden sm:block text-sm text-mist font-medium">
               DigitalXSolutions Academy
             </span>
           </Link>
@@ -80,10 +94,15 @@ export function Navbar() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-mist hover:text-star-white"
+            className="md:hidden relative z-[60] p-2 text-mist hover:text-star-white"
             aria-label={mobileOpen ? "Fermer" : "Menu"}
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <motion.div
+              animate={{ rotate: mobileOpen ? 90 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </motion.div>
           </button>
         </div>
       </div>
@@ -91,30 +110,49 @@ export function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-surface/95 backdrop-blur-2xl border-t border-white/5"
+            variants={menuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed inset-0 z-[55] md:hidden"
           >
-            <div className="px-4 py-8 space-y-6">
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block text-sm text-mist hover:text-star-white transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="pt-6 border-t border-white/10 flex flex-col gap-3">
-                <Link href="/login" onClick={() => setMobileOpen(false)}>
-                  <NebulaButton variant="ghost" className="w-full">Connexion</NebulaButton>
-                </Link>
-                <Link href="/register" onClick={() => setMobileOpen(false)}>
-                  <NebulaButton className="w-full">Rejoindre</NebulaButton>
-                </Link>
-              </div>
+            <div className="absolute inset-0 bg-void/90 backdrop-blur-2xl" />
+            <div className="relative h-full flex flex-col justify-center px-8">
+              <nav className="space-y-1">
+                {links.map((link, i) => (
+                  <motion.div
+                    key={link.href}
+                    custom={i}
+                    variants={linkItemVariants}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="block text-2xl font-display font-semibold text-star-white hover:text-violet transition-colors py-3"
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.35 }}
+                className="mt-10 pt-8 border-t border-white/10"
+              >
+                <div className="flex flex-col gap-3">
+                  <Link href="/login" onClick={() => setMobileOpen(false)}>
+                    <NebulaButton variant="ghost" className="w-full">Connexion</NebulaButton>
+                  </Link>
+                  <Link href="/register" onClick={() => setMobileOpen(false)}>
+                    <NebulaButton className="w-full">Rejoindre</NebulaButton>
+                  </Link>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         )}
