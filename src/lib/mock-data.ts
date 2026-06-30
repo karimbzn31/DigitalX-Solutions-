@@ -3,9 +3,9 @@ import type { Module, Testimonial, FAQItem, ChatMessage, BlogPost } from "@/type
 export const modules: Module[] = [
   {
     id: "1",
-    title: "Accéder aux IA les plus puissantes",
+    title: "Accéder aux IA les plus puissantes gratuitement à vie !",
     titleShort: "IA Gratuite",
-    description: "Maîtrisez ChatGPT, Claude, Gemini et plus sans abonnement coûteux.",
+    description: "Apprenez à configurer un environnement de Vibe Coding professionnel et à exploiter des modèles d'IA ultra puissants sans jamais payer.",
     videos: 8,
     duration: "6h30",
     level: "Débutant",
