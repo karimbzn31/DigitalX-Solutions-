@@ -32,7 +32,7 @@ export function Hero() {
           </NebulaBadge>
         </motion.div>
 
-        <h1 className="font-display text-4xl sm:text-5xl md:text-7xl xl:text-8xl font-bold tracking-tight leading-[0.95] text-center max-w-5xl">
+        <h1 className="font-display text-5xl md:text-7xl xl:text-8xl font-bold tracking-tight leading-[0.95] text-center max-w-5xl">
           {words.map((word, i) => (
             <motion.span
               key={word}
