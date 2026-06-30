@@ -51,9 +51,9 @@ export const modules: Module[] = [
   },
   {
     id: "5",
-    title: "No Code & Product Building",
+    title: "Vibe Coding & Développement Full Stack",
     titleShort: "No Code",
-    description: "Construisez des produits sans coder avec Bubble, FlutterFlow et Webflow.",
+    description: "Apprenez à créer des sites web, des plateformes et des applications en ligne en maîtrisant le Frontend et le Backend grâce au Vibe Coding.",
     videos: 11,
     duration: "8h",
     level: "Intermédiaire",
