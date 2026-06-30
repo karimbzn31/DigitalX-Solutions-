@@ -29,14 +29,17 @@ function FounderAvatar({ person }: { person: (typeof founders)[number] }) {
 
   if (!error) {
     return (
-      <Image
-        src={`/images/team/${person.slug}.jpg`}
-        alt={person.name}
-        width={96}
-        height={96}
-        className="w-full h-full rounded-full object-cover"
-        onError={() => setError(true)}
-      />
+      <div className="w-full h-full rounded-full overflow-hidden bg-surface">
+        <Image
+          src={`/images/team/${person.slug}.jpg`}
+          alt={person.name}
+          width={96}
+          height={96}
+          className="w-full h-full object-cover object-center"
+          style={{ objectPosition: "50% 30%" }}
+          onError={() => setError(true)}
+        />
+      </div>
     );
   }
 
