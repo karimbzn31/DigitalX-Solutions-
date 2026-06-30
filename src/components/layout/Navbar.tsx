@@ -54,7 +54,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link href="/" className="flex items-center gap-3 group">
             <Logo size={32} scrolled={scrolled} />
-            <span className="hidden sm:block text-sm text-mist font-medium">
+            <span className="block text-sm text-mist font-medium">
               DigitalXSolutions Academy
             </span>
           </Link>
