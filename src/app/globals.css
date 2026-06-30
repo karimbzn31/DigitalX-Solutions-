@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --void: #06040D;
+    --surface: #110D1F;
+    --surface-soft: #181230;
+    --violet: #7C5CFF;
+    --magenta: #C45CFF;
+    --rose: #FF6FB8;
+    --cyan-soft: #5CC9FF;
+    --star-white: #F4F1FA;
+    --mist: #9C93B8;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-void text-star-white antialiased font-sans;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  ::selection {
+    @apply bg-violet/20 text-star-white;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-violet ring-offset-2 ring-offset-void;
+  }
+}
+
+@layer components {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #7C5CFF 0%, #C45CFF 50%, #FF6FB8 100%);
+  }
+
+  .text-gradient-duo {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #7C5CFF 0%, #C45CFF 100%);
+  }
+
+  .nebula-card {
+    background: rgba(17, 13, 31, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .nebula-card-hover {
+    @apply transition-all duration-300;
+  }
+
+  .nebula-card-hover:hover {
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 20px 60px rgba(124, 92, 255, 0.15);
+    position: relative;
+  }
+
+  .nebula-card-hover:hover::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(124,92,255,0.4), rgba(196,92,255,0.3));
+    z-index: -1;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    padding: 1px;
+    pointer-events: none;
+  }
+
+  .nebula-glass {
+    background: rgba(17, 13, 31, 0.5);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .nebula-progress {
+    @apply bg-surface-soft/60 relative overflow-hidden rounded-full;
+    height: 6px;
+  }
+
+  .nebula-progress-bar {
+    @apply h-full relative rounded-full;
+    background: linear-gradient(90deg, #7C5CFF, #C45CFF);
+    box-shadow: 0 0 8px rgba(124, 92, 255, 0.3);
+  }
+
+  .nebula-table tr:nth-child(even) {
+    background: rgba(17, 13, 31, 0.4);
+  }
+
+  .nebula-table tr:hover {
+    background: rgba(124, 92, 255, 0.03);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(124, 92, 255, 0.15) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(124, 92, 255, 0.15); border-radius: 999px; }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
