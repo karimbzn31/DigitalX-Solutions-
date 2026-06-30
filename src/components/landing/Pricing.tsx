@@ -57,8 +57,8 @@ export function Pricing() {
                 <p className="text-xs text-mist mt-2">Paiement sécurisé · Accès immédiat</p>
               </div>
 
-              <Link href="/register">
-                <NebulaButton className="w-full">Rejoindre la formation →</NebulaButton>
+              <Link href="/contact">
+                <NebulaButton variant="secondary" className="w-full">Nous contacter →</NebulaButton>
               </Link>
 
               <p className="text-xs text-mist/50 text-center mt-4">Paiement sécurisé · Accès immédiat</p>
