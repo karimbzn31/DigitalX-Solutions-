@@ -73,7 +73,7 @@ export function Navbar() {
             <Link href="/login">
               <NebulaButton variant="ghost" size="sm">Connexion</NebulaButton>
             </Link>
-            <Link href="#pricing">
+            <Link href="/register">
               <NebulaButton size="sm">Rejoindre</NebulaButton>
             </Link>
           </div>
@@ -111,7 +111,7 @@ export function Navbar() {
                 <Link href="/login" onClick={() => setMobileOpen(false)}>
                   <NebulaButton variant="ghost" className="w-full">Connexion</NebulaButton>
                 </Link>
-                <Link href="#pricing" onClick={() => setMobileOpen(false)}>
+                <Link href="/register" onClick={() => setMobileOpen(false)}>
                   <NebulaButton className="w-full">Rejoindre</NebulaButton>
                 </Link>
               </div>

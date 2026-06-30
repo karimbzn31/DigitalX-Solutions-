@@ -33,7 +33,7 @@ export function CTASection() {
           </p>
 
           <div className="mt-10">
-            <Link href="#pricing">
+            <Link href="/register">
               <NebulaButton size="lg" className="px-10 py-4 text-base">
                 Commencer maintenant →
               </NebulaButton>
