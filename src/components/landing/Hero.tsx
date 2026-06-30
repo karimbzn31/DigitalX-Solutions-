@@ -68,7 +68,7 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-10 w-full sm:w-auto px-4 sm:px-0"
         >
-          <Link href="#pricing" className="w-full sm:w-auto">
+          <Link href="/register" className="w-full sm:w-auto">
             <NebulaButton size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
               Rejoindre la formation →
             </NebulaButton>
