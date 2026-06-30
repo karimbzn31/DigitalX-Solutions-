@@ -9,7 +9,7 @@ const founders = [
   {
     name: "Karim Bouziane",
     slug: "karim-bouziane",
-    role: "Fondateur",
+    role: "Fondateur & Formateur IA",
     bio: "Passionné par l'intelligence artificielle et le développement SaaS. Karim a formé plus de 500 entrepreneurs en Algérie. Il croit fermement que l'IA est le levier le plus puissant pour transformer des idées en entreprises.",
     initials: "KB",
     color: "from-violet to-magenta",
