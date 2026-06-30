@@ -35,7 +35,7 @@ function FounderAvatar({ person }: { person: (typeof founders)[number] }) {
           alt={person.name}
           width={96}
           height={96}
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover"
           style={{ objectPosition: "50% 30%" }}
           onError={() => setError(true)}
         />
