@@ -39,9 +39,9 @@ export const modules: Module[] = [
   },
   {
     id: "4",
-    title: "Agent IA & Automatisation",
+    title: "Développez votre propre Agent IA autonome",
     titleShort: "Agents IA",
-    description: "Créez des agents intelligents avec n8n, Make et les APIs LLM.",
+    description: "Apprenez à créer un Agent IA autonome ultra puissant, sans jamais payer quoi que ce soit.",
     videos: 9,
     duration: "7h15",
     level: "Avancé",
