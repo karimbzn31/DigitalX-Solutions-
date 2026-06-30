@@ -1,17 +1,23 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export function FloatingCTA() {
-  const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 0.05, 0.85, 0.95], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.05, 0.85, 0.95], [20, 0, 0, 20]);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setVisible(window.scrollY > 100 && window.scrollY < document.body.scrollHeight - 1000);
+    handler();
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
 
   return (
-    <motion.div
-      style={{ opacity, y }}
-      className="fixed bottom-24 md:bottom-8 right-4 z-40 md:hidden"
+    <div
+      className={`fixed bottom-24 md:bottom-8 right-4 z-40 md:hidden transition-all duration-300 ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+      }`}
     >
       <Link
         href="/register"
@@ -22,6 +28,6 @@ export function FloatingCTA() {
           <path d="M5 12h14M13 5l7 7-7 7" />
         </svg>
       </Link>
-    </motion.div>
+    </div>
   );
 }

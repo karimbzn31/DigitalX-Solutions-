@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface Mass {
   id: number;
@@ -28,6 +28,8 @@ const masses: Mass[] = [
 export function NebulaBackground({ intensity = 1 }: { intensity?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -36,12 +38,18 @@ export function NebulaBackground({ intensity = 1 }: { intensity?: number }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const { scrollYProgress } = useScroll();
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !isVisible) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -55,7 +63,7 @@ export function NebulaBackground({ intensity = 1 }: { intensity?: number }) {
 
     const initStars = () => {
       stars = [];
-      const count = isMobile ? 40 : 120;
+      const count = isMobile ? 30 : 80;
       for (let i = 0; i < count; i++) {
         stars.push({
           x: Math.random() * canvas.width,
@@ -69,7 +77,7 @@ export function NebulaBackground({ intensity = 1 }: { intensity?: number }) {
 
     let lastTime = 0;
     const draw = (time: number) => {
-      if (time - lastTime < 40) {
+      if (time - lastTime < 60) {
         animationId = requestAnimationFrame(draw);
         return;
       }
@@ -98,45 +106,40 @@ export function NebulaBackground({ intensity = 1 }: { intensity?: number }) {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
     };
-  }, [isMobile]);
+  }, [isMobile, isVisible]);
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-void" style={{ opacity: intensity }}>
+    <div ref={containerRef} className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-void" style={{ opacity: intensity }}>
       <canvas ref={canvasRef} className="absolute inset-0" />
 
-      <motion.div style={isMobile ? {} : { y: parallaxY }} className="absolute inset-0">
-        {(isMobile ? masses.slice(0, 2) : masses).map((m) => {
-          const xMove = (m.x > 50 ? -1 : 1) * (isMobile ? 8 : 30);
-          const yMove = (m.y > 50 ? -1 : 1) * (isMobile ? 6 : 20);
-          return (
-            <motion.div
-              key={m.id}
-              className="absolute"
-              style={{
-                width: isMobile ? m.width * 0.6 : m.width,
-                height: isMobile ? m.height * 0.6 : m.height,
-                background: m.color,
-                top: `${m.y}%`,
-                left: `${m.x}%`,
-                borderRadius: `${m.br1}% ${m.br2}% ${m.br3}% ${m.br4}%`,
-                willChange: "transform",
-                filter: `blur(${isMobile ? 60 : 150}px)`,
-              }}
-              animate={{ x: [0, xMove, 0], y: [0, yMove, 0], scale: [1, 1.05, 1] }}
-              transition={{ duration: m.duration, repeat: Infinity, ease: "easeInOut", delay: m.delay }}
-            />
-          );
-        })}
-      </motion.div>
-
-      {!isMobile && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E\")",
-            opacity: 0.5,
-          }}
-        />
+      {isVisible && (
+        <motion.div
+          initial={false}
+          className="absolute inset-0"
+        >
+          {(isMobile ? masses.slice(0, 2) : masses).map((m) => {
+            const xMove = (m.x > 50 ? -1 : 1) * (isMobile ? 6 : 20);
+            const yMove = (m.y > 50 ? -1 : 1) * (isMobile ? 4 : 12);
+            return (
+              <motion.div
+                key={m.id}
+                className="absolute"
+                style={{
+                  width: isMobile ? m.width * 0.5 : m.width,
+                  height: isMobile ? m.height * 0.5 : m.height,
+                  background: m.color,
+                  top: `${m.y}%`,
+                  left: `${m.x}%`,
+                  borderRadius: `${m.br1}% ${m.br2}% ${m.br3}% ${m.br4}%`,
+                  willChange: "transform",
+                  filter: `blur(${isMobile ? 40 : 60}px)`,
+                }}
+                animate={{ x: [0, xMove, 0], y: [0, yMove, 0], scale: [1, 1.03, 1] }}
+                transition={{ duration: m.duration * 1.5, repeat: Infinity, ease: "easeInOut", delay: m.delay }}
+              />
+            );
+          })}
+        </motion.div>
       )}
     </div>
   );
