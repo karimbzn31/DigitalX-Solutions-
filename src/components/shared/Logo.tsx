@@ -6,9 +6,7 @@ interface LogoProps {
 }
 
 export function Logo({ size = 32, className = "", scrolled = false, visible = false }: LogoProps) {
-  const fillOpacity = visible ? "0.9" : "0.5";
-  const fillOpacity2 = visible ? "0.6" : "0.15";
-  const strokeW = visible ? "2.5" : "1.5";
+  const strokeW = visible ? "3" : "1.5";
 
   return (
     <div className="relative inline-flex" style={{ width: size, height: size }}>
@@ -33,8 +31,8 @@ export function Logo({ size = 32, className = "", scrolled = false, visible = fa
             <stop offset="100%" stopColor="#FF6FB8" />
           </linearGradient>
           <linearGradient id="logog-fill" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor="#110D1F" stopOpacity={fillOpacity} />
-            <stop offset="100%" stopColor="#110D1F" stopOpacity={fillOpacity2} />
+            <stop offset="0%" stopColor="#7C5CFF" stopOpacity={visible ? "0.85" : "0.5"} />
+            <stop offset="100%" stopColor="#C45CFF" stopOpacity={visible ? "0.5" : "0.15"} />
           </linearGradient>
         </defs>
 
