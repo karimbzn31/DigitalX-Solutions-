@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Bell, Search, Command } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
-import { Logo } from "@/components/shared/Logo";
+
 
 export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
   const user = useAppStore((s) => s.user);
@@ -18,11 +18,13 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
           )}
-          <Link href="/dashboard" className="flex items-center gap-3 group">
-            <Logo size={28} />
-            <span className="text-sm text-mist font-medium group-hover:text-star-white transition-colors">
-              DigitalXSolutions Academy
-            </span>
+          <Link href="/dashboard" className="flex items-center">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet to-magenta flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
+                <path d="M12 12L20 20L28 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 28L20 20L28 28" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+              </svg>
+            </div>
           </Link>
         </div>
 
