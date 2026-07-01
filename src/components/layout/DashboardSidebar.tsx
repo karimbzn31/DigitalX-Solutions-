@@ -3,10 +3,10 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
-  Home, BookOpen, Library, Users, Bot, Award, Settings, LogOut, ChevronLeft
+  Home, BookOpen, Library, Users, Bot, Award, Settings, LogOut, ChevronLeft, User
 } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
-
+import { LogoFull } from "@/components/shared/Logo";
 
 const navItems = [
   { icon: Home, label: "Accueil", href: "/dashboard" },
@@ -16,6 +16,7 @@ const navItems = [
   { icon: Bot, label: "Assistant IA", href: "/dashboard/ai" },
   { icon: Award, label: "Certificats", href: "/dashboard/certificats" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
+  { icon: User, label: "Profil", href: "/dashboard/profile" },
 ];
 
 const levelBadges: Record<string, string> = {
@@ -51,10 +52,7 @@ export function DashboardSidebar() {
       {/* Header */}
       <div className="p-4 border-b border-white/5 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet to-magenta flex items-center justify-center text-xs font-bold text-white shrink-0">
-            DX
-          </div>
-          {sidebarOpen && <span className="font-display text-star-white font-semibold text-sm">Academy</span>}
+          {sidebarOpen ? <LogoFull /> : <LogoFull className="[&>div>span]:hidden" />}
         </Link>
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 rounded-lg hover:bg-violet/10 text-mist hover:text-star-white transition-colors">
           <ChevronLeft className={cn("w-4 h-4 transition-transform", !sidebarOpen && "rotate-180")} />
@@ -63,8 +61,8 @@ export function DashboardSidebar() {
 
       {/* User profile */}
       {sidebarOpen && (
-        <div className="px-3 pt-3 pb-2">
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-violet/10 to-magenta/10 border border-violet/10">
+        <Link href="/dashboard/profile" className="px-3 pt-3 pb-2 block">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-violet/10 to-magenta/10 border border-violet/10 hover:border-violet/30 transition-colors">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet to-magenta flex items-center justify-center text-xs font-bold text-white shrink-0">
               {user?.initials || "?"}
             </div>
@@ -73,7 +71,7 @@ export function DashboardSidebar() {
               <span className="inline-block text-[10px] px-2 py-0.5 rounded-full bg-violet/20 text-violet font-medium">{level}</span>
             </div>
           </div>
-        </div>
+        </Link>
       )}
 
       {/* Navigation */}

@@ -1,5 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Bell, Search, Command } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
@@ -12,6 +13,7 @@ const breadcrumbMap: Record<string, string> = {
   "/dashboard/ai": "Assistant IA",
   "/dashboard/certificats": "Certificats",
   "/dashboard/parametres": "Paramètres",
+  "/dashboard/profile": "Profil",
 };
 
 export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
@@ -48,9 +50,9 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
             {unreadCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose text-[8px] flex items-center justify-center font-bold text-white">{unreadCount > 9 ? "9+" : unreadCount}</span>}
           </button>
 
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet to-magenta flex items-center justify-center text-xs font-bold text-white">
+          <Link href="/dashboard/profile" className="w-8 h-8 rounded-full bg-gradient-to-br from-violet to-magenta flex items-center justify-center text-xs font-bold text-white hover:brightness-110 transition-all">
             {user?.initials || "?"}
-          </div>
+          </Link>
         </div>
       </div>
     </header>
