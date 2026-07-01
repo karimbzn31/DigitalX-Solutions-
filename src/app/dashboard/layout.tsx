@@ -1,10 +1,24 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { NebulaBackground } from "@/components/shared/NebulaBackground";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const router = useRouter();
+  const isAuthenticated = useAppStore((s) => s.isAuthenticated);
+
+  useEffect(() => {
+    if (!isAuthenticated) router.replace("/login");
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) return null;
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />

@@ -3,7 +3,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
@@ -16,8 +16,10 @@ import {
   BarChart3,
   Settings,
   Bell,
+  LogOut,
 } from "lucide-react";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { useAppStore } from "@/store/useAppStore";
 import { Logo } from "@/components/shared/Logo";
 
 const navItems = [
@@ -32,11 +34,19 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const user = useAppStore((s) => s.user);
+  const setUser = useAppStore((s) => s.setUser);
   const unreadCount = useNotificationStore((s) => s.unreadCount);
   const notifications = useNotificationStore((s) => s.notifications);
   const markAsRead = useNotificationStore((s) => s.markAsRead);
   const markAllAsRead = useNotificationStore((s) => s.markAllAsRead);
   const [notifOpen, setNotifOpen] = useState(false);
+
+  const handleLogout = () => {
+    setUser(null);
+    router.push("/login");
+  };
 
   return (
     <aside className="hidden md:flex md:w-60 lg:w-64 flex-col bg-surface border-r border-white/5 h-screen sticky top-0">
@@ -145,16 +155,23 @@ export function Sidebar() {
         </Link>
       </div>
 
-      <div className="px-3 pb-3">
+      <div className="px-3 pb-3 space-y-1">
         <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-violet/10 to-magenta/10 border border-violet/10">
           <div className="w-8 h-8 rounded-full bg-violet/20 flex items-center justify-center text-xs font-medium text-violet">
-            KB
+            {user?.initials || "?"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-star-white font-medium truncate">Karim B.</p>
-            <p className="text-xs text-mist truncate">karim@dx.academy</p>
+            <p className="text-xs text-star-white font-medium truncate">{user?.name || "Utilisateur"}</p>
+            <p className="text-xs text-mist truncate">{user?.email || ""}</p>
           </div>
         </div>
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 px-3 py-2 text-xs text-mist hover:text-rose hover:bg-rose/5 rounded-lg transition-colors"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          Déconnexion
+        </button>
       </div>
     </aside>
   );

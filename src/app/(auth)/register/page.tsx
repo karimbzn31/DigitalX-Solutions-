@@ -1,9 +1,26 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAppStore } from "@/store/useAppStore";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const setUser = useAppStore((s) => s.setUser);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !password) return;
+    const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+    setUser({ name, initials, email, isAdmin: false });
+    router.push("/dashboard");
+  };
+
   return (
     <div className="nebula-card p-8 rounded-[0.75rem]">
       <div className="text-center mb-8">
@@ -11,12 +28,14 @@ export default function RegisterPage() {
         <p className="text-sm text-mist">Rejoignez DigitalXSolutions Academy</p>
       </div>
 
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <label className="text-sm text-mist">Nom complet</label>
           <input
             type="text"
             placeholder="Votre nom"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="w-full px-4 py-2.5 rounded-lg bg-void border border-white/10 text-star-white text-sm placeholder:text-mist/40 focus:outline-none focus:border-violet transition-colors"
           />
         </div>
@@ -25,6 +44,8 @@ export default function RegisterPage() {
           <input
             type="email"
             placeholder="vous@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2.5 rounded-lg bg-void border border-white/10 text-star-white text-sm placeholder:text-mist/40 focus:outline-none focus:border-violet transition-colors"
           />
         </div>
@@ -33,6 +54,8 @@ export default function RegisterPage() {
           <input
             type="password"
             placeholder="Minimum 8 caractères"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2.5 rounded-lg bg-void border border-white/10 text-star-white text-sm placeholder:text-mist/40 focus:outline-none focus:border-violet transition-colors"
           />
         </div>
