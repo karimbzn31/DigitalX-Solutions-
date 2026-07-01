@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Bell, Search, Command } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { Logo } from "@/components/shared/Logo";
 
 const breadcrumbMap: Record<string, string> = {
   "/dashboard": "Accueil",
@@ -32,7 +33,10 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
           )}
-          <div>
+          <Link href="/dashboard" className="md:hidden">
+            <Logo size={28} />
+          </Link>
+          <div className="hidden md:block">
             <p className="text-xs text-mist">Dashboard</p>
             <h1 className="text-sm font-semibold text-star-white">{currentPage}</h1>
           </div>
