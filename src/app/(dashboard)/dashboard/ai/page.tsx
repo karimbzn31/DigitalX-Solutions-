@@ -1,37 +1,53 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { conversations, chatMessages as initialMessages, suggestions } from "@/lib/mock-data";
+import { conversations as initialConversations, chatMessages as initialMessages, suggestions } from "@/lib/mock-data";
 import { Send, Bot, User, MessageSquare, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function AiAssistantPage() {
-  const {
-    chatMessages,
-    addChatMessage,
-    isChatLoading,
-    setChatLoading,
-  } = useAppStore();
+let nextConvId = initialConversations.length + 1;
 
+export default function AiAssistantPage() {
+  const { chatMessages, addChatMessage, setChatMessages, isChatLoading, setChatLoading } = useAppStore();
+  const [convs, setConvs] = useState(initialConversations);
+  const [activeConv, setActiveConv] = useState(convs[0]?.id || null);
   const [input, setInput] = useState("");
-  const [activeConv, setActiveConv] = useState(conversations[0]?.id || null);
   const [showSidebar, setShowSidebar] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const messages = chatMessages.length > 0 ? chatMessages : initialMessages;
+  const displayMessages = useMemo(() => {
+    const current = activeConv ? chatMessages[activeConv] || [] : [];
+    return current.length > 0 ? current : (activeConv === convs[0]?.id ? initialMessages : []);
+  }, [chatMessages, activeConv, convs]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [displayMessages]);
+
+  const handleNewConversation = () => {
+    const id = `conv-${nextConvId++}`;
+    setConvs((prev) => [{ id, title: "Nouvelle conversation", date: new Date() }, ...prev]);
+    setActiveConv(id);
+    setChatMessages(id, []);
+  };
+
+  const handleDeleteConversation = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setConvs((prev) => prev.filter((c) => c.id !== id));
+    if (activeConv === id) {
+      const remaining = convs.filter((c) => c.id !== id);
+      setActiveConv(remaining[0]?.id || null);
+    }
+  };
 
   const handleSend = async () => {
-    if (!input.trim() || isChatLoading) return;
-    const userMsg = { id: `msg-${Date.now()}`, role: "user" as const, content: input.trim(), timestamp: new Date() };
-    addChatMessage(userMsg);
+    if (!input.trim() || isChatLoading || !activeConv) return;
+    const convId = activeConv;
+    const userMsg = { id: `msg-${Date.now()}`, role: "user" as const, content: input.trim(), timestamp: new Date(), conversationId: convId };
+    addChatMessage(convId, userMsg);
     setInput("");
     setChatLoading(true);
 
-    // Simulate AI response
     setTimeout(() => {
       const responses = [
         "Excellente question ! Le Vibe Coding repose sur une collaboration étroite entre vous et l'IA. Pour maximiser l'efficacité, je vous recommande de structurer vos projets en petites tâches bien définies et d'utiliser des prompts contextuels qui décrivent précisément ce que vous attendez.",
@@ -44,8 +60,9 @@ export default function AiAssistantPage() {
         role: "assistant" as const,
         content: responses[Math.floor(Math.random() * responses.length)],
         timestamp: new Date(),
+        conversationId: convId,
       };
-      addChatMessage(response);
+      addChatMessage(convId, response);
       setChatLoading(false);
     }, 1500);
   };
@@ -62,18 +79,21 @@ export default function AiAssistantPage() {
         showSidebar ? "fixed inset-y-0 left-0 z-40 md:relative md:inset-auto md:z-auto" : "hidden md:flex"
       )}>
         <div className="p-4 border-b border-white/5">
-          <button className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-gradient-to-r from-violet to-magenta text-white text-xs font-medium hover:brightness-110 transition-all">
+          <button
+            onClick={handleNewConversation}
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-gradient-to-r from-violet to-magenta text-white text-xs font-medium hover:brightness-110 transition-all"
+          >
             <Plus className="w-3.5 h-3.5" />
             Nouvelle conversation
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-thin">
-          {conversations.map((conv) => (
+          {convs.map((conv) => (
             <button
               key={conv.id}
-              onClick={() => setActiveConv(conv.id)}
+              onClick={() => { setActiveConv(conv.id); setShowSidebar(false); }}
               className={cn(
-                "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-all",
+                "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-all group",
                 activeConv === conv.id ? "bg-violet/10 border-l-2 border-violet" : "hover:bg-white/5"
               )}
             >
@@ -82,7 +102,9 @@ export default function AiAssistantPage() {
                 <p className={cn("text-xs truncate", activeConv === conv.id ? "text-star-white font-medium" : "text-mist")}>{conv.title}</p>
                 <p className="text-[10px] text-mist">{conv.date.toLocaleDateString("fr-FR")}</p>
               </div>
-              <button className="opacity-0 hover:opacity-100 text-mist hover:text-rose transition-all"><Trash2 className="w-3 h-3" /></button>
+              <button onClick={(e) => handleDeleteConversation(e, conv.id)} className="opacity-0 group-hover:opacity-100 text-mist hover:text-rose transition-all">
+                <Trash2 className="w-3 h-3" />
+              </button>
             </button>
           ))}
         </div>
@@ -90,7 +112,6 @@ export default function AiAssistantPage() {
 
       {/* Chat area */}
       <div className="flex-1 flex flex-col min-w-0 bg-void">
-        {/* Mobile sidebar toggle */}
         <div className="md:hidden flex items-center p-3 border-b border-white/5">
           <button onClick={() => setShowSidebar(!showSidebar)} className="p-1 text-mist hover:text-star-white">
             <MessageSquare className="w-5 h-5" />
@@ -98,9 +119,8 @@ export default function AiAssistantPage() {
           <span className="text-sm font-medium text-star-white ml-2">Assistant IA</span>
         </div>
 
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin">
-          {messages.map((msg) => (
+          {displayMessages.map((msg) => (
             <div key={msg.id} className={cn("flex gap-3", msg.role === "user" ? "justify-end" : "justify-start")}>
               {msg.role === "assistant" && (
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet to-magenta flex items-center justify-center shrink-0 mt-0.5">
@@ -141,8 +161,7 @@ export default function AiAssistantPage() {
             </div>
           )}
 
-          {/* Suggestions */}
-          {messages.length <= 1 && (
+          {displayMessages.length <= 1 && !isChatLoading && (
             <div className="grid grid-cols-2 gap-2 mt-4">
               {suggestions.map((s, i) => (
                 <button
@@ -159,7 +178,6 @@ export default function AiAssistantPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
         <div className="border-t border-white/5 p-4 bg-surface/30 backdrop-blur-sm">
           <div className="flex items-end gap-2 max-w-4xl mx-auto">
             <div className="flex-1 relative">
@@ -175,7 +193,7 @@ export default function AiAssistantPage() {
             </div>
             <button
               onClick={handleSend}
-              disabled={!input.trim() || isChatLoading}
+              disabled={!input.trim() || isChatLoading || !activeConv}
               className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-violet to-magenta text-white disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all shrink-0"
             >
               <Send className="w-4 h-4" />

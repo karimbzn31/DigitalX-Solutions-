@@ -17,7 +17,7 @@ export default function RegisterPage() {
     e.preventDefault();
     if (!name || !email || !password) return;
     const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-    setUser({ name, initials, email, isAdmin: false });
+    setUser({ name, initials, email, isAdmin: false, totalProgress: 0, level: "Apprenti IA" });
     router.push("/dashboard");
   };
 

@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Home, Users, BookOpen, Bell, Settings } from "lucide-react";
+import { Home, Users, BookOpen, Bell } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 
 const adminNav = [
@@ -47,15 +47,7 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-3 border-t border-white/5">
-        <Link
-          href="/admin/settings"
-          className="flex items-center gap-3 px-3 py-2.5 text-sm text-mist hover:text-star-white hover:bg-violet/5 rounded-lg transition-all"
-        >
-          <Settings className="w-4 h-4 shrink-0" />
-          Paramètres
-        </Link>
-      </div>
+
     </aside>
   );
 }

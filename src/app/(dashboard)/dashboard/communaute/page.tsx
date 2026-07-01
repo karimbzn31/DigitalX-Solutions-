@@ -21,16 +21,45 @@ const channelColors: Record<string, string> = {
 export default function CommunautePage() {
   const [activeChannel, setActiveChannel] = useState<string | null>(null);
   const [newPost, setNewPost] = useState("");
+  const [posts, setPosts] = useState(communityPosts);
+  const [likedPosts, setLikedPosts] = useState<Record<string, boolean>>({});
 
   const filtered = activeChannel
-    ? communityPosts.filter((p) => p.channel === activeChannel)
-    : communityPosts;
+    ? posts.filter((p) => p.channel === activeChannel)
+    : posts;
 
   const sorted = [...filtered].sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
     return b.createdAt.getTime() - a.createdAt.getTime();
   });
+
+  const handleLike = (postId: string) => {
+    setLikedPosts((prev) => ({ ...prev, [postId]: !prev[postId] }));
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId
+          ? { ...p, likes: likedPosts[postId] ? p.likes - 1 : p.likes + 1 }
+          : p
+      )
+    );
+  };
+
+  const handlePublish = () => {
+    if (!newPost.trim()) return;
+    const post = {
+      id: `post-${Date.now()}`,
+      author: { name: "Vous", initials: "VO", badge: "Apprenti IA" },
+      content: newPost.trim(),
+      likes: 0,
+      comments: 0,
+      channel: activeChannel || "general",
+      pinned: false,
+      createdAt: new Date(),
+    };
+    setPosts((prev) => [post, ...prev]);
+    setNewPost("");
+  };
 
   return (
     <div className="space-y-6">
@@ -39,11 +68,10 @@ export default function CommunautePage() {
         <p className="text-sm text-mist mt-1">Échangez avec les autres apprenants et partagez vos projets</p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
           { icon: Users, value: "128", label: "Membres" },
-          { icon: MessageCircle, value: communityPosts.length.toString(), label: "Discussions" },
+          { icon: MessageCircle, value: posts.length.toString(), label: "Discussions" },
           { icon: TrendingUp, value: "24", label: "En ligne" },
         ].map((s) => (
           <div key={s.label} className="bg-surface/70 backdrop-blur-sm border border-white/[0.07] rounded-xl p-4">
@@ -60,7 +88,6 @@ export default function CommunautePage() {
         ))}
       </div>
 
-      {/* Channels */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
         <button
           onClick={() => setActiveChannel(null)}
@@ -81,10 +108,9 @@ export default function CommunautePage() {
         ))}
       </div>
 
-      {/* New Post */}
       <div className="bg-surface/70 backdrop-blur-sm border border-white/[0.07] rounded-xl p-4">
         <div className="flex gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet to-magenta flex items-center justify-center text-xs font-bold text-white shrink-0">KM</div>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet to-magenta flex items-center justify-center text-xs font-bold text-white shrink-0">VO</div>
           <div className="flex-1">
             <textarea
               placeholder="Partagez quelque chose avec la communauté..."
@@ -95,12 +121,22 @@ export default function CommunautePage() {
             />
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
               <div className="flex gap-2">
-                {channels.slice(0, 3).map((ch) => (
-                  <button key={ch.id} className="text-xs text-mist hover:text-star-white transition-colors">{ch.emoji}</button>
+                {channels.map((ch) => (
+                  <button
+                    key={ch.id}
+                    onClick={() => setActiveChannel(ch.id)}
+                    className={cn(
+                      "text-xs px-2 py-1 rounded-lg transition-colors",
+                      activeChannel === ch.id ? "text-violet bg-violet/10" : "text-mist hover:text-star-white"
+                    )}
+                  >
+                    {ch.emoji}
+                  </button>
                 ))}
               </div>
               <button
                 disabled={!newPost.trim()}
+                onClick={handlePublish}
                 className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-violet text-white text-xs font-medium hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Send className="w-3 h-3" />
@@ -111,8 +147,12 @@ export default function CommunautePage() {
         </div>
       </div>
 
-      {/* Posts */}
       <div className="space-y-4">
+        {sorted.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-sm text-mist">Aucun post dans ce canal</p>
+          </div>
+        )}
         {sorted.map((post) => (
           <div key={post.id} className={cn("bg-surface/70 backdrop-blur-sm border rounded-xl p-4 transition-all", post.pinned ? "border-violet/30" : "border-white/[0.07] hover:border-violet/20")}>
             <div className="flex items-start gap-3">
@@ -134,8 +174,11 @@ export default function CommunautePage() {
                 </div>
                 <p className="text-sm text-star-white mt-2 leading-relaxed">{post.content}</p>
                 <div className="flex items-center gap-4 mt-3">
-                  <button className="flex items-center gap-1 text-xs text-mist hover:text-rose transition-colors">
-                    <Heart className="w-3.5 h-3.5" />
+                  <button
+                    onClick={() => handleLike(post.id)}
+                    className={cn("flex items-center gap-1 text-xs transition-colors", likedPosts[post.id] ? "text-rose" : "text-mist hover:text-rose")}
+                  >
+                    <Heart className={cn("w-3.5 h-3.5", likedPosts[post.id] && "fill-rose")} />
                     {post.likes}
                   </button>
                   <button className="flex items-center gap-1 text-xs text-mist hover:text-violet transition-colors">

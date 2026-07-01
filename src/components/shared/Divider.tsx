@@ -6,6 +6,6 @@ interface DividerProps {
 
 export function Divider({ className }: DividerProps) {
   return (
-    <div className={cn("h-px bg-border fade-mask-x", className)} />
+    <div className={cn("h-px bg-gradient-to-r from-transparent via-border to-transparent", className)} />
   );
 }

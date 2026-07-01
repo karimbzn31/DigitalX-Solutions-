@@ -1,5 +1,5 @@
 "use client";
-import { useState, use } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { modules, videos, resources } from "@/lib/mock-data";
@@ -17,8 +17,8 @@ const resourceIcons = {
   template: File,
 };
 
-export default function ModuleDetailPage({ params }: { params: Promise<{ moduleId: string }> }) {
-  const { moduleId } = use(params);
+export default function ModuleDetailPage({ params }: { params: { moduleId: string } }) {
+  const { moduleId } = params;
   const router = useRouter();
   const mod = modules.find((m) => m.id === moduleId);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);

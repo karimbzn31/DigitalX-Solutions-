@@ -1,33 +1,54 @@
 import { create } from "zustand";
-import type { ChatMessage } from "@/types";
+import { persist } from "zustand/middleware";
+import type { ChatMessage, User } from "@/types";
 
 interface AppState {
-  user: { name: string; initials: string; email: string; isAdmin: boolean } | null;
+  user: User | null;
   isAuthenticated: boolean;
-  sidebarOpen: boolean;
-  chatMessages: ChatMessage[];
+  sidebarCollapsed: boolean;
+  chatMessages: Record<string, ChatMessage[]>;
   isChatLoading: boolean;
+  watchedVideos: Record<string, boolean>;
 
-  setUser: (user: AppState["user"]) => void;
-  setSidebarOpen: (open: boolean) => void;
+  setUser: (user: User | null) => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
   toggleSidebar: () => void;
-  addChatMessage: (message: ChatMessage) => void;
-  setChatMessages: (messages: ChatMessage[]) => void;
+  addChatMessage: (convId: string, message: ChatMessage) => void;
+  setChatMessages: (convId: string, messages: ChatMessage[]) => void;
   setChatLoading: (loading: boolean) => void;
+  setVideoWatched: (videoId: string, watched: boolean) => void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  sidebarOpen: false,
-  chatMessages: [],
-  isChatLoading: false,
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      user: null,
+      isAuthenticated: false,
+      sidebarCollapsed: false,
+      chatMessages: {},
+      isChatLoading: false,
+      watchedVideos: {},
 
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
-  setSidebarOpen: (open) => set({ sidebarOpen: open }),
-  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-  addChatMessage: (message) =>
-    set((state) => ({ chatMessages: [...state.chatMessages, message] })),
-  setChatMessages: (messages) => set({ chatMessages: messages }),
-  setChatLoading: (loading) => set({ isChatLoading: loading }),
-}));
+      setUser: (user) => set({ user, isAuthenticated: !!user }),
+      setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+      toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+      addChatMessage: (convId, message) =>
+        set((state) => ({
+          chatMessages: {
+            ...state.chatMessages,
+            [convId]: [...(state.chatMessages[convId] || []), message],
+          },
+        })),
+      setChatMessages: (convId, messages) =>
+        set((state) => ({
+          chatMessages: { ...state.chatMessages, [convId]: messages },
+        })),
+      setChatLoading: (loading) => set({ isChatLoading: loading }),
+      setVideoWatched: (videoId, watched) =>
+        set((state) => ({
+          watchedVideos: { ...state.watchedVideos, [videoId]: watched },
+        })),
+    }),
+    { name: "dx-academy-store" }
+  )
+);

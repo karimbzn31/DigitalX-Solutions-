@@ -3,7 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
-  Home, BookOpen, Library, Users, Bot, Award, Settings, LogOut, ChevronLeft, User
+  Home, BookOpen, Library, Users, Bot, Award, Settings, LogOut, ChevronLeft
 } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { LogoFull } from "@/components/shared/Logo";
@@ -16,16 +16,15 @@ const navItems = [
   { icon: Bot, label: "Assistant IA", href: "/dashboard/ai" },
   { icon: Award, label: "Certificats", href: "/dashboard/certificats" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
-  { icon: User, label: "Profil", href: "/dashboard/profile" },
 ];
 
-const levelBadges: Record<string, string> = {
+const levelBadges = {
   "0": "Apprenti IA",
   "25": "Vibe Coder",
   "50": "Fondateur",
   "75": "Architecte IA",
   "100": "Maître",
-};
+} as const;
 
 function getLevel(progress: number): string {
   if (progress >= 75) return levelBadges["75"];
@@ -39,29 +38,27 @@ export function DashboardSidebar() {
   const router = useRouter();
   const user = useAppStore((s) => s.user);
   const setUser = useAppStore((s) => s.setUser);
-  const sidebarOpen = useAppStore((s) => s.sidebarOpen);
-  const setSidebarOpen = useAppStore((s) => s.setSidebarOpen);
+  const collapsed = useAppStore((s) => s.sidebarCollapsed);
+  const setCollapsed = useAppStore((s) => s.setSidebarCollapsed);
   const handleLogout = () => { setUser(null); router.push("/login"); };
-  const level = getLevel(42);
+  const level = getLevel(user?.totalProgress ?? 0);
 
   return (
     <aside className={cn(
       "hidden md:flex md:w-64 flex-col bg-surface border-r border-white/5 h-screen sticky top-0 transition-all duration-200 z-30",
-      !sidebarOpen && "md:w-16"
+      collapsed && "md:w-16"
     )}>
-      {/* Header */}
       <div className="p-4 border-b border-white/5 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2">
-          {sidebarOpen ? <LogoFull /> : <LogoFull className="[&>div>span]:hidden" />}
+          {collapsed ? <LogoFull className="[&>div>span]:hidden" /> : <LogoFull />}
         </Link>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 rounded-lg hover:bg-violet/10 text-mist hover:text-star-white transition-colors">
-          <ChevronLeft className={cn("w-4 h-4 transition-transform", !sidebarOpen && "rotate-180")} />
+        <button onClick={() => setCollapsed(!collapsed)} className="p-1 rounded-lg hover:bg-violet/10 text-mist hover:text-star-white transition-colors">
+          <ChevronLeft className={cn("w-4 h-4 transition-transform", collapsed && "rotate-180")} />
         </button>
       </div>
 
-      {/* User profile */}
-      {sidebarOpen && (
-        <Link href="/dashboard/profile" className="px-3 pt-3 pb-2 block">
+      {!collapsed && (
+        <Link href="/dashboard/parametres" className="px-3 pt-3 pb-2 block">
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-violet/10 to-magenta/10 border border-violet/10 hover:border-violet/30 transition-colors">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet to-magenta flex items-center justify-center text-xs font-bold text-white shrink-0">
               {user?.initials || "?"}
@@ -74,7 +71,6 @@ export function DashboardSidebar() {
         </Link>
       )}
 
-      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-3 space-y-0.5 scrollbar-thin">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
@@ -90,14 +86,13 @@ export function DashboardSidebar() {
               )}
             >
               <item.icon className="w-4 h-4 shrink-0" />
-              {sidebarOpen && item.label}
+              {!collapsed && item.label}
             </Link>
           );
         })}
       </nav>
 
-      {/* Logout */}
-      {sidebarOpen && (
+      {!collapsed && (
         <div className="p-3 border-t border-white/5">
           <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2 text-sm text-mist hover:text-rose hover:bg-rose/5 rounded-xl transition-colors w-full">
             <LogOut className="w-4 h-4 shrink-0" />

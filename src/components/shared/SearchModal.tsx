@@ -149,7 +149,6 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                 </div>
                 <div className="px-4 py-2.5 border-t border-white/5 flex items-center gap-4 text-[10px] text-mist">
                   <span className="flex items-center gap-1"><Command className="w-3 h-3" />K Ouvrir</span>
-                  <span className="flex items-center gap-1"><Command className="w-3 h-3" /><span className="text-xs">↑↓</span> Naviguer</span>
                   <span className="flex items-center gap-1">Esc Fermer</span>
                 </div>
               </div>

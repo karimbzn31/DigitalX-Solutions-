@@ -2,13 +2,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, BookOpen, Bot, Award, Users } from "lucide-react";
+import { Home, BookOpen, Bot, Award, Library } from "lucide-react";
 
 const items = [
   { icon: Home, label: "Accueil", href: "/dashboard" },
   { icon: BookOpen, label: "Formation", href: "/dashboard/formation" },
+  { icon: Library, label: "Bibliothèque", href: "/dashboard/bibliotheque" },
   { icon: Bot, label: "Assistant", href: "/dashboard/ai" },
-  { icon: Users, label: "Communauté", href: "/dashboard/communaute" },
   { icon: Award, label: "Certificats", href: "/dashboard/certificats" },
 ];
 

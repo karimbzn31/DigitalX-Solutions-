@@ -15,7 +15,7 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
-    setUser({ name: "Karim B.", initials: "KB", email, isAdmin: false });
+    setUser({ name: "Karim B.", initials: "KB", email, isAdmin: false, totalProgress: 42, level: "Vibe Coder" });
     router.push("/dashboard");
   };
 

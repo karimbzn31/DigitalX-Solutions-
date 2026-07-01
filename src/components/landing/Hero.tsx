@@ -28,7 +28,7 @@ export function Hero() {
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
         >
           <NebulaBadge variant="violet" className="mb-6 md:mb-8 px-3 md:px-4 py-1 text-xs md:text-sm">
-            ✦ Nouvelle formation · Cohorte 2025
+            ✦ Nouvelle formation · Cohorte 2026
           </NebulaBadge>
         </motion.div>
 

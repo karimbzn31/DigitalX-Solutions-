@@ -4,14 +4,14 @@ import type {
   FAQItem,
   ChatMessage,
   BlogPost,
-  DashboardUser,
+  User,
   Video,
   Resource,
   CommunityPost,
   Conversation,
 } from "@/types";
 
-export const currentUser: DashboardUser = {
+export const currentUser: User = {
   name: "Karim B.",
   initials: "KB",
   email: "karim@dx.academy",

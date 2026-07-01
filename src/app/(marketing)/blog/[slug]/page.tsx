@@ -5,7 +5,7 @@ import { blogPosts } from "@/lib/mock-data";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }
 
 export async function generateStaticParams() {
@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug } = params;
   const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return {};
   return {
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const { slug } = await params;
+  const { slug } = params;
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) notFound();

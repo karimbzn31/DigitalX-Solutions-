@@ -21,6 +21,25 @@ export default function BibliothequePage() {
     return true;
   });
 
+  const handleDownload = (title: string, content?: string, fileUrl?: string) => {
+    if (fileUrl) {
+      const a = document.createElement("a");
+      a.href = fileUrl;
+      a.download = fileUrl.split("/").pop() || title;
+      a.click();
+      return;
+    }
+    if (content) {
+      const blob = new Blob([content], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title.toLowerCase().replace(/\s+/g, "-")}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -28,7 +47,6 @@ export default function BibliothequePage() {
         <p className="text-sm text-mist mt-1">Ressources, prompts, templates et scripts pour vos projets</p>
       </div>
 
-      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mist" />
         <input
@@ -40,7 +58,6 @@ export default function BibliothequePage() {
         />
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => setTypeFilter(null)}
@@ -64,7 +81,6 @@ export default function BibliothequePage() {
         })}
       </div>
 
-      {/* Results */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map((r) => {
           const config = resourceTypeConfig[r.type];
@@ -85,7 +101,10 @@ export default function BibliothequePage() {
                   {mod && <span className="inline-block text-[10px] text-violet mt-2">Module {mod.id} · {mod.titleShort}</span>}
                 </div>
               </div>
-              <button className="flex items-center justify-center gap-1.5 w-full mt-3 py-1.5 rounded-lg bg-violet/10 text-violet text-[11px] font-medium hover:bg-violet/20 transition-colors">
+              <button
+                onClick={() => handleDownload(r.title, r.content, r.fileUrl)}
+                className="flex items-center justify-center gap-1.5 w-full mt-3 py-1.5 rounded-lg bg-violet/10 text-violet text-[11px] font-medium hover:bg-violet/20 transition-colors"
+              >
                 <Download className="w-3 h-3" />
                 Télécharger
               </button>

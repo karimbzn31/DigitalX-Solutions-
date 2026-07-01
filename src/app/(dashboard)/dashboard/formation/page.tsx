@@ -6,7 +6,7 @@ import { BookOpen, Clock, Award } from "lucide-react";
 
 export default function FormationPage() {
   const totalVideos = modules.reduce((sum, m) => sum + m.videos, 0);
-  const completedVideos = currentUser.videosWatched;
+  const completedVideos = currentUser.videosWatched ?? 0;
   const [filter, setFilter] = useState<string | null>(null);
 
   const filteredModules = filter

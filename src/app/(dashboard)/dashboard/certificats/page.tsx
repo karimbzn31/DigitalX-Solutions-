@@ -4,6 +4,26 @@ import { Award, Download, CheckCircle, Lock, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function CertificatsPage() {
+  const handleDownloadPDF = (moduleTitle: string) => {
+    const element = document.createElement("a");
+    const content = `Certificat de réussite - ${moduleTitle}\nFélicitations pour avoir complété ce module !\n\nDigitalXSolutions Academy`;
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    element.href = url;
+    element.download = `certificat-${moduleTitle.toLowerCase().replace(/\s+/g, "-")}.txt`;
+    element.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleShare = async (moduleTitle: string) => {
+    const text = `🎓 Je viens de terminer le module "${moduleTitle}" sur DigitalXSolutions Academy !`;
+    if (navigator.share) {
+      await navigator.share({ title: "Mon certificat", text }).catch(() => {});
+    } else {
+      await navigator.clipboard.writeText(text);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -11,23 +31,21 @@ export default function CertificatsPage() {
         <p className="text-sm text-mist mt-1">Téléchargez vos certificats de réussite</p>
       </div>
 
-      {/* Stats card */}
       <div className="bg-surface/70 backdrop-blur-sm border border-white/[0.07] rounded-xl p-5">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet/20 to-magenta/10 flex items-center justify-center">
             <Award className="w-7 h-7 text-violet" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-star-white">{currentUser.certificates} / {modules.length}</p>
+            <p className="text-2xl font-bold text-star-white">{(currentUser.certificates ?? 0)} / {modules.length}</p>
             <p className="text-xs text-mist">Certificats obtenus</p>
           </div>
         </div>
         <div className="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
-          <div className="h-full rounded-full bg-gradient-to-r from-violet to-magenta transition-all" style={{ width: `${(currentUser.certificates / modules.length) * 100}%` }} />
+          <div className="h-full rounded-full bg-gradient-to-r from-violet to-magenta transition-all" style={{ width: `${((currentUser.certificates ?? 0) / modules.length) * 100}%` }} />
         </div>
       </div>
 
-      {/* Certificate list */}
       <div className="space-y-4">
         {modules.map((mod) => {
           const isCompleted = mod.status === "completed";
@@ -66,11 +84,17 @@ export default function CertificatsPage() {
                 <div className="flex items-center gap-2 shrink-0">
                   {isCompleted ? (
                     <>
-                      <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-violet/10 text-violet text-xs font-medium hover:bg-violet/20 transition-all">
+                      <button
+                        onClick={() => handleDownloadPDF(mod.title)}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-violet/10 text-violet text-xs font-medium hover:bg-violet/20 transition-all"
+                      >
                         <Download className="w-3.5 h-3.5" />
                         PDF
                       </button>
-                      <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 text-mist text-xs font-medium hover:text-star-white hover:bg-white/10 transition-all">
+                      <button
+                        onClick={() => handleShare(mod.title)}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 text-mist text-xs font-medium hover:text-star-white hover:bg-white/10 transition-all"
+                      >
                         <Share2 className="w-3.5 h-3.5" />
                       </button>
                     </>

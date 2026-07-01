@@ -18,7 +18,6 @@ export interface Video {
   duration: string;
   order: number;
   completed?: boolean;
-  chapterId?: string;
 }
 
 export interface Resource {
@@ -49,24 +48,27 @@ export interface Conversation {
   date: Date;
 }
 
-export interface DashboardUser {
+export interface User {
+  id?: string;
   name: string;
   initials: string;
   email: string;
-  level: string;
-  totalProgress: number;
-  videosWatched: number;
-  totalVideos: number;
-  timeSpent: string;
-  certificates: number;
+  isAdmin?: boolean;
+  level?: string;
+  totalProgress?: number;
+  videosWatched?: number;
+  totalVideos?: number;
+  timeSpent?: string;
+  certificates?: number;
+  joinedAt?: string;
 }
 
-export interface Chapter {
+export interface ChatMessage {
   id: string;
-  moduleId: string;
-  title: string;
-  order: number;
-  videos: Video[];
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+  conversationId?: string;
 }
 
 export interface Testimonial {
@@ -82,60 +84,6 @@ export interface FAQItem {
   id: string;
   question: string;
   answer: string;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  initials: string;
-  email: string;
-  totalProgress: number;
-  videosWatched: number;
-  totalVideos: number;
-  timeSpent: string;
-  certificates: number;
-  joinedAt: string;
-}
-
-export interface ChatMessage {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
-}
-
-export interface Certificate {
-  id: string;
-  moduleId: string;
-  moduleTitle: string;
-  studentName: string;
-  completedAt: Date;
-  grade: number;
-}
-
-export interface QuizQuestion {
-  id: string;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
-}
-
-export interface Student {
-  id: string;
-  name: string;
-  email: string;
-  enrolledAt: string;
-  status: "active" | "inactive" | "suspended";
-  progress: number;
-}
-
-export interface Announcement {
-  id: string;
-  title: string;
-  content: string;
-  publishedAt: Date;
-  status: "published" | "draft";
 }
 
 export interface BlogPost {
@@ -159,4 +107,21 @@ export interface Notification {
   message: string;
   createdAt: Date;
   read: boolean;
+}
+
+export interface Student {
+  id: string;
+  name: string;
+  email: string;
+  enrolledAt: string;
+  status: "active" | "inactive" | "suspended";
+  progress: number;
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  publishedAt: Date;
+  status: "published" | "draft";
 }
