@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Bell, Search, Command } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { Logo } from "@/components/shared/Logo";
 
 
 export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
@@ -19,12 +20,7 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
             </button>
           )}
           <Link href="/dashboard" className="flex items-center">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet to-magenta flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
-                <path d="M12 12L20 20L28 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 28L20 20L28 28" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
-              </svg>
-            </div>
+            <Logo size={32} />
           </Link>
         </div>
 
