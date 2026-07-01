@@ -20,7 +20,9 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
             </button>
           )}
           <Link href="/dashboard" className="flex items-center">
-            <Logo size={32} />
+            <div className="w-10 h-10 rounded-xl bg-surface border border-white/10 flex items-center justify-center hover:border-violet/30 transition-colors">
+              <Logo size={28} />
+            </div>
           </Link>
         </div>
 
