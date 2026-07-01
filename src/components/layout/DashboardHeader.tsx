@@ -21,7 +21,7 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
           )}
           <Link href="/dashboard" className="flex items-center gap-3 group">
             <Logo size={32} />
-            <span className="text-sm text-mist font-medium group-hover:text-star-white transition-colors">
+            <span className="hidden md:block text-sm text-mist font-medium group-hover:text-star-white transition-colors">
               DigitalXSolutions Academy
             </span>
           </Link>
