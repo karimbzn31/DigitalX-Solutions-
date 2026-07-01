@@ -28,8 +28,8 @@ export function Logo({ size = 32, className = "", scrolled = false }: LogoProps)
             <stop offset="100%" stopColor="#FF6FB8" />
           </linearGradient>
           <linearGradient id="logog2" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor="#7C5CFF" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#C45CFF" stopOpacity="0.05" />
+            <stop offset="0%" stopColor="#7C5CFF" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#C45CFF" stopOpacity="0.15" />
           </linearGradient>
         </defs>
 
