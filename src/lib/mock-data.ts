@@ -17,7 +17,7 @@ export const modules: Module[] = [
     id: "2",
     title: "Vibe Coding & projets professionnels",
     titleShort: "Vibe Coding",
-    description: "Développez 10x plus vite avec l'IA générative et le pair programming.",
+    description: "Ce module vous plonge dans l'art du Vibe Coding — une nouvelle façon de développer où vous et l'IA travaillez ensemble comme deux associés, l'un ayant la vision, l'autre l'exécution. Vous n'apprendrez pas juste à utiliser l'IA pour générer du code : vous apprendrez à la diriger, la cadrer et en extraire le meilleur selon votre projet et votre vision.\n\nVous aurez accès à notre bibliothèque exclusive de Master Prompts — des structures de prompts soigneusement conçues par notre équipe pour vous permettre de démarrer, structurer et faire évoluer n'importe quel projet professionnel avec une précision et une rapidité redoutables.\n\nVous apprendrez notamment :\n\n• Comment parler à l'IA pour obtenir exactement ce que vous voulez — pas des approximations, mais des résultats précis et professionnels\n• Comment la gérer selon votre projet — adapter votre communication selon que vous construisez un site, une application, un SaaS ou un agent IA\n• Comment maintenir votre vision tout au long du développement, sans perdre la cohérence ni la qualité\n• Toutes les techniques du Vibe Coding professionnel utilisées par les meilleurs développeurs et entrepreneurs tech en 2025\n\nÀ l'issue de ce module, vous serez capable de concevoir et livrer des projets qui prenaient autrefois des semaines — en quelques jours, voire quelques heures.",
     videos: 12,
     duration: "9h45",
     level: "Intermédiaire",
