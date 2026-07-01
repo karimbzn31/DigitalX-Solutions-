@@ -1,35 +1,19 @@
 "use client";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Bell, Search, Command } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { useSearchStore } from "@/store/useSearchStore";
 
-const breadcrumbLabels: Record<string, string> = {
-  "/dashboard": "Accueil",
-  "/dashboard/formation": "Ma Formation",
-  "/dashboard/bibliotheque": "Bibliothèque",
-  "/dashboard/communaute": "Communauté",
-  "/dashboard/ai": "Assistant IA",
-  "/dashboard/certificats": "Certificats",
-  "/dashboard/parametres": "Paramètres",
-};
-
 export function DashboardHeader() {
-  const pathname = usePathname();
   const user = useAppStore((s) => s.user);
   const unreadCount = useNotificationStore((s) => s.unreadCount);
   const setSearchOpen = useSearchStore((s) => s.setOpen);
 
-  const currentLabel = breadcrumbLabels[pathname] || "Dashboard";
-
   return (
     <header className="sticky top-0 z-30 border-b border-white/5">
       <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8 bg-surface">
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-star-white font-medium hidden sm:inline">{currentLabel}</span>
-        </div>
+        <div />
 
         <div className="flex items-center gap-3">
           <button
