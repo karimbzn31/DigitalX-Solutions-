@@ -11,7 +11,7 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
   const unreadCount = useNotificationStore((s) => s.unreadCount);
 
   return (
-    <header className="sticky top-0 z-30 bg-void/80 backdrop-blur-xl border-b border-white/5">
+    <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-white/5">
       <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           {onMenuClick && (
@@ -19,10 +19,11 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
           )}
-          <Link href="/dashboard" className="flex items-center">
-            <div className="w-10 h-10 rounded-xl bg-surface border border-white/10 flex items-center justify-center hover:border-violet/30 transition-colors">
-              <Logo size={28} />
-            </div>
+          <Link href="/dashboard" className="flex items-center gap-3 group">
+            <Logo size={32} />
+            <span className="text-sm text-mist font-medium group-hover:text-star-white transition-colors">
+              DigitalXSolutions Academy
+            </span>
           </Link>
         </div>
 
