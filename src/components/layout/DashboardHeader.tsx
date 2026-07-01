@@ -1,27 +1,13 @@
 "use client";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Bell, Search, Command } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
-import { Logo, LogoFull } from "@/components/shared/Logo";
-const breadcrumbMap: Record<string, string> = {
-  "/dashboard": "Accueil",
-  "/dashboard/formation": "Ma Formation",
-  "/dashboard/bibliotheque": "Bibliothèque",
-  "/dashboard/communaute": "Communauté",
-  "/dashboard/ai": "Assistant IA",
-  "/dashboard/certificats": "Certificats",
-  "/dashboard/parametres": "Paramètres",
-  "/dashboard/profile": "Profil",
-};
+import { Logo } from "@/components/shared/Logo";
 
 export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
-  const pathname = usePathname();
   const user = useAppStore((s) => s.user);
   const unreadCount = useNotificationStore((s) => s.unreadCount);
-
-  const currentPage = breadcrumbMap[pathname] || "Dashboard";
 
   return (
     <header className="sticky top-0 z-30 bg-void/80 backdrop-blur-xl border-b border-white/5">
@@ -32,16 +18,12 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
           )}
-          <Link href="/dashboard" className="md:hidden flex items-center gap-2">
-            <Logo size={32} />
+          <Link href="/dashboard" className="flex items-center gap-3 group">
+            <Logo size={28} />
+            <span className="text-sm text-mist font-medium group-hover:text-star-white transition-colors">
+              DigitalXSolutions Academy
+            </span>
           </Link>
-          <Link href="/dashboard" className="hidden md:flex items-center gap-3">
-            <LogoFull />
-          </Link>
-          <div className="hidden lg:block ml-2">
-            <p className="text-xs text-mist">Dashboard</p>
-            <h1 className="text-sm font-semibold text-star-white">{currentPage}</h1>
-          </div>
         </div>
 
         <div className="flex items-center gap-3">
