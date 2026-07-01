@@ -39,7 +39,7 @@ export function Features() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           {features.map((f, i) => {
             const Icon = f.icon;
@@ -60,6 +60,23 @@ export function Features() {
             );
           })}
         </motion.div>
+
+        <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 scrollbar-none mt-4">
+          {features.map((f) => {
+            const Icon = f.icon;
+            return (
+              <div key={f.title} className="snap-start shrink-0 w-[80vw]">
+                <NebulaCard className="p-6 h-full group">
+                  <div className="w-10 h-10 bg-gradient-to-br from-violet/10 to-magenta/10 rounded-lg flex items-center justify-center mb-4 border border-violet/10 group-hover:border-violet/20 transition-colors">
+                    <Icon className="w-5 h-5 text-violet" />
+                  </div>
+                  <h3 className="font-display text-lg font-semibold text-star-white mb-2 tracking-tight">{f.title}</h3>
+                  <p className="text-sm text-mist leading-relaxed">{f.desc}</p>
+                </NebulaCard>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
