@@ -29,7 +29,7 @@ export const modules: Module[] = [
     id: "3",
     title: "Build ton SaaS en partant de zéro",
     titleShort: "SaaS",
-    description: "De l'idée au produit lancé : stack technique, déploiement, scaling.",
+    description: "Avoir une idée, c'est bien. La transformer en un vrai produit utilisé par des clients, c'est une autre dimension. Ce module vous emmène exactement là — de la page blanche au SaaS en production, étape par étape, sans raccourcis et sans zone d'ombre.\n\nVous apprendrez à choisir et maîtriser la stack technique idéale pour votre projet : frontend moderne, backend robuste, base de données, authentification, paiements, APIs — chaque brique expliquée, intégrée et mise en place avec l'aide de l'IA.\n\nVous découvrirez comment :\n\n• Valider votre idée avant d'écrire une seule ligne de code — pour ne jamais construire quelque chose que personne ne veut\n• Concevoir votre MVP rapidement et intelligemment — le minimum qui convainc, pas le minimum qui déçoit\n• Déployer votre produit en ligne et le rendre accessible au monde entier, avec un environnement professionnel et sécurisé\n• Structurer votre architecture dès le départ pour que votre SaaS puisse grandir sans tout reconstruire\n• Scaler votre produit au fur et à mesure que vos utilisateurs arrivent — performance, stabilité, évolution\n\nCe module est 100% pratique. Vous construirez un vrai SaaS fonctionnel de A à Z, pas un projet d'exercice — un produit que vous pourrez vendre dès la fin de la formation.",
     videos: 10,
     duration: "8h20",
     level: "Avancé",
