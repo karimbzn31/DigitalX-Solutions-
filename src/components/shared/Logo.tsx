@@ -2,9 +2,14 @@ interface LogoProps {
   size?: number;
   className?: string;
   scrolled?: boolean;
+  visible?: boolean;
 }
 
-export function Logo({ size = 32, className = "", scrolled = false }: LogoProps) {
+export function Logo({ size = 32, className = "", scrolled = false, visible = false }: LogoProps) {
+  const fillOpacity = visible ? "0.9" : "0.5";
+  const fillOpacity2 = visible ? "0.6" : "0.15";
+  const strokeW = visible ? "2.5" : "1.5";
+
   return (
     <div className="relative inline-flex" style={{ width: size, height: size }}>
       {scrolled && (
@@ -27,13 +32,13 @@ export function Logo({ size = 32, className = "", scrolled = false }: LogoProps)
             <stop offset="50%" stopColor="#C45CFF" />
             <stop offset="100%" stopColor="#FF6FB8" />
           </linearGradient>
-          <linearGradient id="logog2" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor="#7C5CFF" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#C45CFF" stopOpacity="0.15" />
+          <linearGradient id="logog-fill" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0%" stopColor="#110D1F" stopOpacity={fillOpacity} />
+            <stop offset="100%" stopColor="#110D1F" stopOpacity={fillOpacity2} />
           </linearGradient>
         </defs>
 
-        <rect x="1" y="1" width="38" height="38" rx="10" fill="url(#logog2)" stroke="url(#logog)" strokeWidth="1.5" />
+        <rect x="1" y="1" width="38" height="38" rx="10" fill="url(#logog-fill)" stroke="url(#logog)" strokeWidth={strokeW} />
 
         <path
           d="M12 12L20 20L28 12"

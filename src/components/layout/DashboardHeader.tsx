@@ -20,7 +20,7 @@ export function DashboardHeader({ onMenuClick }: { onMenuClick?: () => void }) {
             </button>
           )}
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <Logo size={32} />
+            <Logo size={32} visible />
             <span className="hidden md:block text-sm text-mist font-medium group-hover:text-star-white transition-colors">
               DigitalXSolutions Academy
             </span>
