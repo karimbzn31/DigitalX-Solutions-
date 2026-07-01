@@ -18,6 +18,55 @@ export interface Video {
   duration: string;
   order: number;
   completed?: boolean;
+  chapterId?: string;
+}
+
+export interface Resource {
+  id: string;
+  type: "prompt" | "code" | "pdf" | "template";
+  title: string;
+  description: string;
+  moduleId: string;
+  content?: string;
+  fileUrl?: string;
+}
+
+export interface CommunityPost {
+  id: string;
+  author: { name: string; initials: string; badge: string };
+  content: string;
+  image?: string;
+  likes: number;
+  comments: number;
+  channel: string;
+  pinned: boolean;
+  createdAt: Date;
+}
+
+export interface Conversation {
+  id: string;
+  title: string;
+  date: Date;
+}
+
+export interface DashboardUser {
+  name: string;
+  initials: string;
+  email: string;
+  level: string;
+  totalProgress: number;
+  videosWatched: number;
+  totalVideos: number;
+  timeSpent: string;
+  certificates: number;
+}
+
+export interface Chapter {
+  id: string;
+  moduleId: string;
+  title: string;
+  order: number;
+  videos: Video[];
 }
 
 export interface Testimonial {
