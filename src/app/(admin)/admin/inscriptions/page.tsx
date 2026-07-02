@@ -49,6 +49,7 @@ export default function AdminInscriptionsPage() {
   const [generatedCode, setGeneratedCode] = useState("");
   const [copied, setCopied] = useState(false);
   const [rejectError, setRejectError] = useState("");
+  const [approveError, setApproveError] = useState("");
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -71,7 +72,7 @@ export default function AdminInscriptionsPage() {
     });
     const data = await res.json();
     if (!res.ok) {
-      setError("Erreur lors de l'approbation : " + (data.error || "inconnue"));
+      setApproveError("Erreur : " + (data.error || "inconnue"));
       return;
     }
     setGeneratedCode(code);
@@ -203,9 +204,10 @@ export default function AdminInscriptionsPage() {
               {!generatedCode ? (
                 <>
                   <h2 className="text-lg font-semibold text-white mb-2">Approuver l&apos;inscription</h2>
-                  <p className="text-white/50 text-sm mb-6">
+                  <p className="text-white/50 text-sm mb-4">
                     Activer le compte de <strong className="text-white">{approveModal.request?.name}</strong>
                   </p>
+                  {approveError && <div className="p-3 rounded-lg bg-rose/10 border border-rose/20 text-sm text-rose mb-4">{approveError}</div>}
                   <div className="flex gap-3 justify-end">
                     <button
                       onClick={() => setApproveModal({ open: false, request: null })}
