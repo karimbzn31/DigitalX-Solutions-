@@ -8,18 +8,18 @@ const supabaseAdmin = createClient(
 );
 
 export async function GET() {
-  const { data: pending, error } = await supabaseAdmin
+  const { data: all, error } = await supabaseAdmin
     .from("profiles")
-    .select("*")
-    .eq("status", "pending")
-    .order("created_at", { ascending: false });
+    .select("*");
 
   if (error) {
     console.error("GET /api/admin/pending error:", error.message);
     return Response.json({ error: error.message }, { status: 500 });
   }
 
-  console.log("DEBUG pending: count=" + (pending?.length ?? 0), "ids=" + JSON.stringify(pending?.map(p => p.id)));
+  const pending = (all || [])
+    .filter((p) => p.status === "pending")
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return Response.json({ requests: pending || [] }, {
     headers: { "Cache-Control": "no-store, max-age=0" },
