@@ -21,7 +21,7 @@ export async function GET() {
 
   console.log("DEBUG pending: count=" + (pending?.length ?? 0), "ids=" + JSON.stringify(pending?.map(p => p.id)));
 
-  return new Response(JSON.stringify({ requests: pending || [] }), {
+  return Response.json({ requests: pending || [] }, {
     headers: { "Cache-Control": "no-store, max-age=0" },
   });
 }
