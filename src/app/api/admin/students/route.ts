@@ -8,10 +8,14 @@ const supabaseAdmin = createClient(
 );
 
 export async function GET() {
-  const { data: profiles } = await supabaseAdmin
+  const { data: profiles, error } = await supabaseAdmin
     .from("profiles")
     .select("*")
     .order("created_at", { ascending: false });
 
+  if (error) {
+    console.error("GET /api/admin/students error:", error.message);
+    return Response.json({ error: error.message }, { status: 500 });
+  }
   return Response.json({ students: profiles || [] });
 }

@@ -8,11 +8,15 @@ const supabaseAdmin = createClient(
 );
 
 export async function GET() {
-  const { data: pending } = await supabaseAdmin
+  const { data: pending, error } = await supabaseAdmin
     .from("profiles")
     .select("*")
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
+  if (error) {
+    console.error("GET /api/admin/pending error:", error.message);
+    return Response.json({ error: error.message }, { status: 500 });
+  }
   return Response.json({ requests: pending || [] });
 }
