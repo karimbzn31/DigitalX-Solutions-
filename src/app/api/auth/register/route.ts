@@ -44,7 +44,9 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ user: { id: userId } });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Erreur serveur";
+    console.error("POST /api/auth/register exception:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
