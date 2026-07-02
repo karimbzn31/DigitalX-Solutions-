@@ -22,27 +22,26 @@ export default function RegisterPage() {
 
     const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name, initials },
-      },
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name, initials }),
     });
 
-    setLoading(false);
+    const data = await res.json();
 
-    if (signUpError) {
-      if (signUpError.message.includes("rate limit") || signUpError.message.includes("rate_limit")) {
-        setError("Trop de tentatives. Attends 30 secondes avant de réessayer.");
-      } else {
-        setError(signUpError.message);
-      }
+    if (!res.ok) {
+      setError(data.error || "Erreur lors de l'inscription");
+      setLoading(false);
       return;
     }
 
-    if (!data.user) {
-      setError("Erreur lors de la création du compte. Vérifie que la confirmation email est désactivée dans Supabase.");
+    // Auto-login after registration
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (signInError) {
+      setError("Compte créé mais connexion automatique échouée. Connecte-toi manuellement.");
+      setLoading(false);
       return;
     }
 
