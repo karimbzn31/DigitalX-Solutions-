@@ -31,13 +31,13 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const { userId } = await req.json();
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
 
   if (!userId) {
     return Response.json({ error: "Missing userId" }, { status: 400 });
   }
 
-  // Delete from auth (this cascades to profiles)
   const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
   if (error) return Response.json({ error: error.message }, { status: 500 });

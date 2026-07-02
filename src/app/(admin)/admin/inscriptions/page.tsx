@@ -48,6 +48,7 @@ export default function AdminInscriptionsPage() {
   const [rejectModal, setRejectModal] = useState<{ open: boolean; request: PendingProfile | null }>({ open: false, request: null });
   const [generatedCode, setGeneratedCode] = useState("");
   const [copied, setCopied] = useState(false);
+  const [rejectError, setRejectError] = useState("");
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -68,20 +69,27 @@ export default function AdminInscriptionsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: req.id, status: "active", validationCode: code }),
     });
-    if (res.ok) {
-      setGeneratedCode(code);
-      setRequests((prev) => prev.filter((r) => r.id !== req.id));
+    const data = await res.json();
+    if (!res.ok) {
+      setError("Erreur lors de l'approbation : " + (data.error || "inconnue"));
+      return;
     }
+    setGeneratedCode(code);
+    setRequests((prev) => prev.filter((r) => r.id !== req.id));
   };
 
   const handleReject = async () => {
     const req = rejectModal.request;
     if (!req) return;
-    await fetch("/api/admin/profile", {
+    setRejectError("");
+    const res = await fetch("/api/admin/profile?userId=" + encodeURIComponent(req.id), {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: req.id }),
     });
+    const data = await res.json();
+    if (!res.ok) {
+      setRejectError(data.error || "Erreur lors de la suppression");
+      return;
+    }
     setRequests((prev) => prev.filter((r) => r.id !== req.id));
     setRejectModal({ open: false, request: null });
   };
@@ -261,10 +269,11 @@ export default function AdminInscriptionsPage() {
                   <p className="text-white/50 text-sm">{rejectModal.request?.name}</p>
                 </div>
               </div>
-              <p className="text-white/60 text-sm mb-6">L&apos;utilisateur sera bloqué et ne pourra pas accéder à la plateforme.</p>
+              <p className="text-white/60 text-sm mb-6">L&apos;utilisateur sera supprimé définitivement.</p>
+              {rejectError && <div className="p-3 rounded-lg bg-rose/10 border border-rose/20 text-sm text-rose mb-4">{rejectError}</div>}
               <div className="flex gap-3 justify-end">
                 <button onClick={() => setRejectModal({ open: false, request: null })} className="px-4 py-2 rounded-xl text-sm text-white/60 hover:text-white bg-white/5 hover:bg-white/10 transition-colors">Annuler</button>
-                <button onClick={handleReject} className="px-4 py-2 rounded-xl text-sm font-medium bg-rose text-white hover:bg-rose/80 transition-colors">Refuser définitivement</button>
+                <button onClick={handleReject} className="px-4 py-2 rounded-xl text-sm font-medium bg-rose text-white hover:bg-rose/80 transition-colors">Supprimer définitivement</button>
               </div>
             </motion.div>
           </motion.div>
