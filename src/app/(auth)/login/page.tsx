@@ -41,23 +41,28 @@ export default function LoginPage() {
       .eq("id", user.id)
       .single();
 
-    if (profile) {
-      setUser({
-        id: profile.id,
-        name: profile.name,
-        initials: profile.initials,
-        email: profile.email,
-        isAdmin: profile.is_admin,
-        status: profile.status,
-        level: profile.level,
-        totalProgress: profile.total_progress,
-        videosWatched: profile.videos_watched,
-        totalVideos: profile.total_videos,
-        timeSpent: profile.time_spent,
-        certificates: profile.certificates,
-        joinedAt: profile.created_at,
-      });
+    if (!profile) {
+      await supabase.auth.signOut();
+      setError("Profil introuvable. Contacte le support.");
+      setLoading(false);
+      return;
     }
+
+    setUser({
+      id: profile.id,
+      name: profile.name,
+      initials: profile.initials,
+      email: profile.email,
+      isAdmin: profile.is_admin,
+      status: profile.status,
+      level: profile.level,
+      totalProgress: profile.total_progress,
+      videosWatched: profile.videos_watched,
+      totalVideos: profile.total_videos,
+      timeSpent: profile.time_spent,
+      certificates: profile.certificates,
+      joinedAt: profile.created_at,
+    });
 
     if (profile?.status === "blocked") {
       await supabase.auth.signOut();

@@ -25,7 +25,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json({ user: { id: data.user?.id } });
+    const userId = data.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: "Erreur création utilisateur" }, { status: 500 });
+    }
+
+    const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
+      id: userId,
+      email,
+      name,
+      initials,
+      is_admin: false,
+      status: "pending",
+    });
+
+    if (profileError) {
+      return NextResponse.json({ error: profileError.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ user: { id: userId } });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
