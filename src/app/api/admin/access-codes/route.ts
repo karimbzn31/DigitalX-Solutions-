@@ -2,8 +2,8 @@ import { supabaseAdmin, requireAdmin } from "@/lib/api-auth";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
-  const auth = await requireAdmin(request);
+export async function GET() {
+  const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
   const { data: codes } = await supabaseAdmin
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(req: Request) {
-  const auth = await requireAdmin(req);
+  const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
   const body = await req.json();
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-  const auth = await requireAdmin(req);
+  const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
   const body = await req.json();

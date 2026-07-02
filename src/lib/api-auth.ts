@@ -1,64 +1,57 @@
+import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+// Client with service role key for admin DB operations (bypasses RLS)
+export const supabaseAdmin = createClient(
+  supabaseUrl,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function requireAdmin(request: Request) {
-  const authHeader = request.headers.get("authorization");
+function getServerClient() {
+  const cookieStore = cookies();
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch {}
+      },
+    },
+  });
+}
 
-  // Support Bearer token or cookie-based session
-  let userId: string | null = null;
+export async function getAuthenticatedUser() {
+  const supabase = getServerClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) return null;
+  return data.user;
+}
 
-  if (authHeader?.startsWith("Bearer ")) {
-    const token = authHeader.slice(7);
-    const { data, error } = await supabaseAdmin.auth.getUser(token);
-    if (error || !data.user) {
-      return { error: NextResponse.json({ error: "Non authentifié" }, { status: 401 }), userId: null };
-    }
-    userId = data.user.id;
-  } else {
-    const cookieHeader = request.headers.get("cookie") || "";
-    const cookies = Object.fromEntries(
-      cookieHeader.split(";").filter(Boolean).map((c) => {
-        const [k, ...v] = c.trim().split("=");
-        return [k, v.join("=")];
-      })
-    );
-    const accessToken = cookies["sb-access-token"] || cookies["supabase-auth-token"];
-    if (accessToken) {
-      try {
-        const parsed = JSON.parse(decodeURIComponent(accessToken));
-        const token = Array.isArray(parsed) ? parsed[0] : parsed;
-        const { data, error } = await supabaseAdmin.auth.getUser(token);
-        if (!error && data.user) {
-          userId = data.user.id;
-        }
-      } catch {}
-    }
-  }
-
-  if (!userId) {
+export async function requireAdmin() {
+  const user = await getAuthenticatedUser();
+  if (!user) {
     return { error: NextResponse.json({ error: "Non authentifié" }, { status: 401 }), userId: null };
   }
 
-  const { data: profile, error: profileError } = await supabaseAdmin
+  const { data: profile } = await supabaseAdmin
     .from("profiles")
-    .select("is_admin, status")
-    .eq("id", userId)
+    .select("is_admin")
+    .eq("id", user.id)
     .single();
 
-  if (profileError || !profile) {
-    return { error: NextResponse.json({ error: "Profil introuvable" }, { status: 403 }), userId };
+  if (!profile?.is_admin) {
+    return { error: NextResponse.json({ error: "Accès refusé" }, { status: 403 }), userId: user.id };
   }
 
-  if (!profile.is_admin) {
-    return { error: NextResponse.json({ error: "Accès refusé : administrateur requis" }, { status: 403 }), userId };
-  }
-
-  return { error: null, userId };
+  return { error: null, userId: user.id };
 }
-
-export { supabaseAdmin };

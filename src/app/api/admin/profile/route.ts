@@ -3,7 +3,7 @@ import { supabaseAdmin, requireAdmin } from "@/lib/api-auth";
 export const dynamic = "force-dynamic";
 
 export async function PATCH(req: Request) {
-  const auth = await requireAdmin(req);
+  const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
   try {
@@ -38,7 +38,7 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const auth = await requireAdmin(req);
+  const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
   try {
