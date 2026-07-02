@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import {
   Home, BookOpen, Library, Users, Bot, Award, Settings, LogOut, ChevronLeft
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { useAppStore } from "@/store/useAppStore";
 import { LogoFull } from "@/components/shared/Logo";
 
@@ -40,7 +41,7 @@ export function DashboardSidebar() {
   const setUser = useAppStore((s) => s.setUser);
   const collapsed = useAppStore((s) => s.sidebarCollapsed);
   const setCollapsed = useAppStore((s) => s.setSidebarCollapsed);
-  const handleLogout = () => { setUser(null); router.push("/login"); };
+  const handleLogout = async () => { await supabase.auth.signOut(); setUser(null); router.push("/login"); };
   const level = getLevel(user?.totalProgress ?? 0);
 
   return (

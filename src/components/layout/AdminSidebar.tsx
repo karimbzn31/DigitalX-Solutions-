@@ -3,11 +3,12 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Home, Users, BookOpen, Bell } from "lucide-react";
+import { Home, Users, BookOpen, Bell, Shield } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 
 const adminNav = [
   { icon: Home, label: "Vue d'ensemble", href: "/admin" },
+  { icon: Shield, label: "Validations", href: "/admin/validations" },
   { icon: Users, label: "Étudiants", href: "/admin/students" },
   { icon: BookOpen, label: "Formations", href: "/admin/formations" },
   { icon: Bell, label: "Annonces", href: "/admin/announcements" },

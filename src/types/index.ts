@@ -61,6 +61,8 @@ export interface User {
   timeSpent?: string;
   certificates?: number;
   joinedAt?: string;
+  status?: "pending" | "active" | "blocked";
+  validationCode?: string;
 }
 
 export interface ChatMessage {
