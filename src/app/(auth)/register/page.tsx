@@ -22,7 +22,7 @@ export default function RegisterPage() {
 
     const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -33,7 +33,16 @@ export default function RegisterPage() {
     setLoading(false);
 
     if (signUpError) {
-      setError(signUpError.message);
+      if (signUpError.message.includes("rate limit") || signUpError.message.includes("rate_limit")) {
+        setError("Trop de tentatives. Attends 30 secondes avant de réessayer.");
+      } else {
+        setError(signUpError.message);
+      }
+      return;
+    }
+
+    if (!data.user) {
+      setError("Erreur lors de la création du compte. Vérifie que la confirmation email est désactivée dans Supabase.");
       return;
     }
 
