@@ -8,15 +8,20 @@ const supabaseAdmin = createClient(
 );
 
 export async function PATCH(req: Request) {
-  const { userId, status } = await req.json();
+  const { userId, status, validationCode } = await req.json();
 
   if (!userId || !status) {
     return Response.json({ error: "Missing userId or status" }, { status: 400 });
   }
 
+  const updates: Record<string, unknown> = { status };
+  if (validationCode) {
+    updates.validation_code = validationCode;
+  }
+
   const { data, error } = await supabaseAdmin
     .from("profiles")
-    .update({ status })
+    .update(updates)
     .eq("id", userId)
     .select()
     .single();

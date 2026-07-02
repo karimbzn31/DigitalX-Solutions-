@@ -56,43 +56,22 @@ export default function ValidationPage() {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setError("Vous devez être connecté.");
+      setError("Vous devez \u00eatre connect\u00e9.");
       setLoading(false);
       return;
     }
 
-    const { data: profile, error: fetchError } = await supabase
-      .from("profiles")
-      .select("validation_code, status")
-      .eq("id", user.id)
-      .single();
+    const res = await fetch("/api/auth/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.id, code: code.trim() }),
+    });
 
-    if (fetchError || !profile) {
-      setError("Erreur lors de la vérification du code.");
-      setLoading(false);
-      return;
-    }
-
-    if (profile.status === "active") {
-      router.push("/dashboard");
-      return;
-    }
-
-    if (profile.validation_code !== code.trim()) {
-      setError("Code invalide. Vérifiez votre code et réessayez.");
-      setLoading(false);
-      return;
-    }
-
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ status: "active", validation_code: null })
-      .eq("id", user.id);
-
+    const data = await res.json();
     setLoading(false);
 
-    if (updateError) {
-      setError("Erreur lors de l'activation du compte.");
+    if (!res.ok) {
+      setError(data.error || "Erreur lors de la v\u00e9rification du code.");
       return;
     }
 
@@ -162,7 +141,7 @@ export default function ValidationPage() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-lg bg-void border border-white/10 text-star-white text-sm placeholder:text-mist/40 focus:outline-none focus:border-violet transition-colors text-center font-mono text-lg tracking-widest"
-                maxLength={8}
+                maxLength={16}
               />
             </div>
 

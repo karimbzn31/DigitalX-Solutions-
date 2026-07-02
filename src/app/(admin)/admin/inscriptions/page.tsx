@@ -62,13 +62,13 @@ export default function AdminInscriptionsPage() {
   const handleApprove = async () => {
     const req = approveModal.request;
     if (!req) return;
+    const code = generateCode();
     const res = await fetch("/api/admin/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: req.id, status: "active" }),
+      body: JSON.stringify({ userId: req.id, status: "active", validationCode: code }),
     });
     if (res.ok) {
-      const code = generateCode();
       setGeneratedCode(code);
       setRequests((prev) => prev.filter((r) => r.id !== req.id));
     }
@@ -78,9 +78,9 @@ export default function AdminInscriptionsPage() {
     const req = rejectModal.request;
     if (!req) return;
     await fetch("/api/admin/profile", {
-      method: "PATCH",
+      method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: req.id, status: "blocked" }),
+      body: JSON.stringify({ userId: req.id }),
     });
     setRequests((prev) => prev.filter((r) => r.id !== req.id));
     setRejectModal({ open: false, request: null });
