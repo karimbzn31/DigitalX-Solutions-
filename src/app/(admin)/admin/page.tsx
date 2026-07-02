@@ -1,184 +1,126 @@
 "use client";
 
-import { Users, Clock, UserPlus, TrendingUp, AlertTriangle, CheckCircle, MessageSquare, FileText } from "lucide-react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Users, UserPlus, AlertTriangle, CheckCircle, Shield } from "lucide-react";
 import { NebulaCard } from "@/components/shared/NebulaCard";
 import { cn } from "@/lib/utils";
-import { ADMIN_USER, PENDING_REQUESTS, RECENT_ACTIVITIES, DAILY_REGISTRATIONS, STUDENTS } from "@/lib/mock-admin";
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+interface PendingReq {
+  id: string;
+  name: string;
+  email: string;
+  initials: string;
+  status: string;
+  created_at: string;
 }
 
-function isThisWeek(iso: string): boolean {
-  const now = new Date();
-  const date = new Date(iso);
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  return date >= weekAgo;
+interface Stats {
+  total: number;
+  pending: number;
+  active: number;
+  blocked: number;
+  admins: number;
+  daily: { day: string; count: number }[];
 }
-
-const activityConfig: Record<string, { icon: typeof Users; color: string; bg: string }> = {
-  inscription: { icon: UserPlus, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-  validation: { icon: CheckCircle, color: "text-cyan-soft", bg: "bg-cyan-500/10" },
-  progression: { icon: TrendingUp, color: "text-violet", bg: "bg-violet/10" },
-  certificat: { icon: FileText, color: "text-amber-400", bg: "bg-amber-500/10" },
-  message: { icon: MessageSquare, color: "text-rose", bg: "bg-rose/10" },
-};
-
-const statusConfig: Record<string, { label: string; classes: string }> = {
-  completed: { label: "Terminé", classes: "bg-emerald-500/10 text-emerald-400 border-emerald-500/15" },
-  pending: { label: "En attente", classes: "bg-amber-500/10 text-amber-400 border-amber-500/15" },
-  warning: { label: "Attention", classes: "bg-rose/10 text-rose border-rose/15" },
-};
 
 export default function AdminOverviewPage() {
-  const activeStudents = STUDENTS.filter((s) => s.status === "active").length;
-  const pendingCount = PENDING_REQUESTS.filter((r) => r.status === "pending").length;
-  const newThisWeek = STUDENTS.filter((s) => isThisWeek(s.enrolledAt)).length;
-  const avgProgress = Math.round(STUDENTS.reduce((acc, s) => acc + s.progress, 0) / STUDENTS.length);
-  const maxCount = Math.max(...DAILY_REGISTRATIONS.map((d) => d.count));
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [pending, setPending] = useState<PendingReq[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/admin/stats").then((r) => r.json()),
+      fetch("/api/admin/pending").then((r) => r.json()),
+    ]).then(([statsData, pendingData]) => {
+      setStats(statsData);
+      setPending(pendingData.requests || []);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-6 h-6 border-2 border-cyan-soft border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const kpis = [
+    { icon: Users, label: "Total inscrits", value: stats?.total || 0, color: "from-cyan-soft to-violet" },
+    { icon: UserPlus, label: "En attente", value: stats?.pending || 0, color: "from-amber-400 to-orange-500", alert: (stats?.pending || 0) > 0 },
+    { icon: CheckCircle, label: "Actifs", value: stats?.active || 0, color: "from-emerald-400 to-teal-500" },
+    { icon: Shield, label: "Administrateurs", value: stats?.admins || 0, color: "from-violet to-magenta" },
+  ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-bold text-star-white tracking-tight">
-          Panneau de contrôle 👑
-        </h1>
-        <p className="text-sm text-mist mt-1">
-          Bienvenue, <span className="text-star-white font-medium">{ADMIN_USER.name}</span>
-        </p>
+        <h1 className="text-2xl font-bold text-white">Vue d&apos;ensemble</h1>
+        <p className="text-white/50 text-sm mt-1">Tableau de bord administrateur</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <NebulaCard className="p-5 !bg-surface/70">
-          <div className="w-10 h-10 rounded-xl bg-violet/10 flex items-center justify-center mb-3">
-            <Users className="w-5 h-5 text-violet" />
-          </div>
-          <p className="font-display text-3xl font-bold text-star-white">{activeStudents}</p>
-          <p className="text-xs text-mist mt-0.5">Total étudiants actifs</p>
-        </NebulaCard>
-
-        <NebulaCard className="p-5 !bg-surface/70">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3">
-            <Clock className="w-5 h-5 text-amber-400" />
-          </div>
-          <p className="font-display text-3xl font-bold text-star-white">{pendingCount}</p>
-          <p className="text-xs text-mist mt-0.5">Demandes en attente</p>
-        </NebulaCard>
-
-        <NebulaCard className="p-5 !bg-surface/70">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
-            <UserPlus className="w-5 h-5 text-emerald-400" />
-          </div>
-          <p className="font-display text-3xl font-bold text-star-white">{newThisWeek}</p>
-          <p className="text-xs text-mist mt-0.5">Nouveaux inscrits cette semaine</p>
-        </NebulaCard>
-
-        <NebulaCard className="p-5 !bg-surface/70">
-          <div className="w-10 h-10 rounded-xl bg-magenta/10 flex items-center justify-center mb-3">
-            <TrendingUp className="w-5 h-5 text-magenta" />
-          </div>
-          <p className="font-display text-3xl font-bold text-star-white">{avgProgress}%</p>
-          <p className="text-xs text-mist mt-0.5">Taux de complétion moyen</p>
-        </NebulaCard>
-      </div>
-
-      {pendingCount > 0 && (
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/15 p-5">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.06),transparent_60%)] pointer-events-none" />
-          <div className="relative z-10 flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-5 h-5 text-amber-400" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-star-white">
-                  {pendingCount} demande{pendingCount > 1 ? "s" : ""} d&apos;inscription attendent votre validation.
-                </p>
-                <p className="text-xs text-mist mt-0.5">Elles seront automatiquement supprimées après 7 jours.</p>
-              </div>
-            </div>
-            <Link
-              href="/admin/inscriptions"
-              className="shrink-0 px-4 py-2 rounded-lg bg-amber-500/15 text-amber-400 text-sm font-medium hover:bg-amber-500/25 transition-all"
-            >
-              Voir les demandes →
-            </Link>
-          </div>
+      {stats && stats.pending > 0 && (
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+          <p className="text-sm text-amber-200">
+            <strong>{stats.pending}</strong> inscription{stats.pending > 1 ? "s" : ""} en attente de validation
+          </p>
         </div>
       )}
 
-      <NebulaCard className="p-6 !bg-surface/70 overflow-hidden">
-        <h2 className="font-display text-lg font-semibold text-star-white mb-4">Dernières activités</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm nebula-table">
-            <thead>
-              <tr className="border-b border-white/5">
-                <th className="text-left py-3 pr-4 text-xs text-mist font-medium">Action</th>
-                <th className="text-left py-3 pr-4 text-xs text-mist font-medium">Utilisateur</th>
-                <th className="text-left py-3 pr-4 text-xs text-mist font-medium">Date</th>
-                <th className="text-left py-3 text-xs text-mist font-medium">Statut</th>
-              </tr>
-            </thead>
-            <tbody>
-              {RECENT_ACTIVITIES.map((activity) => {
-                const config = activityConfig[activity.type];
-                const stat = statusConfig[activity.status];
-                const Icon = config.icon;
-                return (
-                  <tr key={activity.id} className="border-b border-white/5 last:border-0">
-                    <td className="py-3 pr-4">
-                      <div className="flex items-center gap-3">
-                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", config.bg)}>
-                          <Icon className={cn("w-4 h-4", config.color)} />
-                        </div>
-                        <span className="text-star-white">{activity.details}</span>
-                      </div>
-                    </td>
-                    <td className="py-3 pr-4">
-                      <div>
-                        <p className="text-star-white text-sm">{activity.user.name}</p>
-                        <p className="text-xs text-mist">{activity.user.email}</p>
-                      </div>
-                    </td>
-                    <td className="py-3 pr-4 text-mist text-xs whitespace-nowrap">{formatDate(activity.date)}</td>
-                    <td className="py-3">
-                      <span className={cn("inline-flex text-[11px] font-medium px-2.5 py-1 rounded-full border", stat.classes)}>
-                        {stat.label}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </NebulaCard>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpis.map((kpi) => (
+          <NebulaCard key={kpi.label} className={cn("p-5", kpi.alert && "ring-1 ring-amber-500/30")}>
+            <div className={cn("w-10 h-10 rounded-xl bg-gradient-to-br border border-white/10 flex items-center justify-center mb-3", kpi.color)}>
+              <kpi.icon className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-2xl font-bold text-white">{kpi.value}</div>
+            <div className="text-white/40 text-sm">{kpi.label}</div>
+          </NebulaCard>
+        ))}
+      </div>
 
-      <NebulaCard className="p-6 !bg-surface/70">
-        <h2 className="font-display text-lg font-semibold text-star-white mb-6">Inscriptions cette semaine</h2>
-        <div className="grid grid-cols-7 gap-3 items-end h-[140px]">
-          {DAILY_REGISTRATIONS.map((d) => {
-            const height = maxCount > 0 ? (d.count / maxCount) * 120 : 0;
-            return (
-              <div key={d.day} className="flex flex-col items-center gap-2 h-full justify-end">
-                <span className="text-xs font-medium text-mist">{d.count}</span>
-                <div
-                  className="w-full rounded-md bg-gradient-to-t from-violet to-magenta transition-all duration-500"
-                  style={{ height: `${Math.max(height, 4)}px` }}
-                />
-                <span className="text-[11px] text-mist font-medium">{d.day}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <NebulaCard className="p-5">
+          <h3 className="text-sm font-semibold text-white mb-4">Inscriptions (7 derniers jours)</h3>
+          <div className="flex items-end gap-2 h-32">
+            {stats?.daily.map((d) => {
+              const max = Math.max(...stats.daily.map((x) => x.count), 1);
+              const h = (d.count / max) * 100;
+              return (
+                <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[10px] text-white/40">{d.count}</span>
+                  <div className="w-full rounded-t-md bg-gradient-to-t from-cyan-soft/40 to-violet/40 transition-all" style={{ height: `${Math.max(h, 4)}%` }} />
+                  <span className="text-[10px] text-white/30">{d.day}</span>
+                </div>
+              );
+            })}
+          </div>
+        </NebulaCard>
+
+        <NebulaCard className="p-5">
+          <h3 className="text-sm font-semibold text-white mb-4">Demandes récentes</h3>
+          <div className="space-y-3">
+            {pending.length === 0 && <p className="text-white/30 text-sm">Aucune demande en attente</p>}
+            {pending.slice(0, 5).map((req) => (
+              <div key={req.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/5 border border-white/5">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 border border-amber-500/20 flex items-center justify-center text-xs font-semibold text-amber-400">
+                  {req.initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-white text-sm font-medium truncate">{req.name}</div>
+                  <div className="text-white/40 text-xs truncate">{req.email}</div>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/15">
+                  En attente
+                </span>
               </div>
-            );
-          })}
-        </div>
-      </NebulaCard>
+            ))}
+          </div>
+        </NebulaCard>
+      </div>
     </div>
   );
 }
