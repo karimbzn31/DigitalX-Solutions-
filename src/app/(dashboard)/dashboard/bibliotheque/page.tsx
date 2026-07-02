@@ -1,19 +1,40 @@
 "use client";
-import { useState } from "react";
-import { resources, modules } from "@/lib/mock-data";
-import { Search, FileText, Code, File as FileIcon, Download } from "lucide-react";
+import { useState, useEffect, type ComponentType } from "react";
+import { Search, FileText, Code, File as FileIcon, Download, Link as LinkIcon, Archive } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const resourceTypeConfig = {
+interface Resource {
+  id: string; module_id: string; type: string; title: string;
+  description: string; url: string; content: string;
+}
+
+interface Module { id: string; title: string; title_short: string; }
+
+const resourceTypeConfig: Record<string, { label: string; icon: ComponentType<{ className?: string }>; color: string }> = {
   prompt: { label: "Prompts", icon: FileText, color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20" },
   code: { label: "Code", icon: Code, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
   pdf: { label: "PDFs", icon: FileIcon, color: "text-rose-400 bg-rose-500/10 border-rose-500/20" },
-  template: { label: "Templates", icon: FileIcon, color: "text-violet bg-violet/10 border-violet/20" },
+  link: { label: "Liens", icon: LinkIcon, color: "text-violet bg-violet/10 border-violet/20" },
+  zip: { label: "Projets", icon: Archive, color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
 };
 
 export default function BibliothequePage() {
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [modules, setModules] = useState<Module[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/student/resources").then(r => r.json()),
+      fetch("/api/student/modules").then(r => r.json()),
+    ]).then(([resData, modData]) => {
+      setResources(resData.resources || []);
+      setModules(modData.modules || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
 
   const filtered = resources.filter((r) => {
     if (typeFilter && r.type !== typeFilter) return false;
@@ -21,24 +42,27 @@ export default function BibliothequePage() {
     return true;
   });
 
-  const handleDownload = (title: string, content?: string, fileUrl?: string) => {
-    if (fileUrl) {
-      const a = document.createElement("a");
-      a.href = fileUrl;
-      a.download = fileUrl.split("/").pop() || title;
-      a.click();
+  const handleDownload = (r: Resource) => {
+    if (r.type === "link" && r.url) {
+      window.open(r.url, "_blank");
       return;
     }
-    if (content) {
-      const blob = new Blob([content], { type: "text/plain" });
+    if (r.content) {
+      const blob = new Blob([r.content], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${title.toLowerCase().replace(/\s+/g, "-")}.txt`;
+      a.download = `${r.title.toLowerCase().replace(/\s+/g, "-")}.txt`;
       a.click();
       URL.revokeObjectURL(url);
+    } else if (r.url) {
+      window.open(r.url, "_blank");
     }
   };
+
+  if (loading) {
+    return <div className="flex justify-center py-20"><div className="w-6 h-6 border-2 border-cyan-soft border-t-transparent rounded-full animate-spin" /></div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -49,33 +73,21 @@ export default function BibliothequePage() {
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mist" />
-        <input
-          type="text"
-          placeholder="Rechercher une ressource..."
-          value={search}
+        <input type="text" placeholder="Rechercher une ressource..." value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-surface/70 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-star-white placeholder:text-mist focus:outline-none focus:border-violet/50 transition-colors"
-        />
+          className="w-full bg-surface/70 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-star-white placeholder:text-mist focus:outline-none focus:border-violet/50 transition-colors" />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <button
-          onClick={() => setTypeFilter(null)}
-          className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-all border", !typeFilter ? "bg-violet text-white border-violet" : "bg-white/5 text-mist border-white/10 hover:text-star-white")}
-        >Tout</button>
+        <button onClick={() => setTypeFilter(null)}
+          className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-all border", !typeFilter ? "bg-violet text-white border-violet" : "bg-white/5 text-mist border-white/10 hover:text-star-white")}>Tout</button>
         {Object.entries(resourceTypeConfig).map(([key, config]) => {
           const Icon = config.icon;
           return (
-            <button
-              key={key}
-              onClick={() => setTypeFilter(typeFilter === key ? null : key)}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-xs font-medium transition-all border flex items-center gap-1.5",
-                typeFilter === key ? config.color + " border-current" : "bg-white/5 text-mist border-white/10 hover:text-star-white"
-              )}
-            >
-              <Icon className="w-3 h-3" />
-              {config.label}
+            <button key={key} onClick={() => setTypeFilter(typeFilter === key ? null : key)}
+              className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-all border flex items-center gap-1.5",
+                typeFilter === key ? config.color + " border-current" : "bg-white/5 text-mist border-white/10 hover:text-star-white")}>
+              <Icon className="w-3 h-3" /> {config.label}
             </button>
           );
         })}
@@ -83,9 +95,9 @@ export default function BibliothequePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map((r) => {
-          const config = resourceTypeConfig[r.type];
+          const config = resourceTypeConfig[r.type] || resourceTypeConfig.prompt;
           const Icon = config.icon;
-          const mod = modules.find((m) => m.id === r.moduleId);
+          const mod = modules.find((m) => m.id === r.module_id);
           return (
             <div key={r.id} className="bg-surface/70 backdrop-blur-sm border border-white/[0.07] rounded-xl p-4 hover:border-violet/40 hover:-translate-y-0.5 transition-all duration-200 group">
               <div className="flex items-start gap-3">
@@ -98,15 +110,13 @@ export default function BibliothequePage() {
                   </span>
                   <h3 className="text-sm font-medium text-star-white mt-1.5 leading-snug">{r.title}</h3>
                   <p className="text-[11px] text-mist mt-1 line-clamp-2">{r.description}</p>
-                  {mod && <span className="inline-block text-[10px] text-violet mt-2">Module {mod.id} · {mod.titleShort}</span>}
+                  {mod && <span className="inline-block text-[10px] text-violet mt-2">Module · {mod.title_short}</span>}
                 </div>
               </div>
-              <button
-                onClick={() => handleDownload(r.title, r.content, r.fileUrl)}
-                className="flex items-center justify-center gap-1.5 w-full mt-3 py-1.5 rounded-lg bg-violet/10 text-violet text-[11px] font-medium hover:bg-violet/20 transition-colors"
-              >
+              <button onClick={() => handleDownload(r)}
+                className="flex items-center justify-center gap-1.5 w-full mt-3 py-1.5 rounded-lg bg-violet/10 text-violet text-[11px] font-medium hover:bg-violet/20 transition-colors">
                 <Download className="w-3 h-3" />
-                Télécharger
+                {r.type === "link" ? "Ouvrir" : r.content ? "Copier" : "Télécharger"}
               </button>
             </div>
           );

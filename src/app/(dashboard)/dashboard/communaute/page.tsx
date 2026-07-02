@@ -1,6 +1,12 @@
 "use client";
 import { useState } from "react";
-import { communityPosts } from "@/lib/mock-data";
+const communityPosts = [
+  { id: "p1", author: { name: "Sophie Martin", initials: "SM", badge: "Expert IA" }, content: "Je viens de terminer mon premier agent WhatsApp avec n8n ! C'est incroyablement puissant. Si vous avez des questions sur la configuration, n'hésitez pas. 🚀", likes: 24, comments: 8, channel: "succes", pinned: true, createdAt: new Date("2026-06-28") },
+  { id: "p2", author: { name: "Thomas Dubois", initials: "TD", badge: "Apprenti IA" }, content: "Quelqu'un a testé le Vibe Coding pour un projet e-commerce ? J'aimerais avoir des retours d'expérience avant de me lancer.", likes: 15, comments: 12, channel: "entraide", pinned: false, createdAt: new Date("2026-06-27") },
+  { id: "p3", author: { name: "Léa Petit", initials: "LP", badge: "Mentor" }, content: "Nouveau template de prompt pour générer des landing pages performantes disponible dans la bibliothèque ! Testez-le et donnez-moi votre avis.", likes: 31, comments: 5, channel: "ressources", pinned: false, createdAt: new Date("2026-06-26") },
+  { id: "p4", author: { name: "Hugo Bernard", initials: "HB", badge: "Apprenti IA" }, content: "Petit tips : utilisez les fonctions Cloudflare AI Workers pour vos agents, c'est gratuit et extrêmement rapide ! 🔥", likes: 18, comments: 3, channel: "general", pinned: false, createdAt: new Date("2026-06-25") },
+  { id: "p5", author: { name: "Camille Roux", initials: "CR", badge: "Expert IA" }, content: "J'ai développé un outil no-code pour générer des vidéos de formation avec l'IA. Si ça intéresse quelqu'un, je partage le lien en MP.", likes: 42, comments: 15, channel: "succes", pinned: false, createdAt: new Date("2026-06-24") },
+];
 import { MessageCircle, Heart, Pin, Send, Users, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 

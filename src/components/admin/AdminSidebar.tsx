@@ -4,7 +4,8 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
-  Home, UserPlus, Users, Key, Megaphone, BarChart3, Settings, LogOut, Shield
+  Home, UserPlus, Users, Key, Megaphone, BarChart3, Settings, LogOut, Shield,
+  Video, FileText
 } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { supabase } from "@/lib/supabase";
@@ -14,6 +15,8 @@ const navItems = [
   { icon: Home, label: "Vue d'ensemble", href: "/admin" },
   { icon: UserPlus, label: "Inscriptions", href: "/admin/inscriptions", badge: true },
   { icon: Users, label: "Étudiants", href: "/admin/etudiants" },
+  { icon: Video, label: "Vidéos", href: "/admin/videos" },
+  { icon: FileText, label: "Ressources", href: "/admin/ressources" },
   { icon: Key, label: "Codes d'accès", href: "/admin/codes" },
   { icon: Megaphone, label: "Annonces", href: "/admin/annonces" },
   { icon: BarChart3, label: "Statistiques", href: "/admin/statistiques" },

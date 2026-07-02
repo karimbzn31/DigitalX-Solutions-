@@ -94,3 +94,125 @@ CREATE POLICY "admins_insert_access_codes"
 CREATE POLICY "admins_update_access_codes"
   ON access_codes FOR UPDATE
   USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+-- ============================================================
+-- Tables de contenu (modules, vidéos, ressources, progression)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS modules (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  title_short TEXT DEFAULT '',
+  description TEXT DEFAULT '',
+  videos_count INTEGER DEFAULT 0,
+  duration TEXT DEFAULT '0h',
+  level TEXT DEFAULT 'Débutant',
+  color_from TEXT DEFAULT '#6366F1',
+  color_to TEXT DEFAULT '#8B5CF6',
+  order_index INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE modules ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "all_read_modules"
+  ON modules FOR SELECT
+  USING (true);
+
+CREATE POLICY "admins_insert_modules"
+  ON modules FOR INSERT
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE POLICY "admins_update_modules"
+  ON modules FOR UPDATE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE POLICY "admins_delete_modules"
+  ON modules FOR DELETE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE TABLE IF NOT EXISTS videos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  module_id UUID REFERENCES modules(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  url TEXT NOT NULL DEFAULT '',
+  duration TEXT DEFAULT '00:00',
+  order_index INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE videos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "all_read_videos"
+  ON videos FOR SELECT
+  USING (true);
+
+CREATE POLICY "admins_insert_videos"
+  ON videos FOR INSERT
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE POLICY "admins_update_videos"
+  ON videos FOR UPDATE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE POLICY "admins_delete_videos"
+  ON videos FOR DELETE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE TABLE IF NOT EXISTS resources (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  module_id UUID REFERENCES modules(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('pdf', 'code', 'prompt', 'link', 'zip')),
+  title TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  url TEXT DEFAULT '',
+  content TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE resources ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "all_read_resources"
+  ON resources FOR SELECT
+  USING (true);
+
+CREATE POLICY "admins_insert_resources"
+  ON resources FOR INSERT
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE POLICY "admins_update_resources"
+  ON resources FOR UPDATE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE POLICY "admins_delete_resources"
+  ON resources FOR DELETE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE TABLE IF NOT EXISTS video_progress (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  video_id UUID REFERENCES videos(id) ON DELETE CASCADE,
+  watched BOOLEAN DEFAULT false,
+  watched_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, video_id)
+);
+
+ALTER TABLE video_progress ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "users_read_own_progress"
+  ON video_progress FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "users_insert_own_progress"
+  ON video_progress FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "users_update_own_progress"
+  ON video_progress FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);

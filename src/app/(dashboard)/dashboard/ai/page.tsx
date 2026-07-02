@@ -1,7 +1,18 @@
 "use client";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { conversations as initialConversations, chatMessages as initialMessages, suggestions } from "@/lib/mock-data";
+const initialConversations = [
+  { id: "conv-1", title: "Bienvenue sur l'assistant IA", date: new Date() },
+];
+const initialMessages = [
+  { id: "msg-1", role: "assistant" as const, content: "Bonjour ! Je suis votre assistant IA spécialisé dans le Vibe Coding et le développement d'agents autonomes. Comment puis-je vous aider aujourd'hui ?", timestamp: new Date(), conversationId: "conv-1" },
+];
+const suggestions = [
+  { icon: "💡", text: "Comment créer un SaaS rentable ?" },
+  { icon: "🤖", text: "Expliquez-moi le Vibe Coding" },
+  { icon: "⚡", text: "Astuce pour n8n ?" },
+  { icon: "🚀", text: "Configurer un agent WhatsApp ?" },
+];
 import { Send, Bot, User, MessageSquare, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
