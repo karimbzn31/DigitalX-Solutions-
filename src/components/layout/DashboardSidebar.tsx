@@ -3,7 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
-  Home, BookOpen, Library, Users, Bot, Award, Settings, LogOut, ChevronLeft
+  Home, BookOpen, Library, Users, Bot, Award, Settings, LogOut, ChevronLeft, Shield
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAppStore } from "@/store/useAppStore";
@@ -73,6 +73,20 @@ export function DashboardSidebar() {
       </div>
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-0.5 scrollbar-thin">
+        {user?.isAdmin && (
+          <Link
+            href="/admin"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 text-sm transition-all duration-150 rounded-xl mb-2",
+              pathname.startsWith("/admin")
+                ? "text-violet bg-violet/10 border-l-2 border-violet"
+                : "text-mist hover:text-star-white hover:bg-violet/5"
+            )}
+          >
+            <Shield className="w-4 h-4 shrink-0" />
+            <span className={cn(collapsed && "hidden group-hover:inline")}>Admin</span>
+          </Link>
+        )}
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
           return (

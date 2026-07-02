@@ -75,7 +75,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push(profile.is_admin ? "/admin" : "/dashboard");
   };
 
   return (
