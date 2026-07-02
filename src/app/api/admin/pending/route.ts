@@ -18,5 +18,7 @@ export async function GET() {
     console.error("GET /api/admin/pending error:", error.message);
     return Response.json({ error: error.message }, { status: 500 });
   }
-  return Response.json({ requests: pending || [] });
+  return new Response(JSON.stringify({ requests: pending || [] }), {
+    headers: { "Cache-Control": "no-store, max-age=0" },
+  });
 }

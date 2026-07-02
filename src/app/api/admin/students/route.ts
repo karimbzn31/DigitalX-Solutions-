@@ -17,5 +17,7 @@ export async function GET() {
     console.error("GET /api/admin/students error:", error.message);
     return Response.json({ error: error.message }, { status: 500 });
   }
-  return Response.json({ students: profiles || [] });
+  return new Response(JSON.stringify({ students: profiles || [] }), {
+    headers: { "Cache-Control": "no-store, max-age=0" },
+  });
 }
