@@ -9,13 +9,17 @@ export async function PATCH(req: Request) {
   try {
     const { userId, status, validationCode } = await req.json();
 
-    if (!userId || !status) {
-      return Response.json({ error: "Missing userId or status" }, { status: 400 });
+    if (!userId) {
+      return Response.json({ error: "Missing userId" }, { status: 400 });
     }
 
-    const updates: Record<string, unknown> = { status };
+    const updates: Record<string, unknown> = {};
     if (validationCode) {
+      // Approval: stocker le code sans activer le compte
       updates.validation_code = validationCode;
+      updates.status = "pending";
+    } else if (status) {
+      updates.status = status;
     }
 
     const { data, error } = await supabaseAdmin
