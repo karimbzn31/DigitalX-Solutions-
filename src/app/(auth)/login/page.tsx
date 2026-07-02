@@ -35,18 +35,20 @@ export default function LoginPage() {
 
     const user = data.user;
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    const res = await fetch("/api/auth/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.id }),
+    });
 
-    if (!profile) {
+    if (!res.ok) {
       await supabase.auth.signOut();
       setError("Profil introuvable. Contacte le support.");
       setLoading(false);
       return;
     }
+
+    const { profile } = await res.json();
 
     setUser({
       id: profile.id,
