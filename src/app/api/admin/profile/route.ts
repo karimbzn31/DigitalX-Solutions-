@@ -1,13 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin, requireAdmin } from "@/lib/api-auth";
 
 export const dynamic = "force-dynamic";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 export async function PATCH(req: Request) {
+  const auth = await requireAdmin(req);
+  if (auth.error) return auth.error;
+
   try {
     const { userId, status, validationCode } = await req.json();
 
@@ -40,6 +38,9 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const auth = await requireAdmin(req);
+  if (auth.error) return auth.error;
+
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");

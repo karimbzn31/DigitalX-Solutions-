@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,11 @@ const supabaseAdmin = createClient(
 );
 
 export async function POST(req: Request) {
+  const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+  if (!checkRateLimit(`validate:${ip}`, 10, 60000)) {
+    return Response.json({ error: "Trop de tentatives. Réessayez dans une minute." }, { status: 429 });
+  }
+
   const { userId, code } = await req.json();
 
   if (!userId || !code) {

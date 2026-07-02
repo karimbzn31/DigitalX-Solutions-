@@ -1,17 +1,37 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+    if (!checkRateLimit(`register:${ip}`, 5, 60000)) {
+      return NextResponse.json({ error: "Trop de tentatives. Réessayez dans une minute." }, { status: 429 });
+    }
+
     const { email, password, name, initials } = await req.json();
 
     if (!email || !password || !name) {
       return NextResponse.json({ error: "Champs obligatoires manquants" }, { status: 400 });
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return NextResponse.json({ error: "Format d'email invalide" }, { status: 400 });
+    }
+
+    if (password.length < 8) {
+      return NextResponse.json({ error: "Le mot de passe doit contenir au moins 8 caractères" }, { status: 400 });
+    }
+
+    if (name.trim().length < 2) {
+      return NextResponse.json({ error: "Le nom doit contenir au moins 2 caractères" }, { status: 400 });
     }
 
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
@@ -40,13 +60,14 @@ export async function POST(req: Request) {
     });
 
     if (profileError) {
+      // Rollback: delete auth user if profile creation fails
+      await supabaseAdmin.auth.admin.deleteUser(userId);
       return NextResponse.json({ error: profileError.message }, { status: 500 });
     }
 
     return NextResponse.json({ user: { id: userId } });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Erreur serveur";
-    console.error("POST /api/auth/register exception:", msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

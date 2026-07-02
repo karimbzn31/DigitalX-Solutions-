@@ -1,13 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin, requireAdmin } from "@/lib/api-auth";
 
 export const dynamic = "force-dynamic";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+export async function GET(request: Request) {
+  const auth = await requireAdmin(request);
+  if (auth.error) return auth.error;
 
-export async function GET() {
   const { data: all, error } = await supabaseAdmin
     .from("profiles")
     .select("*");

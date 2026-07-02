@@ -57,13 +57,11 @@ export default function AdminInscriptionsPage() {
       const res = await fetch("/api/admin/pending");
       const data = await res.json();
       if (!res.ok) {
-        console.error("fetchRequests error:", data.error);
         setRequests([]);
       } else {
         setRequests(data.requests || []);
       }
-    } catch (e) {
-      console.error("fetchRequests exception:", e);
+    } catch {
       setRequests([]);
     }
     setLoading(false);

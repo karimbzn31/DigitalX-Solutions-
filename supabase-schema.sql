@@ -65,3 +65,32 @@ CREATE POLICY "admins_update_all"
 -- Créer un premier admin (à exécuter APRÈS avoir créé ton compte)
 -- Remplace TON_UUID par ton auth.uid() après inscription
 -- UPDATE profiles SET is_admin = true, status = 'active' WHERE id = 'TON_UUID';
+
+-- ============================================================
+-- Table access_codes (codes d'accès générés par les admins)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS access_codes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code TEXT NOT NULL UNIQUE,
+  tag TEXT DEFAULT 'Sans tag',
+  uses INTEGER DEFAULT 0,
+  max_uses INTEGER,
+  expiry TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'expired', 'depleted')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE access_codes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "admins_read_access_codes"
+  ON access_codes FOR SELECT
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE POLICY "admins_insert_access_codes"
+  ON access_codes FOR INSERT
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE POLICY "admins_update_access_codes"
+  ON access_codes FOR UPDATE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,14 @@ export function AdminSidebar() {
   const user = useAppStore((s) => s.user);
   const setUser = useAppStore((s) => s.setUser);
 
-  const [pendingCount] = useState(5);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/admin/stats")
+      .then((r) => r.json())
+      .then((data) => setPendingCount(data.pending || 0))
+      .catch(() => {});
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
