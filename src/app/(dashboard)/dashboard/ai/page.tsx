@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { Send, Bot, User, MessageSquare, Plus, Trash2 } from "lucide-react";
+import { Send, Bot, User, MessageSquare, Plus, Trash2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatMessage {
@@ -30,14 +30,10 @@ const suggestions = [
 export default function AiAssistantPage() {
   const user = useAppStore((s) => s.user);
   const [convs, setConvs] = useState<Conversation[]>([
-    { id: "conv-1", title: "Bienvenue sur l'assistant IA", date: new Date() },
+    { id: "conv-1", title: "Nouvelle conversation", date: new Date() },
   ]);
   const [activeConv, setActiveConv] = useState(convs[0]?.id || null);
-  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({
-    "conv-1": [
-      { id: "msg-1", role: "assistant", content: "Bonjour ! Je suis votre mentor IA spécialisé en Vibe Coding, IA et SaaS. Comment puis-je vous aider aujourd'hui ?", timestamp: new Date(), conversationId: "conv-1" },
-    ],
-  });
+  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -167,7 +163,10 @@ export default function AiAssistantPage() {
           <button onClick={() => setShowSidebar(!showSidebar)} className="p-1 text-mist hover:text-star-white">
             <MessageSquare className="w-5 h-5" />
           </button>
-          <span className="text-sm font-medium text-star-white ml-2">Assistant IA</span>
+          <div className="flex items-center gap-1.5 ml-2">
+            <Sparkles className="w-4 h-4 text-violet" />
+            <span className="text-sm font-medium text-star-white">DigitalX IA</span>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin">
@@ -212,18 +211,27 @@ export default function AiAssistantPage() {
             </div>
           )}
 
-          {displayMessages.length <= 1 && !loading && (
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              {suggestions.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => { setInput(s.text); }}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-surface/50 border border-white/[0.07] text-xs text-mist hover:text-star-white hover:border-violet/30 transition-all text-left"
-                >
-                  <span>{s.icon}</span>
-                  <span>{s.text}</span>
-                </button>
-              ))}
+          {displayMessages.length === 0 && !loading && (
+            <div className="flex flex-col items-center justify-center h-full text-center px-6">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet/20 to-magenta/10 flex items-center justify-center mb-4 border border-violet/20">
+                <Sparkles className="w-7 h-7 text-violet" />
+              </div>
+              <h2 className="text-lg font-semibold text-star-white mb-1">DigitalX IA</h2>
+              <p className="text-xs text-mist mb-6 max-w-xs">
+                Propulsé par <span className="text-violet font-medium">DigitalX Solutions Academy</span>. Posez votre question sur nos formations, le Vibe Coding, l&apos;IA ou le SaaS.
+              </p>
+              <div className="grid grid-cols-2 gap-2 w-full max-w-sm">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setInput(s.text); }}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-surface/50 border border-white/[0.07] text-xs text-mist hover:text-star-white hover:border-violet/30 transition-all text-left"
+                  >
+                    <span>{s.icon}</span>
+                    <span>{s.text}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           <div ref={messagesEndRef} />
@@ -236,7 +244,7 @@ export default function AiAssistantPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={`Pose ta question ${user?.name?.split(' ')[0] || "à l'assistant"}...`}
+                placeholder={`Posez votre question, ${user?.name?.split(' ')[0] || "cher apprenant"}...`}
                 rows={1}
                 className="w-full bg-surface/70 border border-white/10 rounded-xl py-2.5 px-4 pr-10 text-sm text-star-white placeholder:text-mist resize-none focus:outline-none focus:border-violet/50 transition-colors max-h-32"
                 style={{ minHeight: "40px" }}
@@ -250,7 +258,7 @@ export default function AiAssistantPage() {
               <Send className="w-4 h-4" />
             </button>
           </div>
-          <p className="text-[10px] text-mist text-center mt-2">L&apos;assistant IA peut faire des erreurs. Vérifiez les informations importantes.</p>
+          <p className="text-[10px] text-mist text-center mt-2">DigitalX IA peut faire des erreurs. Vérifiez les informations importantes.</p>
         </div>
       </div>
     </div>
