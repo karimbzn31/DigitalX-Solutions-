@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
 import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/store/useNotificationStore";
-import { User, Bell, Shield, LogOut, ChevronRight, Check } from "lucide-react";
+import { User, Bell, Shield, LogOut, ChevronRight, Check, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const notifOptions = [
@@ -115,6 +115,16 @@ export default function ParametresPage() {
                   </button>
                 </div>
               </div>
+
+              <a
+                href="https://wa.me/213798323776"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] text-sm font-medium hover:bg-[#25D366]/20 transition-all md:hidden"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Contacter le support WhatsApp
+              </a>
             </div>
           )}
 
