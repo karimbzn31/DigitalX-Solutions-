@@ -1,6 +1,7 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { NebulaBackground } from "@/components/shared/NebulaBackground";
@@ -9,8 +10,29 @@ import { useAppStore } from "@/store/useAppStore";
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const user = useAppStore((s) => s.user);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    if (useAppStore.persist.hasHydrated()) {
+      setHydrated(true);
+    } else {
+      const unsub = useAppStore.persist.onFinishHydration(() => setHydrated(true));
+      return unsub;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    supabase.auth.getUser().then(({ data: { user: sbUser } }) => {
+      if (!sbUser) {
+        useAppStore.getState().setUser(null);
+        router.replace("/login");
+      }
+    });
+  }, [hydrated, router]);
+
+  useEffect(() => {
+    if (!hydrated) return;
     if (!user) {
       router.replace("/login");
       return;
@@ -18,9 +40,9 @@ export default function AdminRootLayout({ children }: { children: React.ReactNod
     if (!user.isAdmin) {
       router.replace("/dashboard");
     }
-  }, [user, router]);
+  }, [hydrated, user, router]);
 
-  if (!user || !user.isAdmin) {
+  if (!hydrated || !user || !user.isAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-void">
         <div className="w-6 h-6 border-2 border-cyan-soft border-t-transparent rounded-full animate-spin" />
