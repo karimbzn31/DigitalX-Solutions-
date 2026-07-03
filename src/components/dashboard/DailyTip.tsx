@@ -4,16 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Lightbulb, RefreshCw } from "lucide-react";
 
 const tips = [
-  { title: "Prompt efficace", text: "Sois précis dans tes prompts : donne le contexte, le rôle souhaité et le format de sortie attendu." },
-  { title: "Itération rapide", text: "En Vibe Coding, ne cherche pas la perfection au premier essai. Itère vite, corrige avec l'IA." },
-  { title: "Structure SaaS", text: "Un bon SaaS commence par une seule fonctionnalité, parfaitement exécutée." },
-  { title: "Agents IA", text: "Commence petit : un seul workflow n8n automatisé vaut mieux que 10 agents mal configurés." },
-  { title: "Debugging", text: "Quand ton code bug, copie l'erreur complète dans l'IA. Le contexte est la clé." },
-  { title: "MVP", text: "Ton premier produit doit être embarrassant. Si t'en es fier, t'as trop attendu." },
-  { title: "Base de données", text: "Supabase is all you need. Profites-en, c'est gratuit au début." },
-  { title: "Design", text: "Utilise Tailwind. L'IA le connaît par cœur. Gagne des heures sur le CSS." },
-  { title: "Déploiement", text: "Vercel + Supabase = stack de prod en 10min. Ne te prends pas la tête." },
-  { title: "Automatisation", text: "Si tu fais une tâche manuelle 3 fois, automatise-la avec n8n." },
+  { title: "Vibe Coding", text: "Décrivez votre idée en français, l'IA génère le code. Ajustez, itérez, et votre application prend vie en quelques minutes." },
+  { title: "Prompt engineering", text: "Un bon prompt = contexte + rôle + format attendu. Testez cette structure dans votre prochain projet." },
+  { title: "SaaS minimal", text: "Identifiez un problème précis, build une solution simple avec Next.js + Supabase, lancez vite. La perfection vient après." },
+  { title: "Supabase", text: "Base de données, auth, stockage, et real-time en un seul outil. Maîtrisez-le, c'est le cœur de votre stack." },
+  { title: "n8n automations", text: "Reliez vos apps sans code : un webhook n8n peut déclencher un email, un SMS ou une mise à jour Supabase." },
+  { title: "Agent WhatsApp", text: "Créez un agent WhatsApp avec n8n + WhatsApp Business API. Idéal pour le support client automatisé." },
+  { title: "Next.js + IA", text: "Intégrez DeepSeek ou OpenAI à votre app Next.js. Un appel API suffit pour ajouter une intelligence à votre SaaS." },
+  { title: "Déploiement Vercel", text: "Push votre code sur GitHub, Vercel déploie automatiquement. En moins de 5 minutes, votre app est en ligne." },
+  { title: "MVP rapide", text: "Votre première version doit résoudre un seul problème, parfaitement. Lancez, recueillez des retours, itérez." },
+  { title: "Agents autonomes", text: "Un agent IA avec mémoire peut gérer des tâches complexes : scraping, rédaction, analyse de données. Formez le vôtre." },
 ];
 
 export function DailyTip() {
