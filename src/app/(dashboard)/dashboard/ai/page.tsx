@@ -1,45 +1,69 @@
 "use client";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useAppStore } from "@/store/useAppStore";
-const initialConversations = [
-  { id: "conv-1", title: "Bienvenue sur l'assistant IA", date: new Date() },
-];
-const initialMessages = [
-  { id: "msg-1", role: "assistant" as const, content: "Bonjour ! Je suis votre assistant IA spécialisé dans le Vibe Coding et le développement d'agents autonomes. Comment puis-je vous aider aujourd'hui ?", timestamp: new Date(), conversationId: "conv-1" },
-];
+import { Send, Bot, User, MessageSquare, Plus, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+  conversationId: string;
+}
+
+interface Conversation {
+  id: string;
+  title: string;
+  date: Date;
+}
+
+let nextConvId = 2;
+
 const suggestions = [
   { icon: "💡", text: "Comment créer un SaaS rentable ?" },
   { icon: "🤖", text: "Expliquez-moi le Vibe Coding" },
   { icon: "⚡", text: "Astuce pour n8n ?" },
   { icon: "🚀", text: "Configurer un agent WhatsApp ?" },
 ];
-import { Send, Bot, User, MessageSquare, Plus, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-let nextConvId = initialConversations.length + 1;
 
 export default function AiAssistantPage() {
-  const { chatMessages, addChatMessage, setChatMessages, isChatLoading, setChatLoading } = useAppStore();
-  const [convs, setConvs] = useState(initialConversations);
+  const user = useAppStore((s) => s.user);
+  const [convs, setConvs] = useState<Conversation[]>([
+    { id: "conv-1", title: "Bienvenue sur l'assistant IA", date: new Date() },
+  ]);
   const [activeConv, setActiveConv] = useState(convs[0]?.id || null);
+  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({
+    "conv-1": [
+      { id: "msg-1", role: "assistant", content: "Bonjour ! Je suis votre mentor IA spécialisé en Vibe Coding, IA et SaaS. Comment puis-je vous aider aujourd'hui ?", timestamp: new Date(), conversationId: "conv-1" },
+    ],
+  });
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const displayMessages = useMemo(() => {
-    const current = activeConv ? chatMessages[activeConv] || [] : [];
-    return current.length > 0 ? current : (activeConv === convs[0]?.id ? initialMessages : []);
-  }, [chatMessages, activeConv, convs]);
+    return activeConv ? messages[activeConv] || [] : [];
+  }, [messages, activeConv]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [displayMessages]);
 
+  const updateConvTitle = useCallback((convId: string, msg: string) => {
+    setConvs((prev) => prev.map((c) =>
+      c.id === convId && c.title === "Nouvelle conversation"
+        ? { ...c, title: msg.length > 35 ? msg.slice(0, 35) + "..." : msg }
+        : c
+    ));
+  }, []);
+
   const handleNewConversation = () => {
     const id = `conv-${nextConvId++}`;
     setConvs((prev) => [{ id, title: "Nouvelle conversation", date: new Date() }, ...prev]);
     setActiveConv(id);
-    setChatMessages(id, []);
+    setMessages((prev) => ({ ...prev, [id]: [] }));
   };
 
   const handleDeleteConversation = (e: React.MouseEvent, id: string) => {
@@ -49,33 +73,49 @@ export default function AiAssistantPage() {
       const remaining = convs.filter((c) => c.id !== id);
       setActiveConv(remaining[0]?.id || null);
     }
+    setMessages((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
   };
 
   const handleSend = async () => {
-    if (!input.trim() || isChatLoading || !activeConv) return;
+    if (!input.trim() || loading || !activeConv) return;
     const convId = activeConv;
-    const userMsg = { id: `msg-${Date.now()}`, role: "user" as const, content: input.trim(), timestamp: new Date(), conversationId: convId };
-    addChatMessage(convId, userMsg);
+    const userText = input.trim();
+    const userMsg: ChatMessage = { id: `msg-${Date.now()}`, role: "user", content: userText, timestamp: new Date(), conversationId: convId };
+    setMessages((prev) => ({ ...prev, [convId]: [...(prev[convId] || []), userMsg] }));
     setInput("");
-    setChatLoading(true);
+    setLoading(true);
+    updateConvTitle(convId, userText);
 
-    setTimeout(() => {
-      const responses = [
-        "Excellente question ! Le Vibe Coding repose sur une collaboration étroite entre vous et l'IA. Pour maximiser l'efficacité, je vous recommande de structurer vos projets en petites tâches bien définies et d'utiliser des prompts contextuels qui décrivent précisément ce que vous attendez.",
-        "C'est une excellente approche ! Pour créer un SaaS performant, commencez par valider votre idée auprès de vrais utilisateurs. Ensuite, concentrez-vous sur le MVP : une seule fonctionnalité clé, parfaitement exécutée.",
-        "Les agents IA autonomes sont l'avenir du travail numérique. Avec n8n et les modèles de langage modernes, vous pouvez créer des assistants capables de gérer vos emails, répondre à vos clients et automatiser vos processus métier.",
-        "Très bonne initiative ! Pour configurer votre agent WhatsApp avec n8n, assurez-vous d'utiliser le token d'accès permanent plutôt que temporaire. Vérifiez également que votre webhook est correctement configuré dans le Meta Developer Dashboard.",
-      ];
-      const response = {
+    try {
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText }),
+      });
+      const data = await res.json();
+      const botMsg: ChatMessage = {
         id: `msg-${Date.now() + 1}`,
-        role: "assistant" as const,
-        content: responses[Math.floor(Math.random() * responses.length)],
+        role: "assistant",
+        content: data.reply || "Désolé, je n'ai pas pu générer de réponse.",
         timestamp: new Date(),
         conversationId: convId,
       };
-      addChatMessage(convId, response);
-      setChatLoading(false);
-    }, 1500);
+      setMessages((prev) => ({ ...prev, [convId]: [...(prev[convId] || []), botMsg] }));
+    } catch {
+      const fallbackMsg: ChatMessage = {
+        id: `msg-${Date.now() + 1}`,
+        role: "assistant" as const,
+        content: "Désolé, le service IA est temporairement indisponible. Réessaie plus tard.",
+        timestamp: new Date(),
+        conversationId: convId,
+      };
+      setMessages((prev) => ({ ...prev, [convId]: [...(prev[convId] || []), fallbackMsg] }));
+    }
+    setLoading(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -157,7 +197,7 @@ export default function AiAssistantPage() {
             </div>
           ))}
 
-          {isChatLoading && (
+          {loading && (
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet to-magenta flex items-center justify-center shrink-0">
                 <Bot className="w-4 h-4 text-white" />
@@ -172,7 +212,7 @@ export default function AiAssistantPage() {
             </div>
           )}
 
-          {displayMessages.length <= 1 && !isChatLoading && (
+          {displayMessages.length <= 1 && !loading && (
             <div className="grid grid-cols-2 gap-2 mt-4">
               {suggestions.map((s, i) => (
                 <button
@@ -196,7 +236,7 @@ export default function AiAssistantPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Posez votre question à l'assistant IA..."
+                placeholder={`Pose ta question ${user?.name?.split(' ')[0] || "à l'assistant"}...`}
                 rows={1}
                 className="w-full bg-surface/70 border border-white/10 rounded-xl py-2.5 px-4 pr-10 text-sm text-star-white placeholder:text-mist resize-none focus:outline-none focus:border-violet/50 transition-colors max-h-32"
                 style={{ minHeight: "40px" }}
@@ -204,7 +244,7 @@ export default function AiAssistantPage() {
             </div>
             <button
               onClick={handleSend}
-              disabled={!input.trim() || isChatLoading || !activeConv}
+              disabled={!input.trim() || loading || !activeConv}
               className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-violet to-magenta text-white disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all shrink-0"
             >
               <Send className="w-4 h-4" />
