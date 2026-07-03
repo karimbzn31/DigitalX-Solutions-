@@ -14,7 +14,7 @@ const navItems = [
   { icon: BookOpen, label: "Ma Formation", href: "/dashboard/formation" },
   { icon: Library, label: "Bibliothèque", href: "/dashboard/bibliotheque" },
   { icon: Users, label: "Communauté", href: "/dashboard/communaute" },
-  { icon: Bot, label: "Assistant IA", href: "/dashboard/ai" },
+  { icon: Bot, label: "DigitalX IA", href: "/dashboard/ai" },
   { icon: Award, label: "Certificats", href: "/dashboard/certificats" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
 ];
