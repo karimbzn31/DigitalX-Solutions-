@@ -1,0 +1,42 @@
+[
+  {
+    "id": "module_intro_ia",
+    "titre": "Introduction à l'IA Générative",
+    "description": "Comprendre les bases de l'intelligence artificielle, les LLMs, le prompt engineering et les fondamentaux du Vibe Coding.",
+    "niveau": "Débutant",
+    "duree": "2h",
+    "videos": 6
+  },
+  {
+    "id": "module_vibe_coding",
+    "titre": "Vibe Coding - Créer avec l'IA",
+    "description": "Maîtrisez le Vibe Coding : générer du code avec l'IA, itérer rapidement, et construire des applications fonctionnelles sans tout coder manuellement.",
+    "niveau": "Débutant",
+    "duree": "4h",
+    "videos": 10
+  },
+  {
+    "id": "module_saas",
+    "titre": "Lancer son SaaS en 2026",
+    "description": "Du concept au lancement : idéation, développement rapide avec l'IA, déploiement sur Vercel, paiements Stripe, et acquisition clients.",
+    "niveau": "Intermédiaire",
+    "duree": "6h",
+    "videos": 14
+  },
+  {
+    "id": "module_agents",
+    "titre": "Agents Autonomes & Automatisation",
+    "description": "Créer des agents IA avec n8n, WhatsApp bots, automatisations no-code/low-code et déploiement d'agents autonomes.",
+    "niveau": "Avancé",
+    "duree": "5h",
+    "videos": 12
+  },
+  {
+    "id": "module_deploy",
+    "titre": "Déploiement & Production",
+    "description": "Mettre en production vos projets : Vercel, Supabase, domaines personnalisés, monitoring et scaling.",
+    "niveau": "Intermédiaire",
+    "duree": "3h",
+    "videos": 8
+  }
+]

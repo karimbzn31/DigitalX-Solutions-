@@ -28,6 +28,11 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# ai bot (separate service)
+/ai-bot/node_modules
+/ai-bot/.env
+/ai-bot/sessions.json
+
 # vercel
 .vercel
 
