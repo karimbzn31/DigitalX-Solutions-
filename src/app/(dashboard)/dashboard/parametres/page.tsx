@@ -4,7 +4,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { supabase } from "@/lib/supabase";
-import { User, Bell, Shield, LogOut, ChevronRight, Check, Gift, Copy, ExternalLink, Users } from "lucide-react";
+import { User, Bell, Shield, LogOut, ChevronRight, Check, Gift, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const notifOptions = [

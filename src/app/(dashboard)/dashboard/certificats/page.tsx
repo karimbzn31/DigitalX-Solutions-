@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Award, Download, CheckCircle, Lock, Share2, ExternalLink } from "lucide-react";
+import { Award, Download, CheckCircle, Lock, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Mod {

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
-import { usePageView } from "@/lib/analytics";
+import { trackPageView } from "@/lib/analytics";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { SearchModal } from "@/components/shared/SearchModal";
@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    usePageView();
+    trackPageView();
     const done = localStorage.getItem("dx-onboarding-done");
     if (!done) {
       const timer = setTimeout(() => setShowOnboarding(true), 500);

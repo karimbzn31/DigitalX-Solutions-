@@ -35,7 +35,7 @@ export function track(event: string, data?: Record<string, unknown>) {
   }
 }
 
-export function usePageView() {
+export function trackPageView() {
   if (typeof window === "undefined") return;
   track("page_view");
 }

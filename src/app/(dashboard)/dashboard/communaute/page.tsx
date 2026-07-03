@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
-import { MessageCircle, Heart, Pin, Send, Users, TrendingUp, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { MessageCircle, Heart, Send, Users, TrendingUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 
@@ -38,8 +38,9 @@ export default function CommunautePage() {
   const [publishing, setPublishing] = useState(false);
   const [liking, setLiking] = useState<Record<string, boolean>>({});
 
-  const fetchPosts = () => {
-    const params = activeChannel ? `?channel=${activeChannel}` : "";
+  const loadPosts = useCallback((channel: string | null) => {
+    setLoading(true);
+    const params = channel ? `?channel=${channel}` : "";
     fetch(`/api/community/posts${params}`)
       .then((r) => r.json())
       .then((data) => {
@@ -47,12 +48,11 @@ export default function CommunautePage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  };
+  }, []);
 
   useEffect(() => {
-    setLoading(true);
-    fetchPosts();
-  }, [activeChannel]);
+    loadPosts(activeChannel);
+  }, [activeChannel, loadPosts]);
 
   const handleLike = async (postId: string) => {
     if (liking[postId]) return;
@@ -82,7 +82,7 @@ export default function CommunautePage() {
       });
       if (res.ok) {
         setNewPost("");
-        fetchPosts();
+        loadPosts(activeChannel);
       }
     } catch {}
     setPublishing(false);
