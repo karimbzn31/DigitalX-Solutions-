@@ -3,6 +3,7 @@ import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { SearchModal } from "@/components/shared/SearchModal";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { useSearchStore } from "@/store/useSearchStore";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -19,6 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
       <BottomNav />
+      <WhatsAppButton />
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
