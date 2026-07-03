@@ -15,10 +15,9 @@ export async function PATCH(req: Request) {
 
     const updates: Record<string, unknown> = {};
     if (validationCode) {
-      // Approval: stocker le code sans activer le compte
       updates.validation_code = validationCode;
-      updates.status = "pending";
-    } else if (status) {
+    }
+    if (status) {
       updates.status = status;
     }
 
