@@ -39,7 +39,8 @@ function loadCatalog() {
 }
 
 // System prompt generator
-function getSystemPrompt(session, catalog) {
+function getSystemPrompt(session, catalog, userName) {
+  const name = userName ? userName.split(' ')[0] : "l'étudiant";
   return `Tu es un expert sénior en Vibe Coding, Intelligence Artificielle et développement SaaS. Tu es le mentor technique officiel de DigitalXSolutions Academy.
 
 TON RÔLE PRINCIPAL :
@@ -51,6 +52,7 @@ Quand un étudiant ne comprend pas un concept de la formation, tu dois :
 5. Encourager et rassurer
 
 Tu es patient, pédagogue et tu sais t'adapter au niveau de l'étudiant (débutant, intermédiaire, avancé).
+Tu t'adresses à ${name}. Utilise son prénom régulièrement dans tes réponses pour rendre la conversation plus personnelle et engageante. Par exemple : "Très bonne question ${name} !", "Exactement ${name}, tu as bien compris.", "${name}, voici comment tu peux faire..."
 
 TON EXPERTISE (domaines que tu maîtrises parfaitement) :
 - Vibe Coding : génération de code avec l'IA, prompts efficaces, itération rapide, debugging assisté
@@ -98,7 +100,7 @@ Ensuite, envoie ton message de remerciement chaleureux final en utilisant le pr�
  * ReÃ§oit : { userId, type: 'text'|'image'|'audio', content: 'texte ou URL' }
  */
 app.post('/webhook', async (req, res) => {
-  const { userId, type, content } = req.body;
+  const { userId, type, content, userName } = req.body;
 
   if (!userId || !type || !content) {
     return res.status(400).json({ error: "Missing required fields: userId, type, content" });
@@ -147,7 +149,7 @@ app.post('/webhook', async (req, res) => {
 
     // --- Étape 2 : Appeler DeepSeek pour générer la réponse ---
     const history = getHistory(userId);
-    const systemPrompt = getSystemPrompt(session, catalog);
+    const systemPrompt = getSystemPrompt(session, catalog, userName);
     let rawReply = await callDeepSeek(history, systemPrompt);
 
     // Fallback automatique si DeepSeek est indisponible
