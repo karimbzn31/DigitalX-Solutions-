@@ -1,3 +1,5 @@
+import { supabaseAdmin } from "./api-auth";
+
 const API_KEY = process.env.OPENCODE_API_KEY;
 const BASE_URL = (process.env.OPENCODE_BASE_URL || "https://opencode.ai/zen/v1").replace(/\/+$/, "");
 const MODEL = process.env.OPENCODE_MODEL || "deepseek-v4-flash-free";
@@ -34,21 +36,6 @@ interface SessionEntry {
   content: string;
 }
 
-interface Session {
-  userId: string;
-  userName: string;
-  history: SessionEntry[];
-}
-
-const sessions = new Map<string, Session>();
-
-function getSession(userId: string, userName: string): Session {
-  if (!sessions.has(userId)) {
-    sessions.set(userId, { userId, userName, history: [] });
-  }
-  return sessions.get(userId)!;
-}
-
 function getSystemPrompt(userName: string): string {
   const name = userName || "l'étudiant";
   return `Tu es DigitalX IA, l'intelligence artificielle de DigitalX Solutions Academy. Tu parles à ${name}.
@@ -68,6 +55,38 @@ EXEMPLE :
 - Toi : "Vous décrivez votre besoin à l'IA, elle génère le code. Vous itérez jusqu'au résultat. Simple et puissant."
 
 Réponds dans la langue de ${name}.`;
+}
+
+async function getHistory(userId: string): Promise<SessionEntry[]> {
+  const { data } = await supabaseAdmin
+    .from("chat_sessions")
+    .select("role, content")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true })
+    .limit(40);
+
+  return (data || []).map((row) => ({ role: row.role, content: row.content }));
+}
+
+async function saveMessage(userId: string, role: string, content: string) {
+  await supabaseAdmin.from("chat_sessions").insert({
+    user_id: userId,
+    role,
+    content,
+  });
+}
+
+async function trimHistory(userId: string) {
+  const { data } = await supabaseAdmin
+    .from("chat_sessions")
+    .select("id")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (data && data.length > 40) {
+    const idsToDelete = data.slice(40).map((row) => row.id);
+    await supabaseAdmin.from("chat_sessions").delete().in("id", idsToDelete);
+  }
 }
 
 async function callDeepSeek(messages: SessionEntry[], systemPrompt: string): Promise<string> {
@@ -116,17 +135,14 @@ export async function chatWithMentor(
   userName: string,
   message: string
 ): Promise<string> {
-  const session = getSession(userId, userName);
-  session.history.push({ role: "user", content: message });
+  await saveMessage(userId, "user", message);
 
+  const history = await getHistory(userId);
   const systemPrompt = getSystemPrompt(userName);
-  const reply = await callDeepSeek(session.history, systemPrompt);
+  const reply = await callDeepSeek(history, systemPrompt);
 
-  session.history.push({ role: "assistant", content: reply });
-
-  if (session.history.length > 40) {
-    session.history = session.history.slice(-40);
-  }
+  await saveMessage(userId, "assistant", reply);
+  await trimHistory(userId);
 
   return reply;
 }

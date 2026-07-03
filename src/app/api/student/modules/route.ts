@@ -1,28 +1,26 @@
-import { supabaseAdmin, getAuthenticatedUser } from "@/lib/api-auth";
 import { NextResponse } from "next/server";
+import { getAuthenticatedUserWithClient, supabaseAdmin } from "@/lib/api-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const user = await getAuthenticatedUser();
+  const { user, supabase } = await getAuthenticatedUserWithClient();
   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
-  const { data: modules, error } = await supabaseAdmin
+  const { data: modules, error } = await supabase
     .from("modules")
     .select("*")
     .order("order_index", { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Get progress for all videos
-  const { data: progress } = await supabaseAdmin
+  const { data: progress } = await supabase
     .from("video_progress")
     .select("video_id, watched")
     .eq("user_id", user.id);
 
   const watchedVideoIds = new Set((progress || []).filter(p => p.watched).map(p => p.video_id));
 
-  // Get video counts per module
   const { data: allVideos } = await supabaseAdmin.from("videos").select("id, module_id");
   const videosByModule: Record<string, number> = {};
   const watchedByModule: Record<string, number> = {};

@@ -1,16 +1,35 @@
 "use client";
+import { useEffect, useState } from "react";
 import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
+import { usePageView } from "@/lib/analytics";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { SearchModal } from "@/components/shared/SearchModal";
+import { OnboardingFlow } from "@/components/shared/OnboardingFlow";
 import { useSearchStore } from "@/store/useSearchStore";
+import { useGamificationStore } from "@/store/useGamificationStore";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const searchOpen = useSearchStore((s) => s.open);
   const setSearchOpen = useSearchStore((s) => s.setOpen);
+  const checkStreak = useGamificationStore((s) => s.checkStreak);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    usePageView();
+    const done = localStorage.getItem("dx-onboarding-done");
+    if (!done) {
+      const timer = setTimeout(() => setShowOnboarding(true), 500);
+      return () => clearTimeout(timer);
+    }
+    checkStreak();
+  }, [checkStreak]);
 
   return (
     <div className="flex min-h-screen">
+      {showOnboarding && (
+        <OnboardingFlow onComplete={() => setShowOnboarding(false)} />
+      )}
       <DashboardSidebar />
       <div className="flex-1 bg-void relative pb-16 md:pb-0">
         <DashboardHeader />

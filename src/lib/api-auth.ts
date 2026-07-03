@@ -6,13 +6,12 @@ import { NextResponse } from "next/server";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Client with service role key for admin DB operations (bypasses RLS)
 export const supabaseAdmin = createClient(
   supabaseUrl,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-function getServerClient() {
+export function getServerClient() {
   const cookieStore = cookies();
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
@@ -35,6 +34,13 @@ export async function getAuthenticatedUser() {
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return null;
   return data.user;
+}
+
+export async function getAuthenticatedUserWithClient() {
+  const supabase = getServerClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) return { user: null, supabase, error: null };
+  return { user: data.user, supabase, error: null };
 }
 
 export async function requireAdmin() {

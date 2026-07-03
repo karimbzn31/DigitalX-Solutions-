@@ -1,114 +1,162 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Globe, Smartphone, Rocket, Server, Palette, Wrench, ArrowRight } from "lucide-react";
+import { Check, Sparkles, Bot, Infinity, Users, Shield, Zap } from "lucide-react";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { NebulaButton } from "@/components/shared/NebulaButton";
-import { NebulaBadge } from "@/components/shared/NebulaBadge";
 
-const services = [
-  { icon: Globe, label: "Sites web & landing pages" },
-  { icon: Smartphone, label: "Applications web & mobile" },
-  { icon: Rocket, label: "MVP & prototypes startup" },
-  { icon: Server, label: "APIs & back-end sur mesure" },
-  { icon: Palette, label: "Design UI/UX moderne" },
-  { icon: Wrench, label: "Déploiement & maintenance" },
+const plans = [
+  {
+    name: "Pro",
+    desc: "Tout ce dont tu as besoin pour lancer ta startup avec l'IA",
+    monthly: 3500,
+    annual: 25000,
+    popular: true,
+    features: [
+      "Accès complet aux 6 modules",
+      "Assistant IA illimité",
+      "Master Prompts exclusifs",
+      "Communauté privée",
+      "Certificats vérifiables",
+      "Mises à jour à vie",
+    ],
+    icon: Zap,
+  },
+  {
+    name: "Elite",
+    desc: "Pour ceux qui veulent un accompagnement personnalisé",
+    monthly: 8000,
+    annual: 65000,
+    popular: false,
+    features: [
+      "Tout du plan Pro",
+      "Mentoring individuel (2h/mois)",
+      "Templates SaaS premium",
+      "Accès anticipé aux nouveautés",
+      "Badge Elite communauté",
+      "Session Q&A privée mensuelle",
+    ],
+    icon: Sparkles,
+  },
 ];
 
-const trustPoints = [
-  "Accompagnement personnalisé",
-  "Technologies modernes (Next.js, React, Node.js, IA...)",
-  "Livraison rapide & itérative",
-  "Support après-lancement",
+const guarantees = [
+  { icon: Shield, text: "Satisfait ou remboursé sous 7 jours" },
+  { icon: Infinity, text: "Accès à vie au contenu" },
+  { icon: Users, text: "Communauté 1 200+ membres" },
 ];
 
 export function Pricing() {
+  const [annual, setAnnual] = useState(true);
+
   return (
     <section id="pricing" className="py-16 md:py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="Prestation"
-          title="Un projet. Une solution."
-          subtitle="Vous avez une idée de site web, d'application ou de startup ? Je la transforme en produit concret, de la conception au déploiement."
+          eyebrow="Investissement"
+          title="Un prix clair. Sans surprise."
+          subtitle="Choisis le plan qui correspond à ton ambition. Pas d'engagement, tu peux annuler quand tu veux."
           className="mb-10 md:mb-16"
         />
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          className="max-w-3xl mx-auto"
-        >
-          <div
-            className="relative rounded-xl md:rounded-[0.75rem] p-[1px] overflow-hidden"
-            style={{ background: "linear-gradient(135deg, #7C5CFF 0%, #C45CFF 50%, #FF6FB8 100%)" }}
+        <div className="flex items-center justify-center gap-3 mb-10">
+          <span className={`text-sm ${annual ? "text-mist" : "text-star-white font-medium"}`}>Mensuel</span>
+          <button
+            onClick={() => setAnnual(!annual)}
+            className={`relative w-14 h-7 rounded-full transition-colors ${annual ? "bg-violet" : "bg-violet/40"}`}
           >
-            <div className="bg-surface p-5 sm:p-6 md:p-10 rounded-xl md:rounded-[0.75rem] relative backdrop-blur-md">
+            <div className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-transform ${annual ? "left-8" : "left-1"}`} />
+          </button>
+          <span className={`text-sm ${annual ? "text-star-white font-medium" : "text-mist"}`}>
+            Annuel
+            <span className="ml-1.5 px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-medium">-40%</span>
+          </span>
+        </div>
 
-              <div className="text-center mb-5 md:mb-8">
-                <NebulaBadge variant="violet" className="px-3 md:px-4 py-1 text-[10px] md:text-xs">
-                  ✦ Devis gratuit · Réponse sous 48h
-                </NebulaBadge>
-              </div>
+        <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          {plans.map((plan, idx) => {
+            const Icon = plan.icon;
+            const price = annual ? plan.annual : plan.monthly;
+            const period = annual ? "/an" : "/mois";
 
-              <div className="grid grid-cols-2 gap-2 md:gap-3 mb-5 md:mb-8">
-                {services.map((s) => {
-                  const Icon = s.icon;
-                  return (
-                    <div
-                      key={s.label}
-                      className="flex flex-col items-center gap-1.5 p-2.5 md:p-3 rounded-lg bg-violet/[0.03] border border-white/[0.04] hover:border-violet/20 hover:bg-violet/[0.06] transition-colors"
-                    >
-                      <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-violet/20 to-magenta/10 flex items-center justify-center shrink-0">
-                        <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-violet" />
+            return (
+              <motion.div
+                key={plan.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ delay: idx * 0.1 }}
+                className={`relative rounded-xl overflow-hidden ${
+                  plan.popular
+                    ? "border-violet/40 bg-gradient-to-b from-violet/[0.08] to-transparent"
+                    : "border-white/[0.07] bg-surface/70"
+                } border backdrop-blur-sm`}
+              >
+                {plan.popular && (
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-violet via-magenta to-rose" />
+                )}
+
+                <div className="p-6 md:p-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet/20 to-magenta/10 flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-violet" />
                       </div>
-                      <span className="text-[11px] md:text-sm text-star-white font-medium leading-tight text-center">
-                        {s.label}
-                      </span>
+                      <div>
+                        <span className="text-lg font-display font-semibold text-star-white">{plan.name}</span>
+                        {plan.popular && (
+                          <span className="ml-2 px-2 py-0.5 rounded text-[10px] bg-violet/20 text-violet font-medium">Populaire</span>
+                        )}
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
 
-              <div className="border-t border-white/5 pt-3 md:pt-6 mb-4 md:mb-6">
-                <p className="text-[10px] md:text-xs text-mist/60 text-center mb-2.5 md:mb-4">
-                  Ce qui m&apos;engage avec vous
-                </p>
-                <div className="flex flex-wrap justify-center gap-1.5 md:gap-3">
-                  {trustPoints.map((tp) => (
-                    <span
-                      key={tp}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-violet/[0.06] border border-white/[0.04] text-[10px] md:text-xs text-mist"
-                    >
-                      <span className="w-1 h-1 rounded-full bg-violet shrink-0" />
-                      {tp}
+                  <p className="text-sm text-mist mb-6">{plan.desc}</p>
+
+                  <div className="mb-6">
+                    <span className="text-4xl font-display font-bold text-star-white">
+                      {price.toLocaleString("fr-FR")} DZ
                     </span>
-                  ))}
+                    <span className="text-sm text-mist ml-1">{period}</span>
+                  </div>
+
+                  <Link
+                    href="/register"
+                    className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium transition-all mb-6 ${
+                      plan.popular
+                        ? "bg-gradient-to-r from-violet to-magenta text-white hover:brightness-110"
+                        : "bg-white/5 text-star-white border border-white/10 hover:bg-white/10"
+                    }`}
+                  >
+                    {plan.popular ? "Commencer maintenant" : "Choisir Elite"}
+                  </Link>
+
+                  <ul className="space-y-3">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2.5">
+                        <Check className="w-4 h-4 text-violet shrink-0 mt-0.5" />
+                        <span className="text-sm text-mist">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-8">
+          {guarantees.map((g) => {
+            const GIcon = g.icon;
+            return (
+              <div key={g.text} className="flex items-center gap-1.5 text-xs text-mist">
+                <GIcon className="w-3.5 h-3.5 text-violet" />
+                {g.text}
               </div>
-
-              <div className="text-center mb-4 md:mb-6 pb-4 md:pb-6 border-b border-white/5">
-                <p className="text-[10px] md:text-xs text-mist mb-0.5 md:mb-1">Investissement</p>
-                <p className="font-display text-2xl md:text-4xl font-bold text-gradient">Nous contacter</p>
-                <p className="text-[10px] md:text-xs text-mist mt-0.5 md:mt-2">
-                  Devis personnalisé selon votre projet
-                </p>
-              </div>
-
-              <Link href="/contact">
-                <NebulaButton variant="primary" className="w-full text-sm md:text-base py-3 md:py-4 group">
-                  Démarrer votre projet
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                </NebulaButton>
-              </Link>
-
-              <p className="text-[10px] md:text-xs text-mist/50 text-center mt-3 md:mt-4">
-                Paiement sécurisé · Accompagnement 7j/7
-              </p>
-            </div>
-          </div>
-        </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

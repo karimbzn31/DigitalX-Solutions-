@@ -9,8 +9,8 @@ interface AnimatedCounterProps {
   duration?: number;
 }
 
-export function AnimatedCounter({ target, suffix = "", duration = 2 }: AnimatedCounterProps) {
-  const [count, setCount] = useState(0);
+export function AnimatedCounter({ target, suffix = "", duration = 1.2 }: AnimatedCounterProps) {
+  const [count, setCount] = useState(Math.round(target * 0.7));
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const hasAnimated = useRef(false);
@@ -19,14 +19,16 @@ export function AnimatedCounter({ target, suffix = "", duration = 2 }: AnimatedC
     if (!isInView || hasAnimated.current) return;
     hasAnimated.current = true;
 
-    const steps = 60;
-    const increment = target / steps;
-    let current = 0;
+    const steps = 30;
+    const start = Math.round(target * 0.7);
+    const diff = target - start;
+    const increment = diff / steps;
+    let current = start;
     let step = 0;
 
     const timer = setInterval(() => {
       step++;
-      current = Math.min(increment * step, target);
+      current = Math.min(start + increment * step, target);
       setCount(Math.round(current));
 
       if (step >= steps) {

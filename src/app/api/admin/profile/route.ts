@@ -2,23 +2,30 @@ import { supabaseAdmin, requireAdmin } from "@/lib/api-auth";
 
 export const dynamic = "force-dynamic";
 
+const ALLOWED_UPDATE_FIELDS = ["status", "validationCode"] as const;
+
 export async function PATCH(req: Request) {
   const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
   try {
-    const { userId, status, validationCode } = await req.json();
+    const body = await req.json();
+    const { userId, ...fields } = body;
 
     if (!userId) {
       return Response.json({ error: "Missing userId" }, { status: 400 });
     }
 
     const updates: Record<string, unknown> = {};
-    if (validationCode) {
-      updates.validation_code = validationCode;
+    for (const key of Object.keys(fields)) {
+      if ((ALLOWED_UPDATE_FIELDS as readonly string[]).includes(key)) {
+        const dbKey = key === "validationCode" ? "validation_code" : key;
+        updates[dbKey] = fields[key];
+      }
     }
-    if (status) {
-      updates.status = status;
+
+    if (Object.keys(updates).length === 0) {
+      return Response.json({ error: "Aucun champ valide à mettre à jour" }, { status: 400 });
     }
 
     const { data, error } = await supabaseAdmin

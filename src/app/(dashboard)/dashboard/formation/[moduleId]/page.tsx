@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { VideoListItem } from "@/components/dashboard/VideoListItem";
@@ -38,6 +38,7 @@ const resourceColors: Record<string, string> = {
 };
 
 export default function ModuleDetailPage({ params }: { params: { moduleId: string } }) {
+  const gradientId = useId();
   const { moduleId } = params;
   const router = useRouter();
   const [mod, setMod] = useState<Module | null>(null);
@@ -106,11 +107,11 @@ export default function ModuleDetailPage({ params }: { params: { moduleId: strin
               <div className="relative w-16 h-16">
                 <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
                   <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
-                  <circle cx="32" cy="32" r="28" fill="none" stroke="url(#gradProgress)" strokeWidth="4" strokeLinecap="round"
+                  <circle cx="32" cy="32" r="28" fill="none" stroke={`url(#${gradientId})`} strokeWidth="4" strokeLinecap="round"
                     strokeDasharray={`${2 * Math.PI * 28}`}
                     strokeDashoffset={`${2 * Math.PI * 28 * (1 - mod.progress / 100)}`} />
                 </svg>
-                <svg width="0" height="0"><defs><linearGradient id="gradProgress" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#7C5CFF" /><stop offset="100%" stopColor="#C45CFF" /></linearGradient></defs></svg>
+                <svg width="0" height="0"><defs><linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#7C5CFF" /><stop offset="100%" stopColor="#C45CFF" /></linearGradient></defs></svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-sm font-bold text-star-white">{mod.progress}%</span>
                 </div>

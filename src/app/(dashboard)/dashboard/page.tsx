@@ -12,7 +12,9 @@ import { ConfettiEffect, useConfetti } from "@/components/dashboard/ConfettiEffe
 import { DashboardSkeleton } from "@/components/dashboard/SkeletonCard";
 import { ModuleCard } from "@/components/dashboard/ModuleCard";
 import { ContinueCard } from "@/components/dashboard/ContinueCard";
-import { BookOpen, Clock, Award, ChevronRight, Rocket, TrendingUp } from "lucide-react";
+import { BookOpen, Clock, Award, ChevronRight, Rocket, TrendingUp, Zap, Flame, Sparkles } from "lucide-react";
+import { useGamificationStore, getLevelTitle, ALL_BADGES, getNextLevelXp } from "@/store/useGamificationStore";
+import { RecommendedModules } from "@/components/dashboard/RecommendedModules";
 
 interface Mod {
   id: string; title: string; title_short: string; description: string;
@@ -39,6 +41,14 @@ export default function DashboardPage() {
   const [nextVideo, setNextVideo] = useState<VideoItem & { moduleTitle: string; moduleProgress: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const confetti = useConfetti();
+  const levelNum = useGamificationStore((s) => s.level);
+  const xp = useGamificationStore((s) => s.xp);
+  const streak = useGamificationStore((s) => s.streak);
+  const badges = useGamificationStore((s) => s.badges);
+
+  const nextLevelXp = getNextLevelXp(xp);
+  const levelTitle = getLevelTitle(xp);
+  const earnedBadges = ALL_BADGES.filter((b) => badges.some((e) => e.id === b.id));
 
   useEffect(() => {
     Promise.all([
@@ -93,7 +103,7 @@ export default function DashboardPage() {
       {/* Hero */}
       <HeroSection
         name={user?.name || "Apprenant"}
-        level={getLevel(totalProgress)}
+        level={levelTitle}
         progress={totalProgress}
       />
 
@@ -150,6 +160,66 @@ export default function DashboardPage() {
           </div>
         </GlowCard>
       </div>
+
+      {/* Gamification bar */}
+      {(xp > 0 || streak > 0 || badges.length > 0) && (
+        <GlowCard delay={0.25} className="p-4">
+          <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-lg bg-violet/15 flex items-center justify-center shrink-0">
+                <Sparkles className="w-4 h-4 text-violet" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-star-white">{levelTitle}</p>
+                <p className="text-[10px] text-mist">Niveau {levelNum}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-amber-400" />
+              <div>
+                <p className="text-sm font-bold text-star-white">{xp} <span className="text-[10px] font-normal text-mist">XP</span></p>
+                <div className="w-20 h-1.5 rounded-full bg-white/5 mt-0.5">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-violet to-amber-400 transition-all duration-500"
+                    style={{ width: `${Math.min((xp / (nextLevelXp || 1)) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {streak > 0 && (
+              <div className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-orange-400" />
+                <div>
+                  <p className="text-sm font-bold text-star-white">{streak}</p>
+                  <p className="text-[10px] text-mist">Jours consécutifs</p>
+                </div>
+              </div>
+            )}
+
+            {earnedBadges.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                {earnedBadges.slice(0, 4).map((badge) => (
+                  <div
+                    key={badge.id}
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs bg-violet/15"
+                    title={badge.name}
+                  >
+                    {badge.icon}
+                  </div>
+                ))}
+                {earnedBadges.length > 4 && (
+                  <span className="text-[10px] text-mist">+{earnedBadges.length - 4}</span>
+                )}
+              </div>
+            )}
+          </div>
+        </GlowCard>
+      )}
+
+      {/* Recommended Modules */}
+      <RecommendedModules modules={modules} />
 
       {/* Continue Watching + Progress Ring */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -223,6 +293,37 @@ export default function DashboardPage() {
             </div>
             <ProgressTimeline modules={timelineModules} />
           </GlowCard>
+
+          {/* Badges */}
+          {earnedBadges.length > 0 && (
+            <GlowCard delay={0.4} className="p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-star-white">Badges</h3>
+                <span className="text-[11px] text-mist">{earnedBadges.length}/{ALL_BADGES.length}</span>
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                {ALL_BADGES.map((badge) => {
+                  const earned = badges.some((b) => b.id === badge.id);
+                  return (
+                    <div
+                      key={badge.id}
+                      className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
+                        earned ? "opacity-100" : "opacity-25 grayscale"
+                      }`}
+                      title={earned ? badge.name : "Badge à débloquer"}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-violet/15"
+                      >
+                        {badge.icon}
+                      </div>
+                      <span className="text-[9px] text-mist text-center leading-tight">{badge.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </GlowCard>
+          )}
         </div>
       </div>
 

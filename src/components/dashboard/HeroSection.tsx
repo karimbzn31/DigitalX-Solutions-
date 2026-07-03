@@ -100,6 +100,8 @@ interface HeroSectionProps {
   name?: string;
   level?: string;
   progress?: number;
+  xp?: number;
+  streak?: number;
 }
 
 export function HeroSection({ name = "Apprenant", level = "Apprenti IA", progress = 0 }: HeroSectionProps) {

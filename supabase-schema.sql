@@ -216,3 +216,257 @@ CREATE POLICY "users_update_own_progress"
   ON video_progress FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
+
+-- ============================================================
+-- Indexes pour la performance
+-- ============================================================
+CREATE INDEX IF NOT EXISTS idx_videos_module_id ON videos(module_id);
+CREATE INDEX IF NOT EXISTS idx_video_progress_user_id ON video_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_video_progress_video_id ON video_progress(video_id);
+CREATE INDEX IF NOT EXISTS idx_resources_module_id ON resources(module_id);
+CREATE INDEX IF NOT EXISTS idx_profiles_status ON profiles(status);
+CREATE INDEX IF NOT EXISTS idx_profiles_is_admin ON profiles(is_admin);
+CREATE INDEX IF NOT EXISTS idx_modules_order_index ON modules(order_index);
+CREATE INDEX IF NOT EXISTS idx_videos_order_index ON videos(order_index);
+
+-- ============================================================
+-- Trigger pour updated_at automatique
+-- ============================================================
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = ''
+AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER set_profiles_updated_at
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER set_modules_updated_at
+  BEFORE UPDATE ON modules
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER set_videos_updated_at
+  BEFORE UPDATE ON videos
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER set_resources_updated_at
+  BEFORE UPDATE ON resources
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER set_access_codes_updated_at
+  BEFORE UPDATE ON access_codes
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================
+-- Table rate_limits (serverless-compatible rate limiting)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS rate_limits (
+  id BIGSERIAL PRIMARY KEY,
+  key TEXT NOT NULL,
+  count INTEGER NOT NULL DEFAULT 1,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_rate_limits_key_expires ON rate_limits(key, expires_at);
+
+ALTER TABLE rate_limits ENABLE ROW LEVEL SECURITY;
+
+-- Cleanup old entries periodically
+CREATE OR REPLACE FUNCTION cleanup_rate_limits()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = ''
+AS $$
+BEGIN
+  DELETE FROM rate_limits WHERE expires_at < NOW();
+END;
+$$;
+
+-- Rate limit check function
+CREATE OR REPLACE FUNCTION check_rate_limit(
+  p_key TEXT,
+  p_max_requests INTEGER DEFAULT 10,
+  p_window_ms INTEGER DEFAULT 60000
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = ''
+AS $$
+DECLARE
+  current_count INTEGER;
+BEGIN
+  -- Cleanup expired entries
+  DELETE FROM rate_limits WHERE expires_at < NOW();
+
+  -- Check current count
+  SELECT COUNT(*) INTO current_count
+  FROM rate_limits
+  WHERE key = p_key AND expires_at > NOW();
+
+  IF current_count >= p_max_requests THEN
+    RETURN FALSE;
+  END IF;
+
+  -- Record this request
+  INSERT INTO rate_limits (key, count, expires_at)
+  VALUES (p_key, 1, NOW() + (p_window_ms || ' milliseconds')::INTERVAL);
+
+  RETURN TRUE;
+END;
+$$;
+
+-- ============================================================
+-- Table chat_sessions (serverless-compatible AI mentor sessions)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS chat_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL DEFAULT 'user',
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_id ON chat_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_created_at ON chat_sessions(created_at);
+
+ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "users_read_own_chat"
+  ON chat_sessions FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "users_insert_own_chat"
+  ON chat_sessions FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "users_delete_own_chat"
+  ON chat_sessions FOR DELETE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "admins_read_all_chat"
+  ON chat_sessions FOR SELECT
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+-- Table leads (email capture pour Module 0 gratuit)
+CREATE TABLE leads (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  source TEXT DEFAULT 'module-0-landing',
+  subscribed BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anyone_insert_leads"
+  ON leads FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "admins_read_leads"
+  ON leads FOR SELECT
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+-- Index pour dédoublonnage rapide
+CREATE INDEX idx_leads_email ON leads (email);
+
+-- Parrainage
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS referral_code TEXT UNIQUE;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS referred_by UUID REFERENCES profiles(id);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS referrals_count INTEGER DEFAULT 0;
+
+CREATE INDEX IF NOT EXISTS idx_profiles_referral_code ON profiles(referral_code);
+
+-- Communauté : posts
+CREATE TABLE community_posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) NOT NULL,
+  content TEXT NOT NULL,
+  channel TEXT NOT NULL CHECK (channel IN ('general', 'entraide', 'ressources', 'succes')),
+  likes INTEGER DEFAULT 0,
+  liked_by UUID[] DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE community_posts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anyone_read_posts"
+  ON community_posts FOR SELECT
+  USING (true);
+
+CREATE POLICY "auth_insert_posts"
+  ON community_posts FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "own_delete_posts"
+  ON community_posts FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Communauté : commentaires
+CREATE TABLE community_comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES community_posts(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES profiles(id) NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE community_comments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "anyone_read_comments"
+  ON community_comments FOR SELECT
+  USING (true);
+
+CREATE POLICY "auth_insert_comments"
+  ON community_comments FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "own_delete_comments"
+  ON community_comments FOR DELETE
+  USING (auth.uid() = user_id);
+
+CREATE INDEX idx_community_posts_channel ON community_posts(channel);
+CREATE INDEX idx_community_posts_created ON community_posts(created_at DESC);
+CREATE INDEX idx_community_comments_post ON community_comments(post_id);
+
+-- Analytics : événements
+CREATE TABLE events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  event TEXT NOT NULL,
+  data JSONB DEFAULT '{}',
+  page TEXT,
+  session_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE events ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "insert_events"
+  ON events FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "admins_read_events"
+  ON events FOR SELECT
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true));
+
+CREATE INDEX idx_events_event ON events(event);
+CREATE INDEX idx_events_created ON events(created_at);
+
+-- Fonction pour compter les commentaires de plusieurs posts
+CREATE OR REPLACE FUNCTION public.comment_counts(post_ids UUID[])
+RETURNS TABLE(post_id UUID, count BIGINT)
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT community_comments.post_id, COUNT(*)::BIGINT
+  FROM community_comments
+  WHERE community_comments.post_id = ANY(post_ids)
+  GROUP BY community_comments.post_id;
+$$;

@@ -1,30 +1,25 @@
-const rateMap = new Map<string, { count: number; resetAt: number }>();
+import { supabaseAdmin } from "./api-auth";
 
-export function checkRateLimit(key: string, maxRequests: number = 10, windowMs: number = 60000): boolean {
-  const now = Date.now();
-  const entry = rateMap.get(key);
+export async function checkRateLimit(
+  key: string,
+  maxRequests: number = 10,
+  windowMs: number = 60000
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
+      p_key: key,
+      p_max_requests: maxRequests,
+      p_window_ms: windowMs,
+    });
 
-  if (!entry || now > entry.resetAt) {
-    rateMap.set(key, { count: 1, resetAt: now + windowMs });
+    if (error) {
+      console.error("Rate limit RPC error:", error.message);
+      return true;
+    }
+
+    return data ?? true;
+  } catch (e) {
+    console.error("Rate limit check error:", e);
     return true;
   }
-
-  if (entry.count >= maxRequests) {
-    return false;
-  }
-
-  entry.count++;
-  return true;
-}
-
-// Clean up stale entries every 5 minutes
-if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    const now = Date.now();
-    rateMap.forEach((entry, key) => {
-      if (now > entry.resetAt) {
-        rateMap.delete(key);
-      }
-    });
-  }, 300000);
 }

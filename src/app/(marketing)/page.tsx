@@ -1,6 +1,7 @@
 import { Hero } from "@/components/landing/Hero";
 import { Stats } from "@/components/landing/Stats";
 import { Features } from "@/components/landing/Features";
+import { ModuleZero } from "@/components/landing/ModuleZero";
 import { Modules } from "@/components/landing/Modules";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { TeamSection } from "@/components/landing/TeamSection";
@@ -14,6 +15,7 @@ export default function Home() {
       <Hero />
       <Stats />
       <Features />
+      <ModuleZero />
       <Modules />
       <Testimonials />
       <TeamSection />

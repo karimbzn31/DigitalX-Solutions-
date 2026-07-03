@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { VideoListItem } from "@/components/dashboard/VideoListItem";
 import { ChevronLeft, Play, CheckCircle, FileText, MessageCircle } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 interface VideoData {
   id: string; module_id: string; title: string; description: string;
@@ -33,15 +34,16 @@ export default function WatchPage({ params }: { params: { videoId: string } }) {
 
   const toggleWatched = async () => {
     if (!video) return;
+    const newWatched = !video.completed;
     const res = await fetch("/api/student/progress", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ videoId: video.id, watched: !video.completed }),
+      body: JSON.stringify({ videoId: video.id, watched: newWatched }),
     });
     if (res.ok) {
-      const newCompleted = !video.completed;
-      setVideo({ ...video, completed: newCompleted });
-      setModVideos(prev => prev.map(v => v.id === video.id ? { ...v, completed: newCompleted } : v));
+      setVideo({ ...video, completed: newWatched });
+      setModVideos(prev => prev.map(v => v.id === video.id ? { ...v, completed: newWatched } : v));
+      track(newWatched ? "video_completed" : "video_unwatched", { video_id: video.id, video_title: video.title });
     }
   };
 

@@ -49,6 +49,11 @@ export const useAppStore = create<AppState>()(
           watchedVideos: { ...state.watchedVideos, [videoId]: watched },
         })),
     }),
-    { name: "dx-academy-store" }
+    {
+      name: "dx-academy-store",
+      partialize: (state) => ({
+        sidebarCollapsed: state.sidebarCollapsed,
+      }),
+    }
   )
 );

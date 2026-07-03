@@ -23,13 +23,47 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const isAuthPage = request.nextUrl.pathname.startsWith("/login") ||
+    request.nextUrl.pathname.startsWith("/register") ||
+    request.nextUrl.pathname.startsWith("/forgot-password");
+  const isDashboardPage = request.nextUrl.pathname.startsWith("/dashboard");
+  const isAdminPage = request.nextUrl.pathname.startsWith("/admin");
+  const isValidationPage = request.nextUrl.pathname.startsWith("/validation");
+
+  if (isAdminPage && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
+  if (isDashboardPage && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
+  if (isValidationPage && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
+  if (isAuthPage && user) {
+    if (user.user_metadata?.needs_validation) {
+      return NextResponse.redirect(new URL("/validation", request.url));
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

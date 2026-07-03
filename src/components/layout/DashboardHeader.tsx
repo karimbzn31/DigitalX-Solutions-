@@ -1,8 +1,9 @@
 "use client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Bell, Search, Command } from "lucide-react";
+import { Bell, Search, Command, Zap, Flame } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
+import { useGamificationStore, getLevelTitle } from "@/store/useGamificationStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { useSearchStore } from "@/store/useSearchStore";
 import { LogoFull } from "@/components/shared/Logo";
@@ -22,6 +23,8 @@ export function DashboardHeader() {
   const user = useAppStore((s) => s.user);
   const unreadCount = useNotificationStore((s) => s.unreadCount);
   const setSearchOpen = useSearchStore((s) => s.setOpen);
+  const xp = useGamificationStore((s) => s.xp);
+  const streak = useGamificationStore((s) => s.streak);
 
   const currentLabel = breadcrumbLabels[pathname] || "Dashboard";
 
@@ -36,6 +39,20 @@ export function DashboardHeader() {
         </div>
 
         <div className="flex items-center gap-3">
+          {streak > 0 && (
+            <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-400 font-medium">
+              <Flame className="w-3.5 h-3.5" />
+              {streak}
+            </div>
+          )}
+
+          {xp > 0 && (
+            <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-violet/10 border border-violet/20 text-[11px] text-violet font-medium">
+              <Zap className="w-3.5 h-3.5" />
+              {xp} XP
+            </div>
+          )}
+
           <button
             onClick={() => setSearchOpen(true)}
             className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-mist hover:text-star-white transition-colors border border-white/[0.06]"

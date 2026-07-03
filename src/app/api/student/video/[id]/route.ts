@@ -1,13 +1,13 @@
-import { supabaseAdmin, getAuthenticatedUser } from "@/lib/api-auth";
 import { NextResponse } from "next/server";
+import { getAuthenticatedUserWithClient, supabaseAdmin } from "@/lib/api-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const user = await getAuthenticatedUser();
+  const { user, supabase } = await getAuthenticatedUserWithClient();
   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
-  const { data: video, error } = await supabaseAdmin
+  const { data: video, error } = await supabase
     .from("videos")
     .select("*")
     .eq("id", params.id)
@@ -23,20 +23,20 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     .eq("id", video.module_id)
     .single();
 
-  const { data: progress } = await supabaseAdmin
+  const { data: progress } = await supabase
     .from("video_progress")
     .select("watched")
     .eq("user_id", user.id)
     .eq("video_id", params.id)
     .maybeSingle();
 
-  const { data: allVideos } = await supabaseAdmin
+  const { data: allVideos } = await supabase
     .from("videos")
     .select("id, module_id, title, duration, order_index")
     .eq("module_id", video.module_id)
     .order("order_index", { ascending: true });
 
-  const { data: allProgress } = await supabaseAdmin
+  const { data: allProgress } = await supabase
     .from("video_progress")
     .select("video_id, watched")
     .eq("user_id", user.id);
