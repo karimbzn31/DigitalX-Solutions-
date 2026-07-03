@@ -5,6 +5,7 @@ import { Bell, Search, Command } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { useSearchStore } from "@/store/useSearchStore";
+import { LogoFull } from "@/components/shared/Logo";
 
 const breadcrumbLabels: Record<string, string> = {
   "/dashboard": "Accueil",
@@ -28,6 +29,9 @@ export function DashboardHeader() {
     <header className="sticky top-0 z-30 border-b border-white/5">
       <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8 bg-surface">
         <div className="flex items-center gap-3">
+          <div className="sm:hidden">
+            <LogoFull />
+          </div>
           <span className="text-sm text-star-white font-medium hidden sm:inline">{currentLabel}</span>
         </div>
 
