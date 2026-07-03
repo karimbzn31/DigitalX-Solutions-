@@ -5,7 +5,8 @@
     "description": "Comprendre les bases de l'intelligence artificielle, les LLMs, le prompt engineering et les fondamentaux du Vibe Coding.",
     "niveau": "Débutant",
     "duree": "2h",
-    "videos": 6
+    "videos": 6,
+    "chapitres": ["Qu'est-ce que l'IA Générative ?", "Comment fonctionnent les LLMs", "Prompt Engineering 101", "Introduction au Vibe Coding", "Limites et bonnes pratiques", "Premier projet guidé"]
   },
   {
     "id": "module_vibe_coding",
@@ -13,7 +14,8 @@
     "description": "Maîtrisez le Vibe Coding : générer du code avec l'IA, itérer rapidement, et construire des applications fonctionnelles sans tout coder manuellement.",
     "niveau": "Débutant",
     "duree": "4h",
-    "videos": 10
+    "videos": 10,
+    "chapitres": ["Philosophie du Vibe Coding", "Configuration de l'environnement", "Écrire des prompts efficaces pour le code", "Itération et debugging avec l'IA", "Du concept au prototype en 30min", "Structurer un projet avec l'IA", "UI/UX généré par IA", "Gestion des erreurs et edge cases", "Optimisation et refactoring", "Projet fil rouge : landing page"]
   },
   {
     "id": "module_saas",
@@ -21,7 +23,8 @@
     "description": "Du concept au lancement : idéation, développement rapide avec l'IA, déploiement sur Vercel, paiements Stripe, et acquisition clients.",
     "niveau": "Intermédiaire",
     "duree": "6h",
-    "videos": 14
+    "videos": 14,
+    "chapitres": ["Trouver une idée SaaS rentable", "Architecture d'un SaaS moderne", "Next.js + Supabase : stack complète", "Authentification et gestion des utilisateurs", "Pages publiques et landing page", "Dashboard client", "Paiements avec Stripe", "Webhooks et automatisations", "Emails transactionnels", "SEO et acquisition trafic", "Analytics et KPIs", "Gestion des abonnements", "Mise en production", "Maintenance et itérations"]
   },
   {
     "id": "module_agents",
@@ -29,7 +32,8 @@
     "description": "Créer des agents IA avec n8n, WhatsApp bots, automatisations no-code/low-code et déploiement d'agents autonomes.",
     "niveau": "Avancé",
     "duree": "5h",
-    "videos": 12
+    "videos": 12,
+    "chapitres": ["Introduction aux agents IA", "n8n : fondations et workflows", "Webhooks et API externes", "Créer un chatbot WhatsApp", "Google Sheets comme base de données", "Analyse d'images avec Gemini", "Transcription audio et traitement vocal", "Gestion des sessions utilisateur", "Déploiement d'agents sur Render", "Agents avec mémoire et contexte", "Monitoring et logs", "Projet final : assistant client complet"]
   },
   {
     "id": "module_deploy",
@@ -37,6 +41,7 @@
     "description": "Mettre en production vos projets : Vercel, Supabase, domaines personnalisés, monitoring et scaling.",
     "niveau": "Intermédiaire",
     "duree": "3h",
-    "videos": 8
+    "videos": 8,
+    "chapitres": ["Préparer son projet pour la production", "Déploiement sur Vercel", "Supabase en production", "Domaine personnalisé et DNS", "Variables d'environnement et secrets", "Monitoring et erreurs", "Scaling et performances", "CI/CD et automatisation des déploiements"]
   }
 ]
