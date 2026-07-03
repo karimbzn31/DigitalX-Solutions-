@@ -53,12 +53,20 @@ export async function DELETE(req: Request) {
       return Response.json({ error: "Missing userId" }, { status: 400 });
     }
 
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
-
-    if (error) {
-      console.error("DELETE /api/admin/profile error:", error.message);
-      return Response.json({ error: error.message }, { status: 500 });
+    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    if (authError) {
+      console.error("DELETE /api/admin/profile auth error:", authError.message);
+      return Response.json({ error: authError.message }, { status: 500 });
     }
+
+    const { error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .delete()
+      .eq("id", userId);
+    if (profileError) {
+      console.error("DELETE /api/admin/profile profile error:", profileError.message);
+    }
+
     return Response.json({ success: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
