@@ -81,10 +81,8 @@ export default function AdminEtudiantsPage() {
     const student = selectedStudent;
     if (!student) return;
     if (action === "delete") {
-      await fetch("/api/admin/profile", {
+      await fetch(`/api/admin/profile?userId=${encodeURIComponent(student.id)}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: student.id }),
       });
       setStudents((prev) => prev.filter((s) => s.id !== student.id));
     } else {
