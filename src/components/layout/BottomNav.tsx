@@ -8,7 +8,7 @@ const items = [
   { icon: Home, label: "Accueil", href: "/dashboard" },
   { icon: BookOpen, label: "Formation", href: "/dashboard/formation" },
   { icon: Library, label: "Bibliothèque", href: "/dashboard/bibliotheque" },
-  { icon: Bot, label: "DigitalX IA", href: "/dashboard/ai" },
+  { icon: Bot, label: "IA", href: "/dashboard/ai" },
   { icon: Award, label: "Certificats", href: "/dashboard/certificats" },
 ];
 

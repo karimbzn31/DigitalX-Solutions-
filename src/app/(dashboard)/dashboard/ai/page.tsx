@@ -32,7 +32,7 @@ export default function AiAssistantPage() {
   const [convs, setConvs] = useState<Conversation[]>([
     { id: "conv-1", title: "Nouvelle conversation", date: new Date() },
   ]);
-  const [activeConv, setActiveConv] = useState(convs[0]?.id || null);
+  const [activeConv, setActiveConv] = useState("conv-1");
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -67,7 +67,7 @@ export default function AiAssistantPage() {
     setConvs((prev) => prev.filter((c) => c.id !== id));
     if (activeConv === id) {
       const remaining = convs.filter((c) => c.id !== id);
-      setActiveConv(remaining[0]?.id || null);
+      setActiveConv(remaining[0]?.id || "");
     }
     setMessages((prev) => {
       const next = { ...prev };
@@ -76,21 +76,19 @@ export default function AiAssistantPage() {
     });
   };
 
-  const handleSend = async () => {
-    if (!input.trim() || loading || !activeConv) return;
+  const doSend = async (text: string) => {
+    if (!text.trim() || loading || !activeConv) return;
     const convId = activeConv;
-    const userText = input.trim();
-    const userMsg: ChatMessage = { id: `msg-${Date.now()}`, role: "user", content: userText, timestamp: new Date(), conversationId: convId };
+    const userMsg: ChatMessage = { id: `msg-${Date.now()}`, role: "user", content: text, timestamp: new Date(), conversationId: convId };
     setMessages((prev) => ({ ...prev, [convId]: [...(prev[convId] || []), userMsg] }));
-    setInput("");
     setLoading(true);
-    updateConvTitle(convId, userText);
+    updateConvTitle(convId, text);
 
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userText }),
+        body: JSON.stringify({ message: text }),
       });
       const data = await res.json();
       const botMsg: ChatMessage = {
@@ -102,16 +100,16 @@ export default function AiAssistantPage() {
       };
       setMessages((prev) => ({ ...prev, [convId]: [...(prev[convId] || []), botMsg] }));
     } catch {
-      const fallbackMsg: ChatMessage = {
-        id: `msg-${Date.now() + 1}`,
-        role: "assistant" as const,
-        content: "Désolé, le service IA est temporairement indisponible. Réessaie plus tard.",
-        timestamp: new Date(),
-        conversationId: convId,
-      };
-      setMessages((prev) => ({ ...prev, [convId]: [...(prev[convId] || []), fallbackMsg] }));
+      setMessages((prev) => ({ ...prev, [convId]: [...(prev[convId] || []), { id: `msg-${Date.now() + 1}`, role: "assistant" as const, content: "Désolé, le service IA est temporairement indisponible.", timestamp: new Date(), conversationId: convId }] }));
     }
     setLoading(false);
+  };
+
+  const handleSend = async () => {
+    if (!input.trim() || loading || !activeConv) return;
+    const text = input.trim();
+    setInput("");
+    await doSend(text);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -224,7 +222,7 @@ export default function AiAssistantPage() {
                 {suggestions.map((s, i) => (
                   <button
                     key={i}
-                    onClick={() => { setInput(s.text); }}
+                    onClick={() => doSend(s.text)}
                     className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-surface/50 border border-white/[0.07] text-xs text-mist hover:text-star-white hover:border-violet/30 transition-all text-left"
                   >
                     <span>{s.icon}</span>
