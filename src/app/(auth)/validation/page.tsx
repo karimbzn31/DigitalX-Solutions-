@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useAppStore } from "@/store/useAppStore";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 import { Sparkles, PartyPopper, Lock } from "lucide-react";
 
@@ -28,6 +29,7 @@ function Sparkle() {
 
 export default function ValidationPage() {
   const router = useRouter();
+  const setUser = useAppStore((s) => s.setUser);
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -73,6 +75,34 @@ export default function ValidationPage() {
     if (!res.ok) {
       setError(data.error || "Erreur lors de la v\u00e9rification du code.");
       return;
+    }
+
+    // Load profile into store
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (authUser) {
+      const profRes = await fetch("/api/auth/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: authUser.id }),
+      });
+      if (profRes.ok) {
+        const { profile } = await profRes.json();
+        setUser({
+          id: profile.id,
+          name: profile.name,
+          initials: profile.initials,
+          email: profile.email,
+          isAdmin: profile.is_admin,
+          status: profile.status,
+          level: profile.level,
+          totalProgress: profile.total_progress,
+          videosWatched: profile.videos_watched,
+          totalVideos: profile.total_videos,
+          timeSpent: profile.time_spent,
+          certificates: profile.certificates,
+          joinedAt: profile.created_at,
+        });
+      }
     }
 
     router.push("/dashboard");
