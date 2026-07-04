@@ -5,7 +5,7 @@ import Link from "next/link";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
 
-const words = ["Transformez", "vos idées", "en startup grâce à l'IA"];
+const words = ["L'Intelligence Artificielle", "n'est plus l'avenir.", "Elle est le présent."];
 
 const wordVariants = {
   hidden: { y: 40, opacity: 0 },
@@ -55,11 +55,11 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-sm sm:text-base md:text-lg text-mist text-center max-w-2xl mt-4 md:mt-8 leading-relaxed px-2"
+          className="text-sm sm:text-base md:text-lg text-mist text-center max-w-3xl mt-4 md:mt-8 leading-relaxed px-2"
         >
-          Crée des agents IA autonomes, lance des SaaS, automatise des workflows N8N
-          <br className="hidden sm:block" />
-          et crée ta propre startup. Sans payer un sous. L&apos;IA est ton meilleur investissement.
+          DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
+          de l&apos;Intelligence Artificielle accessibles à tous les Algériens. Apprenez à maîtriser
+          les outils, les méthodes et les compétences qui façonnent déjà le monde de demain.
         </motion.p>
 
         <motion.div
