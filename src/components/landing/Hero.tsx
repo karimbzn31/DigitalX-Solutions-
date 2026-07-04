@@ -1,11 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
-import { NebulaButton } from "@/components/shared/NebulaButton";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
 
-const words = ["L'Intelligence Artificielle", "n'est plus l'avenir.", "Elle est le présent."];
+const words = ["Transformez", "vos idées", "en startup grâce à l'IA"];
 
 const wordVariants = {
   hidden: { y: 40, opacity: 0 },
@@ -55,51 +53,12 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-sm sm:text-base md:text-lg text-mist text-center max-w-3xl mt-4 md:mt-8 leading-relaxed px-2"
+          className="text-sm sm:text-base md:text-lg text-mist text-center max-w-2xl mt-4 md:mt-8 leading-relaxed px-2"
         >
-          DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
-          de l&apos;Intelligence Artificielle accessibles à tous les Algériens. Apprenez à maîtriser
-          les outils, les méthodes et les compétences qui façonnent déjà le monde de demain.
+          Maîtrisez l&apos;Intelligence Artificielle, le Vibe Coding et le développement SaaS.
+          <br className="hidden sm:block" />
+          Construisez des produits réels. Lancez votre startup.
         </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-10 w-full sm:w-auto px-4 sm:px-0"
-        >
-          <Link href="/register" className="w-full sm:w-auto">
-            <NebulaButton size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              🚀 Accéder à l&apos;académie →
-            </NebulaButton>
-          </Link>
-          <Link href="#formation" className="w-full sm:w-auto">
-            <NebulaButton variant="secondary" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              📋 Voir les formations
-            </NebulaButton>
-          </Link>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 mt-6 md:mt-8 text-xs md:text-sm text-mist"
-        >
-          <div className="flex -space-x-2">
-            {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-violet/30 bg-surface flex items-center justify-center text-[10px] md:text-xs text-violet"
-              >
-                {String.fromCharCode(65 + i)}
-              </div>
-            ))}
-          </div>
-          <span className="text-center sm:text-left">
-            ★★★★★ <strong className="text-star-white">1 200+ apprenants</strong> · Algérie & international
-          </span>
-        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
