@@ -7,7 +7,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 
 const features = [
   { icon: "📚", text: "Accès complet à toutes nos formations" },
-  { icon: "🤖", text: "DigitalX AI — ton assistant IA qui code, raison et construit pour toi" },
+  { icon: "🤖", text: "DigitalX AI — ton assistant IA qui code, raisonne et construit pour toi" },
   { icon: "👥", text: "Communauté privée de 1 200+ membres actifs" },
   { icon: "📖", text: "Bibliothèque : documents, prompts, GitHub, projets" },
   { icon: "🎓", text: "Certificat officiel DigitalX Solutions Academy" },
