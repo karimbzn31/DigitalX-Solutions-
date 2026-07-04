@@ -5,7 +5,7 @@ import Link from "next/link";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
 
-const words = ["Ton IA travaille", "pendant que tu dors"];
+const words = ["Transformez", "vos idées", "en startup grâce à l'IA"];
 
 const wordVariants = {
   hidden: { y: 40, opacity: 0 },
