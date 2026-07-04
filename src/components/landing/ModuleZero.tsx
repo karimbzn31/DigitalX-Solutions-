@@ -43,12 +43,32 @@ export function ModuleZero() {
               ))}
             </div>
 
-            <div className="p-4 rounded-xl border border-violet/20 bg-violet/5">
-              <p className="text-sm font-medium text-star-white mb-1">Pourquoi nous ?</p>
-              <p className="text-xs text-mist leading-relaxed">
-                On ne fait pas que de la théorie. Chaque module est conçu autour de projets concrets : tu construis, tu testes, tu lances.
-                Tu sors de la formation avec un vrai portfolio et des compétences demandées par le marché.
+            <div className="p-6 sm:p-8 rounded-2xl border border-violet/30 bg-gradient-to-br from-violet/10 via-violet/5 to-magenta/5">
+              <p className="text-lg font-display font-bold text-star-white mb-4">Pourquoi nous ?</p>
+              <p className="text-sm text-mist leading-relaxed mb-5">
+                On ne fait pas que de la théorie. Ici, tu apprends en construisant des vrais projets.
+                Et surtout, tu en sors avec des compétences qui te rapportent de l&apos;argent, pas juste un certificat.
               </p>
+              <p className="text-sm font-medium text-star-white mb-3">Ce que tu obtiens gratuitement :</p>
+              <div className="space-y-3 mb-6">
+                {[
+                  { icon: "🤖", text: "Accès à des modèles IA puissants (type Claude Code) sans payer un sous" },
+                  { icon: "🧩", text: "Créer des agents IA autonomes qui travaillent pour toi 24h/24" },
+                  { icon: "⚙️", text: "Maîtriser N8N et l'automatisation Instagram, Facebook, WhatsApp" },
+                  { icon: "🚀", text: "Lancer et déployer tes propres SaaS" },
+                ].map((item) => (
+                  <div key={item.text} className="flex items-start gap-3 text-sm text-mist">
+                    <span className="mt-0.5 shrink-0">{item.icon}</span>
+                    <span>{item.text}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="p-4 rounded-xl bg-gradient-to-r from-violet/20 to-magenta/10 border border-violet/20">
+                <p className="text-base sm:text-lg font-display font-bold text-star-white leading-snug">
+                  💰 Imagines : une fois nos formations terminées, tu pourrais créer des projets qui te rapportent{" "}
+                  <span className="text-gradient">jusqu&apos;à 500 000 DA</span>
+                </p>
+              </div>
             </div>
           </motion.div>
 
