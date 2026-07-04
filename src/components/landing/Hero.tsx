@@ -5,7 +5,7 @@ import Link from "next/link";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
 
-const words = ["Transformez", "vos idées", "en startup grâce à l'IA"];
+const words = ["Ton IA travaille", "pendant que tu dors"];
 
 const wordVariants = {
   hidden: { y: 40, opacity: 0 },
@@ -28,7 +28,7 @@ export function Hero() {
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
         >
           <NebulaBadge variant="violet" className="mb-6 md:mb-8 px-3 md:px-4 py-1 text-xs md:text-sm">
-            ✦ Nouvelle formation · Cohorte 2026
+            ✦ DigitalX Solutions Academy · Cohorte 2026
           </NebulaBadge>
         </motion.div>
 
@@ -57,9 +57,9 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-sm sm:text-base md:text-lg text-mist text-center max-w-2xl mt-4 md:mt-8 leading-relaxed px-2"
         >
-          Maîtrisez l&apos;Intelligence Artificielle, le Vibe Coding et le développement SaaS.
+          Crée des agents IA autonomes, lance des SaaS, automatise des workflows N8N
           <br className="hidden sm:block" />
-          Construisez des produits réels. Lancez votre startup.
+          et crée ta propre startup. Sans payer un sous. L&apos;IA est ton meilleur investissement.
         </motion.p>
 
         <motion.div
@@ -70,12 +70,12 @@ export function Hero() {
         >
           <Link href="/register" className="w-full sm:w-auto">
             <NebulaButton size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              Rejoindre la formation →
+              🚀 Accéder à l&apos;académie →
             </NebulaButton>
           </Link>
           <Link href="#formation" className="w-full sm:w-auto">
             <NebulaButton variant="secondary" size="lg" className="w-full sm:w-auto">
-              Voir le programme
+              📋 Voir les formations
             </NebulaButton>
           </Link>
         </motion.div>
