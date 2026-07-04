@@ -80,11 +80,7 @@ export default function ValidationPage() {
     // Load profile into store
     const { data: { user: authUser } } = await supabase.auth.getUser();
     if (authUser) {
-      const profRes = await fetch("/api/auth/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: authUser.id }),
-      });
+      const profRes = await fetch("/api/auth/profile");
       if (profRes.ok) {
         const { profile } = await profRes.json();
         setUser({

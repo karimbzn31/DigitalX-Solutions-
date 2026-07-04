@@ -35,11 +35,7 @@ export default function LoginPage() {
 
     const user = data.user;
 
-    const res = await fetch("/api/auth/profile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id }),
-    });
+    const res = await fetch("/api/auth/profile");
 
     if (!res.ok) {
       await supabase.auth.signOut();
