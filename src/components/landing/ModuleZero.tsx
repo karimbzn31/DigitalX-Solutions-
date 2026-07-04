@@ -32,7 +32,7 @@ export function ModuleZero() {
 
             <div className="space-y-3 mb-8">
               {[
-                { icon: "🧠", text: "L'IA génère du code, des apps et des designs en quelques minutes" },
+                { icon: "🧠", text: "L'IA est devenue le collaborateur le plus puissant du 21ème siècle" },
                 { icon: "💰", text: "Les développeurs IA gagnent 2 à 3 fois plus que les développeurs classiques" },
                 { icon: "🇩🇿", text: "Le marché algérien a un besoin énorme de talents maîtrisant l'IA" },
               ].map((item) => (
