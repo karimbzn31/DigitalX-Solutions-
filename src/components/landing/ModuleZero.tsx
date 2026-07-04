@@ -1,7 +1,17 @@
 "use client";
 import { motion } from "framer-motion";
-import { Play } from "lucide-react";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
+
+const words = ["Transformez", "vos idées", "en startup grâce à l'IA"];
+
+const wordVariants = {
+  hidden: { y: 40, opacity: 0 },
+  visible: (i: number) => ({
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const, delay: i * 0.12 },
+  }),
+};
 
 export function ModuleZero() {
   return (
@@ -12,7 +22,7 @@ export function ModuleZero() {
       />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Bloc 1 — Hero centré */}
+        {/* Bloc 1 — Titre + description centrés */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -20,64 +30,63 @@ export function ModuleZero() {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <NebulaBadge variant="violet" className="mb-5 mx-auto w-fit">🚀 Pourquoi l&apos;IA ?</NebulaBadge>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-star-white tracking-tight leading-tight mb-5">
-            L&apos;IA n&apos;est plus l&apos;avenir,{" "}
-            <span className="text-gradient">c&apos;est le présent</span>
-          </h2>
-          <p className="text-base text-mist leading-relaxed max-w-2xl mx-auto mb-10">
-            Chaque jour, des milliers d&apos;entreprises adoptent l&apos;IA pour créer plus vite, réduire les coûts et innover.
-            Ceux qui ne la maîtrisent pas seront bientôt à la traîne.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
-            {[
-              { icon: "🧠", text: "Le collaborateur le plus puissant du 21ème siècle" },
-              { icon: "💰", text: "Gagnent 2 à 3 fois plus que les développeurs classiques" },
-              { icon: "🇩🇿", text: "Un besoin énorme de talents IA en Algérie" },
-            ].map((item) => (
-              <div key={item.text} className="flex items-center gap-3 text-sm text-mist">
-                <span className="text-lg shrink-0">{item.icon}</span>
-                <span>{item.text}</span>
-              </div>
+          <NebulaBadge variant="violet" className="mb-5 mx-auto w-fit">✨ DigitalX Solutions Academy</NebulaBadge>
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[0.95] text-center max-w-4xl mx-auto mb-6">
+            {words.map((word, i) => (
+              <motion.span
+                key={word}
+                custom={i}
+                initial="hidden"
+                animate="visible"
+                variants={wordVariants}
+                className="block text-star-white"
+              >
+                {i === 2 ? (
+                  <span className="text-gradient">{word}</span>
+                ) : (
+                  word
+                )}
+              </motion.span>
             ))}
-          </div>
+          </h1>
+          <p className="text-base sm:text-lg text-mist text-center max-w-2xl mx-auto leading-relaxed">
+            Maîtrisez l&apos;Intelligence Artificielle, le Vibe Coding et le développement SaaS.
+            <br />
+            Construisez des produits réels. Lancez votre startup.
+          </p>
         </motion.div>
 
-        {/* Bloc 2 — Vidéo centrée */}
+        {/* Bloc 2 — Terminal */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, delay: 0.15 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           className="max-w-3xl mx-auto mb-20"
         >
-          <div className="nebula-glass rounded-2xl overflow-hidden shadow-2xl shadow-violet/10">
-            <div className="aspect-video bg-gradient-to-br from-violet/20 via-magenta/10 to-rose/5 flex items-center justify-center relative group cursor-pointer">
-              <div className="absolute inset-0 bg-gradient-to-t from-void/60 to-transparent" />
-              <div className="relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-violet/80 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Play className="w-7 h-7 sm:w-8 sm:h-8 text-white ml-0.5" />
+          <div className="nebula-glass rounded-[0.75rem] overflow-hidden shadow-2xl shadow-violet/10">
+            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 md:py-3 bg-surface border-b border-white/5">
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500/80" />
+                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-yellow-500/80" />
+                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-500/80" />
               </div>
-              <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-violet/30 flex items-center justify-center text-[10px]">🎬</div>
-                <span className="text-[10px] sm:text-xs text-white/70">Découvrez notre approche</span>
-              </div>
+              <span className="text-[10px] md:text-xs text-mist ml-2">terminal — vibe-coding</span>
             </div>
-            <div className="p-4 bg-surface">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs text-mist">
-                  <span className="text-violet font-medium">Presenté par Digital X Solutions</span>
-                  <span>·</span>
-                  <span>5 min</span>
-                </div>
-              </div>
+            <div className="p-3 md:p-5 font-mono text-[11px] md:text-sm leading-relaxed space-y-1.5 md:space-y-2 bg-surface/30">
+              <p><span className="text-violet">$</span> <span className="text-star-white">dx init agent-ia</span></p>
+              <p className="text-mist">{">"} Création de l&apos;environnement de développement...</p>
+              <p><span className="text-emerald-400">✓</span> <span className="text-emerald-400/90">Projet initialisé avec Next.js 14</span></p>
+              <p><span className="text-violet">$</span> <span className="text-star-white">npm run dev</span></p>
+              <p className="text-mist">{">"} Démarrage du serveur de développement...</p>
+              <p className="text-cyan-soft">{">"} ready - started server on http://localhost:3000</p>
+              <p className="text-mist animate-pulse">▌</p>
             </div>
           </div>
         </motion.div>
 
         {/* Bloc 3 — Pourquoi nous */}
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
-          {/* Colonne gauche : texte + bénéfices */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -109,7 +118,6 @@ export function ModuleZero() {
             </div>
           </motion.div>
 
-          {/* Colonne droite : chiffrage 500 000 DA */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
