@@ -33,8 +33,6 @@ export default function LoginPage() {
       return;
     }
 
-    const user = data.user;
-
     const res = await fetch("/api/auth/profile");
 
     if (!res.ok) {

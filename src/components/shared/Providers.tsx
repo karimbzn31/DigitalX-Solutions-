@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { NebulaBackground } from "@/components/shared/NebulaBackground";
 import { PageTransition } from "@/components/shared/PageTransition";
 import { SearchModal } from "@/components/shared/SearchModal";
-import { ChatWidget } from "@/components/shared/ChatWidget";
 import { SocialProof } from "@/components/shared/SocialProof";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useCmdK } from "@/hooks/useKeyboard";
@@ -31,7 +30,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <PageTransition>{children}</PageTransition>
       </div>
       <SearchModal open={open} onClose={() => setOpen(false)} />
-      <ChatWidget />
       <SocialProof />
     </>
   );
