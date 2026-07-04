@@ -52,7 +52,7 @@ export function Pricing() {
                   <Crown className="w-6 h-6 text-violet" />
                 </div>
                 <div>
-                  <span className="text-xl font-display font-bold text-star-white">DigitalX Academy</span>
+                  <span className="text-xl font-display font-bold text-star-white">DigitalX Solutions Academy</span>
                   <span className="ml-2 px-2 py-0.5 rounded text-[10px] bg-violet/20 text-violet font-medium">
                     Accès Complet
                   </span>
@@ -66,14 +66,14 @@ export function Pricing() {
             </p>
 
             {/* Prix */}
-            <div className="flex items-end gap-4 mb-8">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-end sm:gap-4 mb-8">
+              <div className="mb-1 sm:mb-0">
                 <span className="text-5xl sm:text-6xl font-display font-bold text-gradient leading-none">
                   12 000 DA
                 </span>
               </div>
-              <div className="flex items-center gap-2 pb-1.5">
-                <span className="text-xl text-mist/40 line-through font-display font-medium">45 000 DA</span>
+              <div className="flex items-center gap-2 sm:pb-1.5">
+                <span className="text-lg sm:text-xl text-mist/40 line-through font-display font-medium">45 000 DA</span>
                 <span className="px-2 py-0.5 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/20">
                   -73%
                 </span>
