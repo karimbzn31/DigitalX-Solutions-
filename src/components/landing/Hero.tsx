@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { NebulaButton } from "@/components/shared/NebulaButton";
@@ -16,11 +17,133 @@ const wordVariants = {
   }),
 };
 
-export function Hero() {
+/* ------------------------------------------------------------------ */
+/*  Grille de fond dynamique                                          */
+/* ------------------------------------------------------------------ */
+function GridBackground({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
   return (
-    <section className="relative min-h-svh flex flex-col items-center justify-center overflow-hidden pt-20 md:pt-24">
-      <div className="absolute inset-0 bg-gradient-to-b from-violet/[0.04] via-transparent to-transparent pointer-events-none" />
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Grille horizontale/verticale */}
+      <div
+        className="absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(124,92,255,1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(124,92,255,1) 1px, transparent 1px)
+          `,
+          backgroundSize: "60px 60px",
+          transform: `translate(${(mouseX - 0.5) * -8}px, ${(mouseY - 0.5) * -8}px)`,
+          transition: "transform 0.15s ease-out",
+        }}
+      />
+      {/* Grille plus fine */}
+      <div
+        className="absolute inset-0 opacity-[0.008]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(196,92,255,1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(196,92,255,1) 1px, transparent 1px)
+          `,
+          backgroundSize: "20px 20px",
+          transform: `translate(${(mouseX - 0.5) * -12}px, ${(mouseY - 0.5) * -12}px)`,
+          transition: "transform 0.2s ease-out",
+        }}
+      />
+    </div>
+  );
+}
 
+/* ------------------------------------------------------------------ */
+/*  Scan lines subtiles                                                */
+/* ------------------------------------------------------------------ */
+function ScanLines() {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none opacity-[0.03]"
+      style={{
+        backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(124,92,255,0.3) 2px, rgba(124,92,255,0.3) 3px)",
+        backgroundSize: "100% 3px",
+      }}
+    />
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Effet spotlight qui suit la souris                                 */
+/* ------------------------------------------------------------------ */
+function Spotlight({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{
+        background: `radial-gradient(600px circle at ${mouseX * 100}% ${mouseY * 100}%, rgba(124,92,255,0.06), transparent 60%)`,
+        transition: "background 0.2s ease-out",
+      }}
+    />
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Particules flottantes au-dessus du Hero                            */
+/* ------------------------------------------------------------------ */
+function FloatingParticles() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 rounded-full bg-violet/20"
+          style={{
+            left: `${15 + i * 14}%`,
+            top: `${20 + (i % 3) * 25}%`,
+          }}
+          animate={{
+            y: [0, -20 - i * 5, 0],
+            opacity: [0.2, 0.6, 0.2],
+          }}
+          transition={{
+            duration: 4 + i * 0.8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * 0.7,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Hero principal                                                     */
+/* ------------------------------------------------------------------ */
+export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      setMouse({
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
+      });
+    };
+    window.addEventListener("mousemove", handler, { passive: true });
+    return () => window.removeEventListener("mousemove", handler);
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative min-h-svh flex flex-col items-center justify-center overflow-hidden pt-20 md:pt-24"
+    >
+      {/* --- Calques de fond --- */}
+      <div className="absolute inset-0 bg-gradient-to-b from-violet/[0.04] via-transparent to-transparent pointer-events-none" />
+      <GridBackground mouseX={mouse.x} mouseY={mouse.y} />
+      <ScanLines />
+      <Spotlight mouseX={mouse.x} mouseY={mouse.y} />
+      <FloatingParticles />
+
+      {/* Contenu */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 py-12 md:py-24">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -101,6 +224,7 @@ export function Hero() {
           </span>
         </motion.div>
 
+        {/* Terminal */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

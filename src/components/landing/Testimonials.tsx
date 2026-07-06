@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { NebulaCard } from "@/components/shared/NebulaCard";
+import { MagneticCard } from "@/components/shared/MagneticCard";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
 import { testimonials } from "@/lib/mock-data";
 import { getInitials } from "@/lib/utils";
@@ -31,7 +31,7 @@ export function Testimonials() {
         <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-none -mx-4 px-4 gap-4">
           {testimonials.map((t) => (
             <div key={t.id} className="snap-start shrink-0 w-[280px]">
-              <NebulaCard className="p-5 h-full flex flex-col">
+              <MagneticCard className="p-5 h-full flex flex-col">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet/20 to-magenta/20 border border-violet/20 flex items-center justify-center text-sm font-medium text-violet">
                     {getInitials(t.name)}
@@ -48,7 +48,7 @@ export function Testimonials() {
                 <div className="mt-4">
                   <NebulaBadge variant="violet">{t.badge}</NebulaBadge>
                 </div>
-              </NebulaCard>
+              </MagneticCard>
             </div>
           ))}
         </div>
@@ -63,7 +63,7 @@ export function Testimonials() {
         >
           {testimonials.map((t) => (
             <motion.div key={t.id} variants={itemVariants}>
-              <NebulaCard className="p-6 h-full flex flex-col">
+              <MagneticCard className="p-6 h-full flex flex-col">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet/20 to-magenta/20 border border-violet/20 flex items-center justify-center text-sm font-medium text-violet">
                     {getInitials(t.name)}
@@ -80,7 +80,7 @@ export function Testimonials() {
                 <div className="mt-4">
                   <NebulaBadge variant="violet">{t.badge}</NebulaBadge>
                 </div>
-              </NebulaCard>
+              </MagneticCard>
             </motion.div>
           ))}
         </motion.div>

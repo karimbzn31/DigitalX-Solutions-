@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Check, Crown } from "lucide-react";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { useEffect, useRef } from "react";
 
 const features = [
   { icon: "📚", text: "Accès complet à toutes nos formations" },
@@ -23,6 +24,22 @@ const guarantees = [
 ];
 
 export function Pricing() {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    const handler = (e: MouseEvent) => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty("--mouse-x", `${x}%`);
+      card.style.setProperty("--mouse-y", `${y}%`);
+    };
+    card.addEventListener("mousemove", handler);
+    return () => card.removeEventListener("mousemove", handler);
+  }, []);
+
   return (
     <section id="pricing" className="py-16 md:py-24 lg:py-32">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,14 +52,22 @@ export function Pricing() {
 
         {/* Carte pricing principale */}
         <motion.div
+          ref={cardRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5 }}
-          className="relative rounded-2xl overflow-hidden border-violet/40 bg-gradient-to-b from-violet/[0.08] to-transparent"
+          className="group relative rounded-2xl overflow-hidden border-violet/40 bg-gradient-to-b from-violet/[0.08] to-transparent nebula-glow-strong"
         >
           {/* Barre colorée en haut */}
           <div className="h-1 bg-gradient-to-r from-violet via-magenta to-rose" />
+
+          {/* Glow overlay qui suit la souris */}
+          <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            style={{
+              background: "radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(124,92,255,0.12), transparent 60%)",
+            }}
+          />
 
           <div className="p-6 sm:p-8 lg:p-10">
             {/* Header */}

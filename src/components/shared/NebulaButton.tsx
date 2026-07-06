@@ -14,7 +14,7 @@ export const NebulaButton = forwardRef<HTMLButtonElement, NebulaButtonProps>(
   ({ className, isLoading, variant = "primary", size = "md", children, disabled, ...props }, ref) => {
     const variants = {
       primary:
-        "bg-gradient-to-r from-violet to-magenta text-white font-medium hover:brightness-110 hover:shadow-nebula-glow hover:scale-[1.02] active:scale-[0.97]",
+        "bg-gradient-to-r from-violet to-magenta text-white font-medium hover:brightness-110 hover:shadow-[0_0_30px_rgba(124,92,255,0.4),0_0_60px_rgba(124,92,255,0.15)] hover:scale-[1.02] active:scale-[0.97]",
       secondary:
         "border border-white/15 text-star-white hover:bg-violet/10 active:scale-[0.97]",
       ghost:

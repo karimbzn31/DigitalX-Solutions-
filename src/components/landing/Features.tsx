@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Sparkles, Zap, Rocket, Bot, RefreshCw, Users } from "lucide-react";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { NebulaCard } from "@/components/shared/NebulaCard";
+import { MagneticCard } from "@/components/shared/MagneticCard";
 
 const features = [
   { icon: Sparkles, title: "IA Gratuite & Illimitée", desc: "Modèles de pointe sans abonnement, accessibles à tout moment." },
@@ -49,13 +49,13 @@ export function Features() {
                 variants={itemVariants}
                 className={i === 0 ? "lg:col-span-2 lg:row-span-1" : ""}
               >
-                <NebulaCard className="p-6 h-full group">
-                  <div className="w-10 h-10 bg-gradient-to-br from-violet/10 to-magenta/10 rounded-lg flex items-center justify-center mb-4 border border-violet/10 group-hover:border-violet/20 transition-colors">
+                <MagneticCard className="p-6 h-full">
+                  <div className="w-10 h-10 bg-gradient-to-br from-violet/10 to-magenta/10 rounded-lg flex items-center justify-center mb-4 border border-violet/10 transition-colors">
                     <Icon className="w-5 h-5 text-violet" />
                   </div>
                   <h3 className="font-display text-lg font-semibold text-star-white mb-2 tracking-tight">{f.title}</h3>
                   <p className="text-sm text-mist leading-relaxed">{f.desc}</p>
-                </NebulaCard>
+                </MagneticCard>
               </motion.div>
             );
           })}
@@ -66,13 +66,13 @@ export function Features() {
             const Icon = f.icon;
             return (
               <div key={f.title} className="snap-start shrink-0 w-[80vw]">
-                <NebulaCard className="p-6 h-full group">
-                  <div className="w-10 h-10 bg-gradient-to-br from-violet/10 to-magenta/10 rounded-lg flex items-center justify-center mb-4 border border-violet/10 group-hover:border-violet/20 transition-colors">
+                <MagneticCard className="p-6 h-full">
+                  <div className="w-10 h-10 bg-gradient-to-br from-violet/10 to-magenta/10 rounded-lg flex items-center justify-center mb-4 border border-violet/10 transition-colors">
                     <Icon className="w-5 h-5 text-violet" />
                   </div>
                   <h3 className="font-display text-lg font-semibold text-star-white mb-2 tracking-tight">{f.title}</h3>
                   <p className="text-sm text-mist leading-relaxed">{f.desc}</p>
-                </NebulaCard>
+                </MagneticCard>
               </div>
             );
           })}
