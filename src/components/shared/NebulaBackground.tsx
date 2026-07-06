@@ -65,7 +65,7 @@ function useNebulaCanvas(
     if (!ctx) return;
 
     let stars: Star[] = [];
-    let shooters: ShootingStar[] = [];
+    const shooters: ShootingStar[] = [];
     let lastShooter = 0;
     let running = true;
 
