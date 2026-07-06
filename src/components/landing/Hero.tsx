@@ -205,9 +205,15 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-sm sm:text-base md:text-lg text-mist text-center max-w-3xl mt-4 md:mt-8 leading-relaxed px-2"
         >
-          DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
-          de l&apos;Intelligence Artificielle accessibles à tous les Algériens. Apprenez à maîtriser
-          les outils, les méthodes et les compétences qui façonnent déjà le monde de demain.
+          <span className="block md:hidden">
+            DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
+            de l&apos;Intelligence Artificielle accessibles à tous les Algériens.
+          </span>
+          <span className="hidden md:block">
+            DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
+            de l&apos;Intelligence Artificielle accessibles à tous les Algériens. Apprenez à maîtriser
+            les outils, les méthodes et les compétences qui façonnent déjà le monde de demain.
+          </span>
         </motion.p>
 
         <motion.div
