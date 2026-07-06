@@ -3,7 +3,7 @@
 import { AnimatedCounter } from "@/components/shared/AnimatedCounter";
 
 const stats = [
-  { value: 6, label: "modules de formation complète", suffix: "" },
+  { value: 20, label: "formations au programme", suffix: "+" },
   { value: 1200, label: "apprenants inscrits", suffix: "+" },
   { value: 40, label: "heures de contenu vidéo", suffix: "+" },
   { value: 98, label: "taux de satisfaction", suffix: "%" },
