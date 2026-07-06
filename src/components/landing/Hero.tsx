@@ -224,12 +224,12 @@ export function Hero() {
         >
           <Link href="/register" className="w-full sm:w-auto">
             <NebulaButton size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              🎯 Nos offres
+              🚀 Accéder à l&apos;académie →
             </NebulaButton>
           </Link>
           <Link href="#formation" className="w-full sm:w-auto">
             <NebulaButton variant="secondary" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              📚 Nos formations
+              📋 Voir les formations
             </NebulaButton>
           </Link>
         </motion.div>
