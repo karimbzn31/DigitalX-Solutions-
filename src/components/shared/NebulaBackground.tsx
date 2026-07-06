@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useMousePosition } from "@/hooks/useMousePosition";
+import { useScrollY } from "@/hooks/useScrollProgress";
 
 /* ------------------------------------------------------------------ */
 /*  Masses floues (nébuleuses)                                        */
@@ -33,20 +34,21 @@ const MASSES: Mass[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Canvas  —  particules + constellations + shooting stars           */
+/*  Canvas                                                            */
 /* ------------------------------------------------------------------ */
 interface Star {
-  x: number; y: number; size: number; alpha: number; phase: number;
-  speed: number; twinkleSpeed: number;
+  x: number; y: number; ox: number; oy: number;
+  size: number; alpha: number; phase: number;
+  speed: number;
 }
 
 interface ShootingStar {
   x: number; y: number; vx: number; vy: number; life: number;
-  maxLife: number; tail: number;
+  maxLife: number;
 }
 
-interface ParticleConnection {
-  from: number; to: number; distance: number;
+interface TouchRipple {
+  x: number; y: number; radius: number; alpha: number;
 }
 
 function useNebulaCanvas(
@@ -55,11 +57,14 @@ function useNebulaCanvas(
   isVisible: boolean,
   mouseX: number,
   mouseY: number,
+  scrollY: number,
   intensity: number,
 ) {
   const starsRef = useRef<Star[]>([]);
   const shootersRef = useRef<ShootingStar[]>([]);
+  const ripplesRef = useRef<TouchRipple[]>([]);
   const animRef = useRef<number>(0);
+  const timeRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -75,18 +80,20 @@ function useNebulaCanvas(
 
     /* ---- stars ---- */
     const initStars = () => {
-      const count = isMobile ? 80 : 200;
+      const count = isMobile ? 150 : 200;
       const w = canvas.width;
       const h = canvas.height;
-      starsRef.current = Array.from({ length: count }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        size: Math.random() * 1.8 + 0.3,
-        alpha: Math.random() * 0.5 + 0.15,
-        phase: Math.random() * Math.PI * 2,
-        speed: 0.0003 + Math.random() * 0.0006,
-        twinkleSpeed: 0.3 + Math.random() * 0.7,
-      }));
+      starsRef.current = Array.from({ length: count }, () => {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        return {
+          x, y, ox: x, oy: y,
+          size: Math.random() * (isMobile ? 2.2 : 1.8) + 0.3,
+          alpha: Math.random() * 0.5 + 0.15,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.0002 + Math.random() * 0.0004,
+        };
+      });
     };
 
     /* ---- shooting stars ---- */
@@ -94,66 +101,83 @@ function useNebulaCanvas(
       const w = canvas.width;
       const h = canvas.height;
       const angle = Math.PI / 4 + Math.random() * Math.PI / 3;
-      const speed = 4 + Math.random() * 6;
-      const startX = Math.random() * w;
-      const startY = Math.random() * h * 0.5;
-      const life = 40 + Math.random() * 60;
+      const speed = (isMobile ? 3 : 4) + Math.random() * (isMobile ? 4 : 6);
       shootersRef.current.push({
-        x: startX, y: startY,
+        x: Math.random() * w,
+        y: Math.random() * h * 0.4,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        life, maxLife: life, tail: 50 + Math.random() * 80,
+        life: 40 + Math.random() * 60,
+        maxLife: 40 + Math.random() * 60,
       });
     };
+
+    /* ---- touch ripple ---- */
+    const handleTouch = (e: TouchEvent) => {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        ripplesRef.current.push({ x: t.clientX, y: t.clientY, radius: 5, alpha: 0.5 });
+      }
+    };
+    window.addEventListener("touchstart", handleTouch, { passive: true });
 
     let lastShooter = 0;
     let running = true;
 
     const draw = (time: number) => {
       if (!running) return;
+      timeRef.current = time;
       const w = canvas.width;
       const h = canvas.height;
-
-      /* parallax offset — léger décalage vers la souris */
-      const px = ((mouseX / w) - 0.5) * intensity * 12;
-      const py = ((mouseY / h) - 0.5) * intensity * 8;
-
       ctx.clearRect(0, 0, w, h);
+
+      /* ---- Mouse offset (desktop) / auto-offset + scroll (mobile) ---- */
+      let px: number, py: number;
+      if (isMobile) {
+        /* Mobile : les étoiles dérivent lentement avec le temps + scroll */
+        const driftX = Math.sin(time * 0.00008) * 20;
+        const driftY = Math.cos(time * 0.00006) * 15;
+        const scrollOffset = (scrollY / Math.max(document.body.scrollHeight, 1)) * 40 - 20;
+        px = driftX;
+        py = driftY + scrollOffset * 0.3;
+      } else {
+        px = ((mouseX / w) - 0.5) * intensity * 16;
+        py = ((mouseY / h) - 0.5) * intensity * 12;
+      }
 
       /* ---- Stars ---- */
       const starCount = starsRef.current.length;
       for (let i = 0; i < starCount; i++) {
         const s = starsRef.current[i];
-        const pulse = Math.sin(time * s.speed + s.phase) * 0.3 + 0.7;
-        const alpha = s.alpha * pulse;
-        const sx = s.x + px * ((s.x / w) - 0.5) * 0.3;
-        const sy = s.y + py * ((s.y / h) - 0.5) * 0.3;
+        const drift = Math.sin(time * s.speed + s.phase) * 0.3 + 0.7;
+        const alpha = s.alpha * drift;
+        const sx = s.ox + px * ((s.ox / w) - 0.5) * 0.4;
+        const sy = s.oy + py * ((s.oy / h) - 0.5) * 0.4;
+        s.x = sx; s.y = sy;
+
         ctx.beginPath();
         ctx.arc(sx, sy, s.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(244, 241, 250, ${alpha})`;
         ctx.fill();
       }
 
-      /* ---- Connections (constellations) ---- */
+      /* ---- Constellations (desktop only) ---- */
       if (!isMobile && starCount > 10) {
         const connectDist = 120;
         for (let i = 0; i < starCount; i++) {
           const a = starsRef.current[i];
-          const ax = a.x + px * ((a.x / w) - 0.5) * 0.3;
-          const ay = a.y + py * ((a.y / h) - 0.5) * 0.3;
-          /* limiter les connexions proches */
           const checkCount = Math.min(i + 8, starCount);
           for (let j = i + 1; j < checkCount; j++) {
             const b = starsRef.current[j];
-            const dx = ax - (b.x + px * ((b.x / w) - 0.5) * 0.3);
-            const dy = ay - (b.y + py * ((b.y / h) - 0.5) * 0.3);
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < connectDist && dist > 10) {
-              const alpha = (1 - dist / connectDist) * 0.12;
+              const ca = (1 - dist / connectDist) * 0.12;
               ctx.beginPath();
-              ctx.moveTo(ax, ay);
+              ctx.moveTo(a.x, a.y);
               ctx.lineTo(b.x, b.y);
-              ctx.strokeStyle = `rgba(124, 92, 255, ${alpha})`;
+              ctx.strokeStyle = `rgba(124, 92, 255, ${ca})`;
               ctx.lineWidth = 0.5;
               ctx.stroke();
             }
@@ -162,9 +186,9 @@ function useNebulaCanvas(
       }
 
       /* ---- Shooting stars ---- */
-      // spawn toutes les ~3s
-      if (time - lastShooter > 2800 + Math.random() * 2000) {
-        if (shootersRef.current.length < 3) spawnShootingStar();
+      const shooterInterval = isMobile ? 2200 : 2800;
+      if (time - lastShooter > shooterInterval + Math.random() * 1500) {
+        if (shootersRef.current.length < (isMobile ? 4 : 3)) spawnShootingStar();
         lastShooter = time;
       }
 
@@ -180,20 +204,18 @@ function useNebulaCanvas(
         }
 
         const lifeRatio = ss.life / ss.maxLife;
-        const alpha = lifeRatio * 0.9;
+        const sa = lifeRatio * 0.9;
 
-        /* tête */
         ctx.beginPath();
         ctx.arc(ss.x, ss.y, 1.2 * lifeRatio + 0.3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${sa})`;
         ctx.fill();
 
-        /* traînée */
         const gradient = ctx.createLinearGradient(
           ss.x, ss.y,
           ss.x - ss.vx * 3, ss.y - ss.vy * 3,
         );
-        gradient.addColorStop(0, `rgba(200, 180, 255, ${alpha * 0.7})`);
+        gradient.addColorStop(0, `rgba(200, 180, 255, ${sa * 0.7})`);
         gradient.addColorStop(1, `rgba(124, 92, 255, 0)`);
         ctx.beginPath();
         ctx.moveTo(ss.x, ss.y);
@@ -203,10 +225,37 @@ function useNebulaCanvas(
         ctx.stroke();
       }
 
-      /* ---- Vignette subtile ---- */
+      /* ---- Touch ripples ---- */
+      for (let i = ripplesRef.current.length - 1; i >= 0; i--) {
+        const r = ripplesRef.current[i];
+        r.radius += 1.2;
+        r.alpha -= 0.012;
+
+        if (r.alpha <= 0) {
+          ripplesRef.current.splice(i, 1);
+          continue;
+        }
+
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(124, 92, 255, ${r.alpha * 0.4})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        /* halo intérieur */
+        const grad = ctx.createRadialGradient(r.x, r.y, 0, r.x, r.y, r.radius);
+        grad.addColorStop(0, `rgba(124, 92, 255, ${r.alpha * 0.05})`);
+        grad.addColorStop(1, `rgba(124, 92, 255, 0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      /* ---- Vignette ---- */
       const vigGrad = ctx.createRadialGradient(w / 2, h / 2, h * 0.4, w / 2, h / 2, h * 0.9);
       vigGrad.addColorStop(0, "rgba(0,0,0,0)");
-      vigGrad.addColorStop(1, "rgba(6,4,13,0.3)");
+      vigGrad.addColorStop(1, `rgba(6,4,13,${isMobile ? 0.2 : 0.3})`);
       ctx.fillStyle = vigGrad;
       ctx.fillRect(0, 0, w, h);
 
@@ -224,24 +273,21 @@ function useNebulaCanvas(
       running = false;
       cancelAnimationFrame(animRef.current);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("touchstart", handleTouch);
     };
-  }, [canvasRef, isMobile, isVisible, mouseX, mouseY, intensity]);
+  }, [canvasRef, isMobile, isVisible, mouseX, mouseY, scrollY, intensity]);
 }
 
 /* ------------------------------------------------------------------ */
 /*  Composant principal                                                */
 /* ------------------------------------------------------------------ */
-interface NebulaBackgroundProps {
-  intensity?: number;
-  className?: string;
-}
-
-export function NebulaBackground({ intensity = 1, className = "" }: NebulaBackgroundProps) {
+export function NebulaBackground({ intensity = 1, className = "" }: { intensity?: number; className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const mouse = useMousePosition();
+  const scrollY = useScrollY();
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -259,7 +305,7 @@ export function NebulaBackground({ intensity = 1, className = "" }: NebulaBackgr
     return () => obs.disconnect();
   }, []);
 
-  useNebulaCanvas(canvasRef, isMobile, isVisible, mouse.x, mouse.y, intensity);
+  useNebulaCanvas(canvasRef, isMobile, isVisible, mouse.x, mouse.y, scrollY, intensity);
 
   return (
     <div
@@ -269,17 +315,21 @@ export function NebulaBackground({ intensity = 1, className = "" }: NebulaBackgr
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
 
-      {/* Masses floues par-dessus le canvas */}
+      {/* Masses floues */}
       {isVisible && (
         <motion.div
           initial={false}
           className="absolute inset-0"
-          style={{
-            transform: `translate(${(mouse.nx - 0.5) * intensity * 8}px, ${(mouse.ny - 0.5) * intensity * 6}px)`,
-            transition: "transform 0.15s ease-out",
-          }}
+          style={
+            isMobile
+              ? {} /* mobile : pas de parallaxe souris */
+              : {
+                  transform: `translate(${(mouse.nx - 0.5) * intensity * 8}px, ${(mouse.ny - 0.5) * intensity * 6}px)`,
+                  transition: "transform 0.15s ease-out",
+                }
+          }
         >
-          {(isMobile ? MASSES.slice(0, 2) : MASSES).map((m) => (
+          {(isMobile ? MASSES.slice(0, 4) : MASSES).map((m) => (
             <motion.div
               key={m.id}
               className="absolute"

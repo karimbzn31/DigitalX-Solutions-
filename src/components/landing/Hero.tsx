@@ -20,10 +20,9 @@ const wordVariants = {
 /* ------------------------------------------------------------------ */
 /*  Grille de fond dynamique                                          */
 /* ------------------------------------------------------------------ */
-function GridBackground({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
+function GridBackground({ mx, my }: { mx: number; my: number }) {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Grille horizontale/verticale */}
       <div
         className="absolute inset-0 opacity-[0.015]"
         style={{
@@ -32,11 +31,10 @@ function GridBackground({ mouseX, mouseY }: { mouseX: number; mouseY: number }) 
             linear-gradient(90deg, rgba(124,92,255,1) 1px, transparent 1px)
           `,
           backgroundSize: "60px 60px",
-          transform: `translate(${(mouseX - 0.5) * -8}px, ${(mouseY - 0.5) * -8}px)`,
+          transform: `translate(${mx * -8}px, ${my * -8}px)`,
           transition: "transform 0.15s ease-out",
         }}
       />
-      {/* Grille plus fine */}
       <div
         className="absolute inset-0 opacity-[0.008]"
         style={{
@@ -45,7 +43,7 @@ function GridBackground({ mouseX, mouseY }: { mouseX: number; mouseY: number }) 
             linear-gradient(90deg, rgba(196,92,255,1) 1px, transparent 1px)
           `,
           backgroundSize: "20px 20px",
-          transform: `translate(${(mouseX - 0.5) * -12}px, ${(mouseY - 0.5) * -12}px)`,
+          transform: `translate(${mx * -12}px, ${my * -12}px)`,
           transition: "transform 0.2s ease-out",
         }}
       />
@@ -54,7 +52,7 @@ function GridBackground({ mouseX, mouseY }: { mouseX: number; mouseY: number }) 
 }
 
 /* ------------------------------------------------------------------ */
-/*  Scan lines subtiles                                                */
+/*  Scan lines                                                         */
 /* ------------------------------------------------------------------ */
 function ScanLines() {
   return (
@@ -69,43 +67,62 @@ function ScanLines() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Effet spotlight qui suit la souris                                 */
+/*  Spotlight (auto sur mobile, souris sur desktop)                    */
 /* ------------------------------------------------------------------ */
-function Spotlight({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
+function Spotlight({ isMobile }: { isMobile: boolean }) {
+  const timeRef = useRef(0);
+  const [pos, setPos] = useState({ x: 0.5, y: 0.5 });
+
+  useEffect(() => {
+    if (!isMobile) return;
+    let raf: number;
+    const animate = (time: number) => {
+      timeRef.current = time * 0.0001;
+      const x = 0.3 + Math.sin(timeRef.current * 0.6) * 0.4;
+      const y = 0.3 + Math.cos(timeRef.current * 0.4) * 0.4;
+      setPos({ x, y });
+      raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [isMobile]);
+
   return (
     <div
       className="absolute inset-0 pointer-events-none"
       style={{
-        background: `radial-gradient(600px circle at ${mouseX * 100}% ${mouseY * 100}%, rgba(124,92,255,0.06), transparent 60%)`,
-        transition: "background 0.2s ease-out",
+        background: `radial-gradient(${isMobile ? 300 : 600}px circle at ${pos.x * 100}% ${pos.y * 100}%, rgba(124,92,255,0.08), transparent 60%)`,
+        transition: isMobile ? "none" : "background 0.2s ease-out",
       }}
     />
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Particules flottantes au-dessus du Hero                            */
+/*  Particules flottantes                                              */
 /* ------------------------------------------------------------------ */
-function FloatingParticles() {
+function FloatingParticles({ isMobile }: { isMobile: boolean }) {
+  const count = isMobile ? 8 : 6;
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {Array.from({ length: 6 }).map((_, i) => (
+      {Array.from({ length: count }).map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-1 h-1 rounded-full bg-violet/20"
           style={{
-            left: `${15 + i * 14}%`,
-            top: `${20 + (i % 3) * 25}%`,
+            left: `${10 + i * 11}%`,
+            top: `${15 + (i % 3) * 28}%`,
           }}
           animate={{
             y: [0, -20 - i * 5, 0],
-            opacity: [0.2, 0.6, 0.2],
+            opacity: [0.15, 0.5, 0.15],
+            scale: [1, 1.4, 1],
           }}
           transition={{
             duration: 4 + i * 0.8,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: i * 0.7,
+            delay: i * 0.6,
           }}
         />
       ))}
@@ -114,21 +131,32 @@ function FloatingParticles() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Hero principal                                                     */
+/*  Hero                                                               */
 /* ------------------------------------------------------------------ */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+
+    /* Desktop mouse tracking */
     const handler = (e: MouseEvent) => {
       setMouse({
         x: e.clientX / window.innerWidth,
         y: e.clientY / window.innerHeight,
       });
     };
+    /* Mobile : la grille reste fixe ou scroll-reactive */
     window.addEventListener("mousemove", handler, { passive: true });
-    return () => window.removeEventListener("mousemove", handler);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("mousemove", handler);
+    };
   }, []);
 
   return (
@@ -136,12 +164,15 @@ export function Hero() {
       ref={sectionRef}
       className="relative min-h-svh flex flex-col items-center justify-center overflow-hidden pt-20 md:pt-24"
     >
-      {/* --- Calques de fond --- */}
+      {/* Calques */}
       <div className="absolute inset-0 bg-gradient-to-b from-violet/[0.04] via-transparent to-transparent pointer-events-none" />
-      <GridBackground mouseX={mouse.x} mouseY={mouse.y} />
+      <GridBackground
+        mx={isMobile ? 0 : (mouse.x - 0.5) * 100}
+        my={isMobile ? 0 : (mouse.y - 0.5) * 100}
+      />
       <ScanLines />
-      <Spotlight mouseX={mouse.x} mouseY={mouse.y} />
-      <FloatingParticles />
+      <Spotlight isMobile={isMobile} />
+      <FloatingParticles isMobile={isMobile} />
 
       {/* Contenu */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 py-12 md:py-24">
