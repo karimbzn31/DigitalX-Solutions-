@@ -56,34 +56,10 @@ export function ModuleZero() {
           </p>
         </motion.div>
 
-        {/* Bloc 2 — Terminal */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-3xl mx-auto mb-20"
-        >
-          <div className="nebula-glass rounded-[0.75rem] overflow-hidden shadow-2xl shadow-violet/10">
-            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 md:py-3 bg-surface border-b border-white/5">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500/80" />
-                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-yellow-500/80" />
-                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-500/80" />
-              </div>
-              <span className="text-[10px] md:text-xs text-mist ml-2">terminal — vibe-coding</span>
-            </div>
-            <div className="p-3 md:p-5 font-mono text-[11px] md:text-sm leading-relaxed space-y-1.5 md:space-y-2 bg-surface/30">
-              <p><span className="text-violet">$</span> <span className="text-star-white">dx init agent-ia</span></p>
-              <p className="text-mist">{">"} Création de l&apos;environnement de développement...</p>
-              <p><span className="text-emerald-400">✓</span> <span className="text-emerald-400/90">Projet initialisé avec Next.js 14</span></p>
-              <p><span className="text-violet">$</span> <span className="text-star-white">npm run dev</span></p>
-              <p className="text-mist">{">"} Démarrage du serveur de développement...</p>
-              <p className="text-cyan-soft">{">"} ready - started server on http://localhost:3000</p>
-              <p className="text-mist animate-pulse">▌</p>
-            </div>
-          </div>
-        </motion.div>
+        {/* Séparateur visuel */}
+        <div className="max-w-3xl mx-auto mb-20">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+        </div>
 
         {/* Bloc 3 — Pourquoi nous */}
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">

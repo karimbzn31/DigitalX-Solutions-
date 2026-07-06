@@ -224,12 +224,12 @@ export function Hero() {
         >
           <Link href="/register" className="w-full sm:w-auto">
             <NebulaButton size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              🚀 Accéder à l&apos;académie →
+              🎯 Nos offres
             </NebulaButton>
           </Link>
           <Link href="#formation" className="w-full sm:w-auto">
             <NebulaButton variant="secondary" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              📋 Voir les formations
+              📚 Nos formations
             </NebulaButton>
           </Link>
         </motion.div>
@@ -255,31 +255,31 @@ export function Hero() {
           </span>
         </motion.div>
 
-        {/* Terminal */}
+        {/* Bloc de confiance premium */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1 }}
+          transition={{ duration: 0.7, delay: 1 }}
           className="w-full max-w-4xl mx-auto mt-12 md:mt-20 px-2 sm:px-0"
         >
-          <div className="nebula-glass rounded-[0.75rem] overflow-hidden">
-            <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 md:py-3 bg-surface border-b border-white/5">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500/80" />
-                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-yellow-500/80" />
-                <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-500/80" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-px rounded-xl overflow-hidden border border-white/[0.06] bg-white/[0.04]">
+            {[
+              { value: "6", label: "Modules", icon: "📚" },
+              { value: "1 200+", label: "Apprenants", icon: "👥" },
+              { value: "40h+", label: "Contenu vidéo", icon: "🎬" },
+              { value: "98%", label: "Satisfaction", icon: "⭐" },
+            ].map((stat, i) => (
+              <div
+                key={stat.label}
+                className="relative bg-void/80 backdrop-blur-sm p-5 md:p-6 text-center group hover:bg-violet/[0.03] transition-colors duration-300"
+              >
+                <span className="text-xl md:text-2xl mb-2 block">{stat.icon}</span>
+                <p className="font-display text-xl md:text-2xl font-bold text-star-white mb-0.5">
+                  {stat.value}
+                </p>
+                <p className="text-xs text-mist/70">{stat.label}</p>
               </div>
-              <span className="text-[10px] md:text-xs text-mist ml-2">terminal — vibe-coding</span>
-            </div>
-            <div className="p-3 md:p-5 font-mono text-[11px] md:text-sm leading-relaxed space-y-1.5 md:space-y-2 bg-surface/30">
-              <p><span className="text-violet">$</span> <span className="text-star-white">dx init agent-ia</span></p>
-              <p className="text-mist">{">"} Création de l&apos;environnement de développement...</p>
-              <p><span className="text-emerald-400">✓</span> <span className="text-emerald-400/90">Projet initialisé avec Next.js 14</span></p>
-              <p><span className="text-violet">$</span> <span className="text-star-white">npm run dev</span></p>
-              <p className="text-mist">{">"} Démarrage du serveur de développement...</p>
-              <p className="text-cyan-soft">{">"} ready - started server on http://localhost:3000</p>
-              <p className="text-mist animate-pulse">▌</p>
-            </div>
+            ))}
           </div>
         </motion.div>
       </div>
