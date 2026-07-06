@@ -67,63 +67,60 @@ function ScanLines() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Spotlight (auto sur mobile, souris sur desktop)                    */
+/*  Spotlight — CSS-only sur mobile, JS sur desktop                    */
 /* ------------------------------------------------------------------ */
 function Spotlight({ isMobile }: { isMobile: boolean }) {
-  const timeRef = useRef(0);
+  /* Desktop : tracking souris */
   const [pos, setPos] = useState({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
-    if (!isMobile) return;
-    let raf: number;
-    const animate = (time: number) => {
-      timeRef.current = time * 0.0001;
-      const x = 0.3 + Math.sin(timeRef.current * 0.6) * 0.4;
-      const y = 0.3 + Math.cos(timeRef.current * 0.4) * 0.4;
-      setPos({ x, y });
-      raf = requestAnimationFrame(animate);
+    if (isMobile) return; /* mobile : pas de JS */
+    const handler = (e: MouseEvent) => {
+      setPos({
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
+      });
     };
-    raf = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(raf);
+    window.addEventListener("mousemove", handler, { passive: true });
+    return () => window.removeEventListener("mousemove", handler);
   }, [isMobile]);
+
+  if (isMobile) {
+    /* CSS animation pure — 0 JS, 0 paint loop */
+    return (
+      <div
+        className="absolute inset-0 pointer-events-none spotlight-mobile"
+        style={{
+          background: "radial-gradient(300px circle at 50% 50%, rgba(124,92,255,0.08), transparent 60%)",
+        }}
+      />
+    );
+  }
 
   return (
     <div
       className="absolute inset-0 pointer-events-none"
       style={{
-        background: `radial-gradient(${isMobile ? 300 : 600}px circle at ${pos.x * 100}% ${pos.y * 100}%, rgba(124,92,255,0.08), transparent 60%)`,
-        transition: isMobile ? "none" : "background 0.2s ease-out",
+        background: `radial-gradient(600px circle at ${pos.x * 100}% ${pos.y * 100}%, rgba(124,92,255,0.06), transparent 60%)`,
+        transition: "background 0.2s ease-out",
       }}
     />
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Particules flottantes                                              */
+/*  Particules flottantes (desktop only)                               */
 /* ------------------------------------------------------------------ */
-function FloatingParticles({ isMobile }: { isMobile: boolean }) {
-  const count = isMobile ? 8 : 6;
+function FloatingParticles() {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {Array.from({ length: count }).map((_, i) => (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
+      {Array.from({ length: 6 }).map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-1 h-1 rounded-full bg-violet/20"
-          style={{
-            left: `${10 + i * 11}%`,
-            top: `${15 + (i % 3) * 28}%`,
-          }}
-          animate={{
-            y: [0, -20 - i * 5, 0],
-            opacity: [0.15, 0.5, 0.15],
-            scale: [1, 1.4, 1],
-          }}
-          transition={{
-            duration: 4 + i * 0.8,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: i * 0.6,
-          }}
+          style={{ left: `${15 + i * 14}%`, top: `${20 + (i % 3) * 25}%` }}
+          animate={{ y: [0, -20 - i * 5, 0], opacity: [0.2, 0.6, 0.2], scale: [1, 1.4, 1] }}
+          transition={{ duration: 4 + i * 0.8, repeat: Infinity, ease: "easeInOut", delay: i * 0.7 }}
         />
       ))}
     </div>
@@ -143,14 +140,12 @@ export function Hero() {
     const onResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", onResize);
 
-    /* Desktop mouse tracking */
     const handler = (e: MouseEvent) => {
       setMouse({
         x: e.clientX / window.innerWidth,
         y: e.clientY / window.innerHeight,
       });
     };
-    /* Mobile : la grille reste fixe ou scroll-reactive */
     window.addEventListener("mousemove", handler, { passive: true });
 
     return () => {
@@ -159,20 +154,19 @@ export function Hero() {
     };
   }, []);
 
+  const mx = isMobile ? 0 : (mouse.x - 0.5) * 100;
+  const my = isMobile ? 0 : (mouse.y - 0.5) * 100;
+
   return (
     <section
       ref={sectionRef}
       className="relative min-h-svh flex flex-col items-center justify-center overflow-hidden pt-20 md:pt-24"
     >
-      {/* Calques */}
       <div className="absolute inset-0 bg-gradient-to-b from-violet/[0.04] via-transparent to-transparent pointer-events-none" />
-      <GridBackground
-        mx={isMobile ? 0 : (mouse.x - 0.5) * 100}
-        my={isMobile ? 0 : (mouse.y - 0.5) * 100}
-      />
+      <GridBackground mx={mx} my={my} />
       <ScanLines />
       <Spotlight isMobile={isMobile} />
-      <FloatingParticles isMobile={isMobile} />
+      <FloatingParticles />
 
       {/* Contenu */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 py-12 md:py-24">
@@ -196,11 +190,7 @@ export function Hero() {
               variants={wordVariants}
               className="block text-star-white"
             >
-              {i === 2 ? (
-                <span className="text-gradient">{word}</span>
-              ) : (
-                word
-              )}
+              {i === 2 ? <span className="text-gradient">{word}</span> : word}
             </motion.span>
           ))}
         </h1>
@@ -212,8 +202,7 @@ export function Hero() {
           className="text-sm sm:text-base md:text-lg text-mist text-center max-w-3xl mt-4 md:mt-8 leading-relaxed px-2"
         >
           DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
-          de l&apos;Intelligence Artificielle accessibles à tous les Algériens. Apprenez à maîtriser
-          les outils, les méthodes et les compétences qui façonnent déjà le monde de demain.
+          de l&apos;Intelligence Artificielle accessibles à tous les Algériens.
         </motion.p>
 
         <motion.div
@@ -242,10 +231,7 @@ export function Hero() {
         >
           <div className="flex -space-x-2">
             {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-violet/30 bg-surface flex items-center justify-center text-[10px] md:text-xs text-violet"
-              >
+              <div key={i} className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-violet/30 bg-surface flex items-center justify-center text-[10px] md:text-xs text-violet">
                 {String.fromCharCode(65 + i)}
               </div>
             ))}

@@ -198,6 +198,74 @@
   100% { filter: hue-rotate(360deg); }
 }
 
+/* ---- Étoiles filantes CSS (mobile) ---- */
+.shooting-star-css {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: css-shoot 3.5s ease-in infinite;
+  opacity: 0;
+}
+.shooting-star-css::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(to left, rgba(124,92,255,0.4), transparent);
+  transform: translateY(-50%);
+}
+
+@keyframes css-shoot {
+  0% { transform: translate(0, 0); opacity: 0; }
+  5% { opacity: 1; }
+  60% { opacity: 1; }
+  100% { transform: translate(120px, 120px); opacity: 0; }
+}
+
+/* ---- Spotlight mobile (animé en CSS uniquement) ---- */
+.spotlight-mobile {
+  animation: spotlight-drift 8s ease-in-out infinite alternate;
+}
+
+@keyframes spotlight-drift {
+  0% { transform: translate(-5%, -5%); }
+  25% { transform: translate(5%, -3%); }
+  50% { transform: translate(3%, 5%); }
+  75% { transform: translate(-3%, 2%); }
+  100% { transform: translate(-5%, -5%); }
+}
+
+/* ---- Mobile optimizations ---- */
+@media (max-width: 767px) {
+  /* Désactiver backdrop-filter sur mobile = 10× plus rapide */
+  .nebula-glass,
+  .nebula-card {
+    background: rgba(17, 13, 31, 0.85) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .nebula-glow,
+  .nebula-glow-strong {
+    animation: none !important;
+    box-shadow: 0 0 8px rgba(124,92,255,0.15) !important;
+  }
+
+  .nebula-border-glow::before {
+    animation: none !important;
+  }
+
+  /* Réduire les animations des sections pour un scroll 60fps */
+  section[id] {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
+  }
+}
+
 section[id] {
   content-visibility: auto;
   contain-intrinsic-size: 1px 500px;

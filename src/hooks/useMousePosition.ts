@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, type RefObject } from "react";
+import { useState, useEffect, type RefObject } from "react";
 
 interface MousePosition {
   x: number;
