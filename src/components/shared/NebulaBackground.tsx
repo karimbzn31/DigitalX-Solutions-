@@ -80,7 +80,7 @@ function useNebulaCanvas(
 
     /* ---- stars ---- */
     const initStars = () => {
-      const count = isMobile ? 150 : 200;
+      const count = isMobile ? 60 : 200;
       const w = canvas.width;
       const h = canvas.height;
       starsRef.current = Array.from({ length: count }, () => {
@@ -88,8 +88,8 @@ function useNebulaCanvas(
         const y = Math.random() * h;
         return {
           x, y, ox: x, oy: y,
-          size: Math.random() * (isMobile ? 2.2 : 1.8) + 0.3,
-          alpha: Math.random() * 0.5 + 0.15,
+          size: Math.random() * (isMobile ? 1.2 : 1.8) + 0.2,
+          alpha: Math.random() * (isMobile ? 0.3 : 0.5) + 0.08,
           phase: Math.random() * Math.PI * 2,
           speed: 0.0002 + Math.random() * 0.0004,
         };
