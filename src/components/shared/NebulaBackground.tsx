@@ -134,12 +134,12 @@ function useNebulaCanvas(
       /* ---- Mouse offset (desktop) / auto-offset + scroll (mobile) ---- */
       let px: number, py: number;
       if (isMobile) {
-        /* Mobile : les étoiles dérivent lentement avec le temps + scroll */
-        const driftX = Math.sin(time * 0.00008) * 20;
-        const driftY = Math.cos(time * 0.00006) * 15;
+        /* Mobile : les étoiles dérivent très légèrement — presque immobiles */
+        const driftX = Math.sin(time * 0.00004) * 4;
+        const driftY = Math.cos(time * 0.00003) * 3;
         const scrollOffset = (scrollY / Math.max(document.body.scrollHeight, 1)) * 40 - 20;
         px = driftX;
-        py = driftY + scrollOffset * 0.3;
+        py = driftY + scrollOffset * 0.04;
       } else {
         px = ((mouseX / w) - 0.5) * intensity * 16;
         py = ((mouseY / h) - 0.5) * intensity * 12;
@@ -344,9 +344,9 @@ export function NebulaBackground({ intensity = 1, className = "" }: { intensity?
                 filter: `blur(${isMobile ? 40 : 60}px)`,
               }}
               animate={{
-                x: [0, m.xMove, 0],
-                y: [0, m.yMove, 0],
-                scale: [1, 1.04, 1],
+                x: isMobile ? [0, m.xMove * 0.2, 0] : [0, m.xMove, 0],
+                y: isMobile ? [0, m.yMove * 0.2, 0] : [0, m.yMove, 0],
+                scale: [1, isMobile ? 1.02 : 1.04, 1],
               }}
               transition={{
                 duration: m.dur,
