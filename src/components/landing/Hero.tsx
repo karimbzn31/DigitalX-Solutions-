@@ -262,22 +262,19 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 1 }}
           className="w-full max-w-3xl mx-auto mt-12 md:mt-20 px-2 sm:px-0"
         >
-          <p className="text-[10px] md:text-xs text-mist/40 text-center mb-4 tracking-widest uppercase">
-            {/* Technologies et outils maîtrisés */}
-          </p>
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:gap-x-10 md:gap-y-4">
             {[
-              { icon: "⚡", label: "DeepSeek", small: "IA" },
-              { icon: "🤖", label: "Claude", small: "Code" },
+              { icon: "🤖", label: "Claude Code", small: "IA" },
+              { icon: "⚡", label: "Vibe Coding", small: "Cursor / Windsurf" },
               { icon: "⚙️", label: "n8n", small: "Automation" },
-              { icon: "📱", label: "Instagram", small: "API" },
-              { icon: "💬", label: "WhatsApp", small: "Bot" },
-              { icon: "🌐", label: "Next.js", small: "Web" },
-              { icon: "☁️", label: "Docker", small: "DevOps" },
+              { icon: "🧠", label: "DeepSeek", small: "IA Générative" },
+              { icon: "🚀", label: "Full Stack SaaS", small: "Next.js / Supabase" },
+              { icon: "🛠️", label: "Agents IA", small: "Autonomes" },
+              { icon: "📱", label: "Automation", small: "WhatsApp / Instagram" },
             ].map((tech) => (
               <div
                 key={tech.label}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06]"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06] hover:bg-violet/[0.05] hover:border-violet/20 transition-all duration-200"
               >
                 <span className="text-sm">{tech.icon}</span>
                 <div className="flex items-baseline gap-1">
@@ -288,7 +285,7 @@ export function Hero() {
             ))}
           </div>
           <p className="text-[10px] md:text-xs text-mist/30 text-center mt-5">
-            + 30 autres outils, frameworks et APIs au programme
+            + 30 autres outils et technologies au programme
           </p>
         </motion.div>
       </div>
