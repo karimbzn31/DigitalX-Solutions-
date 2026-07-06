@@ -169,7 +169,7 @@ export function Hero() {
       <FloatingParticles />
 
       {/* Contenu */}
-      <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 py-8 md:py-24">
+      <div className="relative z-10 flex flex-col items-center justify-center w-full px-4 py-12 md:py-24">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -180,7 +180,7 @@ export function Hero() {
           </NebulaBadge>
         </motion.div>
 
-        <h1 className="font-display text-5xl sm:text-5xl md:text-7xl xl:text-8xl font-bold tracking-tight leading-[0.92] text-center max-w-5xl">
+        <h1 className="font-display text-4xl sm:text-5xl md:text-7xl xl:text-8xl font-bold tracking-tight leading-[0.95] text-center max-w-5xl">
           {words.map((word, i) => (
             <motion.span
               key={word}
@@ -190,29 +190,24 @@ export function Hero() {
               variants={wordVariants}
               className="block text-star-white"
             >
-              {i === 2 ? <span className="text-gradient">{word}</span> : word}
+              {i === 2 ? (
+                <span className="text-gradient">{word}</span>
+              ) : (
+                word
+              )}
             </motion.span>
           ))}
         </h1>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex items-center justify-center gap-3 mt-6 md:mt-8"
-        >
-          <span className="h-px w-8 bg-gradient-to-r from-transparent to-violet/40" />
-          <span className="h-px w-8 bg-gradient-to-l from-transparent to-violet/40" />
-        </motion.div>
-
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.45 }}
-          className="text-sm md:text-base lg:text-lg text-mist/80 text-center max-w-xl mt-3 md:mt-6 leading-relaxed px-4"
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="text-sm sm:text-base md:text-lg text-mist text-center max-w-3xl mt-4 md:mt-8 leading-relaxed px-2"
         >
-          <span className="text-violet/60 font-medium">DigitalX Solutions Academy</span>
-          {" — rendez les technologies de l'IA accessibles à tous les Algériens."}
+          DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
+          de l&apos;Intelligence Artificielle accessibles à tous les Algériens. Apprenez à maîtriser
+          les outils, les méthodes et les compétences qui façonnent déjà le monde de demain.
         </motion.p>
 
         <motion.div
@@ -222,12 +217,12 @@ export function Hero() {
           className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-6 md:mt-10 w-full sm:w-auto px-4 sm:px-0"
         >
           <Link href="/register" className="w-full sm:w-auto">
-            <NebulaButton size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 text-sm md:text-base font-semibold tracking-wide">
+            <NebulaButton size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
               🚀 Accéder à l&apos;académie →
             </NebulaButton>
           </Link>
           <Link href="#formation" className="w-full sm:w-auto">
-            <NebulaButton variant="secondary" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 text-sm md:text-base font-medium">
+            <NebulaButton variant="secondary" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
               📋 Voir les formations
             </NebulaButton>
           </Link>
@@ -237,17 +232,20 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-6 md:mt-8 text-xs md:text-sm text-mist"
+          className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 mt-6 md:mt-8 text-xs md:text-sm text-mist"
         >
           <div className="flex -space-x-2">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="w-8 h-8 md:w-8 md:h-8 rounded-full border border-violet/30 bg-surface flex items-center justify-center text-xs md:text-xs text-violet font-medium">
+              <div
+                key={i}
+                className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-violet/30 bg-surface flex items-center justify-center text-[10px] md:text-xs text-violet"
+              >
                 {String.fromCharCode(65 + i)}
               </div>
             ))}
           </div>
           <span className="text-center sm:text-left">
-            ★★★★★ <strong className="text-star-white">1 200+ apprenants</strong>
+            ★★★★★ <strong className="text-star-white">1 200+ apprenants</strong> · Algérie & international
           </span>
         </motion.div>
 
