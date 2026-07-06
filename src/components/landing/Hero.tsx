@@ -255,32 +255,41 @@ export function Hero() {
           </span>
         </motion.div>
 
-        {/* Bloc de confiance premium */}
+        {/* Bloc technologies enseignées */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 1 }}
-          className="w-full max-w-4xl mx-auto mt-12 md:mt-20 px-2 sm:px-0"
+          className="w-full max-w-3xl mx-auto mt-12 md:mt-20 px-2 sm:px-0"
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px rounded-xl overflow-hidden border border-white/[0.06] bg-white/[0.04]">
+          <p className="text-[10px] md:text-xs text-mist/40 text-center mb-4 tracking-widest uppercase">
+            {/* Technologies et outils maîtrisés */}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:gap-x-10 md:gap-y-4">
             {[
-              { value: "6", label: "Modules", icon: "📚" },
-              { value: "1 200+", label: "Apprenants", icon: "👥" },
-              { value: "40h+", label: "Contenu vidéo", icon: "🎬" },
-              { value: "98%", label: "Satisfaction", icon: "⭐" },
-            ].map((stat, i) => (
+              { icon: "⚡", label: "DeepSeek", small: "IA" },
+              { icon: "🤖", label: "Claude", small: "Code" },
+              { icon: "⚙️", label: "n8n", small: "Automation" },
+              { icon: "📱", label: "Instagram", small: "API" },
+              { icon: "💬", label: "WhatsApp", small: "Bot" },
+              { icon: "🌐", label: "Next.js", small: "Web" },
+              { icon: "☁️", label: "Docker", small: "DevOps" },
+            ].map((tech) => (
               <div
-                key={stat.label}
-                className="relative bg-void/80 backdrop-blur-sm p-5 md:p-6 text-center group hover:bg-violet/[0.03] transition-colors duration-300"
+                key={tech.label}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06]"
               >
-                <span className="text-xl md:text-2xl mb-2 block">{stat.icon}</span>
-                <p className="font-display text-xl md:text-2xl font-bold text-star-white mb-0.5">
-                  {stat.value}
-                </p>
-                <p className="text-xs text-mist/70">{stat.label}</p>
+                <span className="text-sm">{tech.icon}</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xs font-medium text-star-white">{tech.label}</span>
+                  <span className="text-[9px] text-mist/50 hidden sm:inline">{tech.small}</span>
+                </div>
               </div>
             ))}
           </div>
+          <p className="text-[10px] md:text-xs text-mist/30 text-center mt-5">
+            + 30 autres outils, frameworks et APIs au programme
+          </p>
         </motion.div>
       </div>
     </section>
