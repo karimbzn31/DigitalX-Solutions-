@@ -39,7 +39,7 @@ export function AdminSidebar() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    router.push("/login");
+    router.push("/");
   };
 
   return (
