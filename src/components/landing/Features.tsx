@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Zap, Rocket, Bot, RefreshCw, Users } from "lucide-react";
 import { SectionHeader } from "@/components/shared/SectionHeader";
@@ -24,6 +25,18 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
+function FeatureCard({ icon: Icon, title, desc }: { icon: React.ElementType; title: string; desc: string }) {
+  return (
+    <MagneticCard className="p-6 h-full">
+      <div className="w-10 h-10 bg-gradient-to-br from-violet/10 to-magenta/10 rounded-lg flex items-center justify-center mb-4 border border-violet/10 transition-colors">
+        <Icon className="w-5 h-5 text-violet" />
+      </div>
+      <h3 className="font-display text-lg font-semibold text-star-white mb-2 tracking-tight">{title}</h3>
+      <p className="text-sm text-mist leading-relaxed">{desc}</p>
+    </MagneticCard>
+  );
+}
+
 export function Features() {
   return (
     <section id="formation" className="py-24 lg:py-32">
@@ -34,6 +47,7 @@ export function Features() {
           subtitle="Pas de théorie superflue. Chaque module vous amène à produire quelque chose de réel."
         />
 
+        {/* Desktop: grille */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -41,41 +55,24 @@ export function Features() {
           viewport={{ once: true, margin: "-80px" }}
           className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
-          {features.map((f, i) => {
-            const Icon = f.icon;
-            return (
-              <motion.div
-                key={f.title}
-                variants={itemVariants}
-                className={i === 0 ? "lg:col-span-2 lg:row-span-1" : ""}
-              >
-                <MagneticCard className="p-6 h-full">
-                  <div className="w-10 h-10 bg-gradient-to-br from-violet/10 to-magenta/10 rounded-lg flex items-center justify-center mb-4 border border-violet/10 transition-colors">
-                    <Icon className="w-5 h-5 text-violet" />
-                  </div>
-                  <h3 className="font-display text-lg font-semibold text-star-white mb-2 tracking-tight">{f.title}</h3>
-                  <p className="text-sm text-mist leading-relaxed">{f.desc}</p>
-                </MagneticCard>
-              </motion.div>
-            );
-          })}
+          {features.map((f, i) => (
+            <motion.div
+              key={f.title}
+              variants={itemVariants}
+              className={i === 0 ? "lg:col-span-2 lg:row-span-1" : ""}
+            >
+              <FeatureCard icon={f.icon} title={f.title} desc={f.desc} />
+            </motion.div>
+          ))}
         </motion.div>
 
+        {/* Mobile: scroll horizontal */}
         <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 scrollbar-none mt-4">
-          {features.map((f) => {
-            const Icon = f.icon;
-            return (
-              <div key={f.title} className="snap-start shrink-0 w-[80vw]">
-                <MagneticCard className="p-6 h-full">
-                  <div className="w-10 h-10 bg-gradient-to-br from-violet/10 to-magenta/10 rounded-lg flex items-center justify-center mb-4 border border-violet/10 transition-colors">
-                    <Icon className="w-5 h-5 text-violet" />
-                  </div>
-                  <h3 className="font-display text-lg font-semibold text-star-white mb-2 tracking-tight">{f.title}</h3>
-                  <p className="text-sm text-mist leading-relaxed">{f.desc}</p>
-                </MagneticCard>
-              </div>
-            );
-          })}
+          {features.map((f) => (
+            <div key={f.title} className="snap-start shrink-0 w-[80vw]">
+              <FeatureCard icon={f.icon} title={f.title} desc={f.desc} />
+            </div>
+          ))}
         </div>
       </div>
     </section>

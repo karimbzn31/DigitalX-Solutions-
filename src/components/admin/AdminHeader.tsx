@@ -33,7 +33,7 @@ export function AdminHeader() {
             className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-violet hover:bg-violet/80 text-white text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
-            <span>Créer un compte</span>
+            <span>Gérer les étudiants</span>
           </Link>
 
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-violet to-magenta">

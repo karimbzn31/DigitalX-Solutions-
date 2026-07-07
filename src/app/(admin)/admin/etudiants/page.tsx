@@ -2,9 +2,12 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Search, SlidersHorizontal, ChevronDown, Eye, Ban, Trash2, X, Calendar, Clock, ShieldAlert, CheckCircle, XCircle, BookOpen, Video, Timer } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronDown, Eye, Ban, Trash2, X, Calendar, Clock, ShieldAlert, CheckCircle, XCircle, BookOpen, Video, Timer, ChevronLeft, ChevronRight } from "lucide-react";
 import { NebulaCard } from "@/components/shared/NebulaCard";
+import { Modal } from "@/components/shared/Modal";
 import { cn } from "@/lib/utils";
+
+const PAGE_SIZE = 20;
 
 interface StudentData {
   id: string;
@@ -47,7 +50,7 @@ const statusStyles: Record<string, string> = {
 const statusLabels: Record<string, string> = {
   active: "Actif",
   pending: "En attente",
-  blocked: "Bloqu\u00e9",
+  blocked: "Bloqué",
 };
 
 export default function AdminEtudiantsPage() {
@@ -62,6 +65,7 @@ export default function AdminEtudiantsPage() {
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     fetch("/api/admin/students")
@@ -121,6 +125,12 @@ export default function AdminEtudiantsPage() {
     return list;
   }, [students, search, statusFilter, sortField, sortDir]);
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paged = useMemo(() => filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE), [filtered, page]);
+
+  // Reset to page 0 when filters change
+  useEffect(() => setPage(0), [search, statusFilter, sortField, sortDir]);
+
   const SortIcon = ({ field }: { field: SortField }) => (
     <ChevronDown className={cn("w-3 h-3 transition-transform", sortField === field && (sortDir === "desc" ? "rotate-180" : ""), sortField !== field && "opacity-30")} />
   );
@@ -131,10 +141,11 @@ export default function AdminEtudiantsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Etudiants</h1>
-          <p className="text-white/50 text-sm mt-1">{students.length} inscrits</p>
+          <h1 className="text-2xl font-bold text-white">Étudiants</h1>
+          <p className="text-white/50 text-sm mt-1">{students.length} inscrits (dont {filtered.length} filtrés)</p>
         </div>
         <button onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:border-cyan-soft/30 transition-colors text-sm">
           <SlidersHorizontal className="w-4 h-4" />
@@ -142,6 +153,7 @@ export default function AdminEtudiantsPage() {
         </button>
       </div>
 
+      {/* Filters panel */}
       <AnimatePresence>
         {showFilters && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
@@ -164,13 +176,14 @@ export default function AdminEtudiantsPage() {
         )}
       </AnimatePresence>
 
+      {/* Table */}
       <NebulaCard className="overflow-hidden p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/5">
                 {[
-                  { key: "name" as SortField, label: "Etudiant" },
+                  { key: "name" as SortField, label: "Étudiant" },
                   { key: "created_at" as SortField, label: "Inscription" },
                   { key: "total_progress" as SortField, label: "Progression" },
                   { key: "updated_at" as SortField, label: "Dernière activité" },
@@ -184,7 +197,7 @@ export default function AdminEtudiantsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((student) => (
+              {paged.map((student) => (
                 <tr key={student.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
@@ -225,70 +238,121 @@ export default function AdminEtudiantsPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-white/5">
+            <span className="text-xs text-white/40">
+              {(page * PAGE_SIZE) + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} / {filtered.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="p-1.5 rounded-lg hover:bg-white/5 text-white/40 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              {Array.from({ length: Math.min(totalPages, 7) }).map((_, i) => {
+                // Show pages around current
+                const start = Math.max(0, Math.min(page - 3, totalPages - 7));
+                const pageNum = start + i;
+                if (pageNum >= totalPages) return null;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={cn(
+                      "w-7 h-7 rounded-lg text-xs transition-colors",
+                      pageNum === page ? "bg-violet text-white" : "text-white/40 hover:text-white hover:bg-white/5"
+                    )}
+                  >
+                    {pageNum + 1}
+                  </button>
+                );
+              })}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                className="p-1.5 rounded-lg hover:bg-white/5 text-white/40 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {filtered.length === 0 && <div className="text-center py-12 text-white/30 text-sm">Aucun étudiant trouvé</div>}
       </NebulaCard>
 
       {/* View Modal */}
-      <AnimatePresence>{showViewModal && selectedStudent && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowViewModal(false)}>
-          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} onClick={(e) => e.stopPropagation()} className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0a0e1a] p-6">
-            <div className="flex items-center justify-between mb-6"><h2 className="text-lg font-semibold text-white">Détails étudiant</h2><button onClick={() => setShowViewModal(false)} className="p-1 rounded-lg hover:bg-white/5 text-white/40 hover:text-white transition-colors"><X className="w-5 h-5" /></button></div>
-            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/5">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-soft/20 to-violet/20 border border-white/10 flex items-center justify-center text-lg font-semibold text-white">{selectedStudent.initials || "?"}</div>
-              <div><div className="text-white font-semibold text-lg">{selectedStudent.name || "Sans nom"}</div><div className="text-white/50 text-sm">{selectedStudent.email}</div></div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { icon: Calendar, label: "Inscrit le", value: formatDate(selectedStudent.created_at) },
-                { icon: BookOpen, label: "Niveau", value: selectedStudent.level || "N/A" },
-                { icon: Video, label: "Progression", value: `${selectedStudent.total_progress || 0}%` },
-                { icon: Timer, label: "Temps passé", value: selectedStudent.time_spent || "0h" },
-                { icon: Clock, label: "Dernière activité", value: formatDateShort(selectedStudent.updated_at) },
-                { icon: selectedStudent.is_admin ? CheckCircle : XCircle, label: "Admin", value: selectedStudent.is_admin ? "Oui" : "Non", iconColor: selectedStudent.is_admin ? "text-emerald-400" : "text-white/40" },
-              ].map((item) => (
-                <div key={item.label} className="p-3 rounded-xl bg-white/5 border border-white/5">
-                  <div className="flex items-center gap-2 text-white/40 text-xs mb-1"><item.icon className={cn("w-3.5 h-3.5", item.iconColor)} />{item.label}</div>
-                  <div className="text-white text-sm font-medium">{item.value}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </motion.div>
-      )}</AnimatePresence>
+      {selectedStudent && (
+        <Modal open={showViewModal} onClose={() => setShowViewModal(false)} title="Détails étudiant" subtitle={selectedStudent.email}>
+          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/5">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-soft/20 to-violet/20 border border-white/10 flex items-center justify-center text-lg font-semibold text-white">{selectedStudent.initials || "?"}</div>
+            <div><div className="text-white font-semibold text-lg">{selectedStudent.name || "Sans nom"}</div><div className="text-white/50 text-sm">{selectedStudent.email}</div></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { icon: Calendar, label: "Inscrit le", value: formatDate(selectedStudent.created_at) },
+              { icon: BookOpen, label: "Niveau", value: selectedStudent.level || "N/A" },
+              { icon: Video, label: "Progression", value: `${selectedStudent.total_progress || 0}%` },
+              { icon: Timer, label: "Temps passé", value: selectedStudent.time_spent || "0h" },
+              { icon: Clock, label: "Dernière activité", value: formatDateShort(selectedStudent.updated_at) },
+              { icon: selectedStudent.is_admin ? CheckCircle : XCircle, label: "Admin", value: selectedStudent.is_admin ? "Oui" : "Non", iconColor: selectedStudent.is_admin ? "text-emerald-400" : "text-white/40" },
+            ].map((item) => (
+              <div key={item.label} className="p-3 rounded-xl bg-white/5 border border-white/5">
+                <div className="flex items-center gap-2 text-white/40 text-xs mb-1"><item.icon className={cn("w-3.5 h-3.5", (item as typeof item & { iconColor?: string }).iconColor)} />{item.label}</div>
+                <div className="text-white text-sm font-medium">{item.value}</div>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
 
       {/* Suspend Modal */}
-      <AnimatePresence>{showSuspendModal && selectedStudent && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowSuspendModal(false)}>
-          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0e1a] p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20"><Ban className="w-5 h-5 text-amber-400" /></div>
-              <div><h2 className="text-lg font-semibold text-white">{selectedStudent.status === "blocked" ? "Réactiver l'étudiant" : "Suspendre l'étudiant"}</h2><p className="text-white/50 text-sm">{selectedStudent.name}</p></div>
-            </div>
-            <p className="text-white/60 text-sm mb-6">{selectedStudent.status === "blocked" ? "L'étudiant aura de nouveau accès à la plateforme." : "L'étudiant perdra l'accès à la plateforme."}</p>
-            <div className="flex gap-3 justify-end">
+      {selectedStudent && (
+        <Modal
+          open={showSuspendModal}
+          onClose={() => setShowSuspendModal(false)}
+          title={selectedStudent.status === "blocked" ? "Réactiver l'étudiant" : "Suspendre l'étudiant"}
+          subtitle={selectedStudent.name}
+          icon={<Ban className="w-5 h-5 text-amber-400" />}
+          iconBg="bg-amber-500/10 border-amber-500/20"
+          footer={
+            <>
               <button onClick={() => setShowSuspendModal(false)} className="px-4 py-2 rounded-xl text-sm text-white/60 hover:text-white bg-white/5 hover:bg-white/10 transition-colors">Annuler</button>
               <button onClick={() => handleAction("toggle")} className={cn("px-4 py-2 rounded-xl text-sm font-medium transition-colors", selectedStudent.status === "blocked" ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-amber-500 text-white hover:bg-amber-600")}>{selectedStudent.status === "blocked" ? "Réactiver" : "Suspendre"}</button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}</AnimatePresence>
+            </>
+          }
+        >
+          <p className="text-white/60 text-sm">
+            {selectedStudent.status === "blocked"
+              ? "L'étudiant aura de nouveau accès à la plateforme."
+              : "L'étudiant perdra l'accès à la plateforme."}
+          </p>
+        </Modal>
+      )}
 
       {/* Delete Modal */}
-      <AnimatePresence>{showDeleteModal && selectedStudent && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)}>
-          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0e1a] p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl bg-rose/10 border border-rose/20"><Trash2 className="w-5 h-5 text-rose" /></div>
-              <div>              <h2 className="text-lg font-semibold text-white">Supprimer l&apos;étudiant</h2><p className="text-white/50 text-sm">{selectedStudent.name}</p></div>
-            </div>
-            <p className="text-white/60 text-sm mb-6">Cette action est irréversible. Toutes les données de <strong className="text-white">{selectedStudent.name}</strong> seront définitivement supprimées.</p>
-            <div className="flex gap-3 justify-end">
+      {selectedStudent && (
+        <Modal
+          open={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          title="Supprimer l'étudiant"
+          subtitle={selectedStudent.name}
+          icon={<Trash2 className="w-5 h-5 text-rose" />}
+          iconBg="bg-rose/10 border-rose/20"
+          footer={
+            <>
               <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded-xl text-sm text-white/60 hover:text-white bg-white/5 hover:bg-white/10 transition-colors">Annuler</button>
               <button onClick={() => handleAction("delete")} className="px-4 py-2 rounded-xl text-sm font-medium bg-rose text-white hover:bg-rose/80 transition-colors">Supprimer définitivement</button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}</AnimatePresence>
+            </>
+          }
+        >
+          <p className="text-white/60 text-sm">Cette action est irréversible. Toutes les données de <strong className="text-white">{selectedStudent.name}</strong> seront définitivement supprimées.</p>
+        </Modal>
+      )}
     </div>
   );
 }

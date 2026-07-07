@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
-  Home, UserPlus, Users, Key, Megaphone, BarChart3, Settings, LogOut, Shield,
+  Home, UserPlus, Users, Key, BarChart3, LogOut, Shield,
   Video, FileText
 } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
@@ -18,9 +18,7 @@ const navItems = [
   { icon: Video, label: "Vidéos", href: "/admin/videos" },
   { icon: FileText, label: "Ressources", href: "/admin/ressources" },
   { icon: Key, label: "Codes d'accès", href: "/admin/codes" },
-  { icon: Megaphone, label: "Annonces", href: "/admin/annonces" },
   { icon: BarChart3, label: "Statistiques", href: "/admin/statistiques" },
-  { icon: Settings, label: "Paramètres", href: "/admin/parametres" },
 ];
 
 export function AdminSidebar() {

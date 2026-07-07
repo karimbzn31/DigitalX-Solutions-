@@ -22,11 +22,6 @@ interface Mod {
   status: string; color_from: string; color_to: string;
 }
 
-interface VideoItem {
-  id: string; module_id: string; title: string; duration: string;
-  order_index: number; completed: boolean;
-}
-
 function getLevel(progress: number): string {
   if (progress >= 75) return "Architecte IA";
   if (progress >= 50) return "Fondateur";
@@ -38,7 +33,7 @@ export default function DashboardPage() {
   const user = useAppStore((s) => s.user);
   const [modules, setModules] = useState<Mod[]>([]);
   const [stats, setStats] = useState({ totalVideos: 0, watchedVideos: 0, progress: 0 });
-  const [nextVideo, setNextVideo] = useState<VideoItem & { moduleTitle: string; moduleProgress: number } | null>(null);
+  const [nextVideo, setNextVideo] = useState<{ id: string; moduleId: string; title: string; duration: string; moduleTitle: string; moduleProgress: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const confetti = useConfetti();
   const levelNum = useGamificationStore((s) => s.level);
@@ -51,28 +46,19 @@ export default function DashboardPage() {
   const earnedBadges = ALL_BADGES.filter((b) => badges.some((e) => e.id === b.id));
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/student/modules").then(r => r.json()),
-      fetch("/api/student/progress").then(r => r.json()),
-    ]).then(([modulesData, progressData]) => {
-      const mods = modulesData.modules || [];
-      setModules(mods);
-      setStats(progressData.stats || { totalVideos: 0, watchedVideos: 0, progress: 0 });
+    fetch("/api/student/modules")
+      .then(r => r.json())
+      .then(data => {
+        const mods = data.modules || [];
+        setModules(mods);
+        setStats({ totalVideos: data.stats?.totalVideos || 0, watchedVideos: data.stats?.totalWatched || 0, progress: data.stats?.totalVideos > 0 ? Math.round((data.stats?.totalWatched / data.stats?.totalVideos) * 100) : 0 });
 
-      for (const mod of mods) {
-        if (mod.status === "in-progress" || mod.status === "completed") {
-          fetch(`/api/student/videos?moduleId=${mod.id}`).then(r => r.json()).then(data => {
-            const vids = data.videos || [];
-            const firstUnwatched = vids.find((v: VideoItem) => !v.completed);
-            if (firstUnwatched) {
-              setNextVideo({ ...firstUnwatched, moduleTitle: mod.title, moduleProgress: mod.progress });
-            }
-          });
-          break;
+        if (data.nextVideo) {
+          setNextVideo(data.nextVideo);
         }
-      }
-      setLoading(false);
-    }).catch(() => setLoading(false));
+
+        setLoading(false);
+      }).catch(() => setLoading(false));
   }, []);
 
   const totalProgress = modules.length > 0

@@ -7,7 +7,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
-    if (!checkRateLimit(`register:${ip}`, 5, 60000)) {
+    const allowed = await checkRateLimit(`register:${ip}`, 5, 60000);
+    if (!allowed) {
       return NextResponse.json({ error: "Trop de tentatives. Réessayez dans une minute." }, { status: 429 });
     }
 

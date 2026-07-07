@@ -1,16 +1,16 @@
-﻿import express from 'express';
+import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 
-import { 
-  getSession, 
-  resetSession, 
-  addToHistory, 
+import {
+  getSession,
+  resetSession,
+  addToHistory,
   getHistory
 } from './sessionStore.js';
-import { 
+import {
   callDeepSeek,
   callGeminiText,
   callGeminiWithImage,
@@ -79,25 +79,10 @@ Réponds dans la langue de l'étudiant (français, anglais, arabe/darija).
 Tu n'es PAS un vendeur. Tu es uniquement un mentor technique. Ne collecte pas d'informations personnelles.
 Utilise des extraits de code quand c'est pertinent, mais toujours avec des explications.`;
 }
-    ],
-    "total": 0,
-    "devise": "DZD",
-    "statut": "en_attente"
-  },
-  "meta": {
-    "canal": "chatbot",
-    "agent": "Yasmine",
-    "version": "1.0"
-  }
-}
-\`\`\`
-Ensuite, envoie ton message de remerciement chaleureux final en utilisant le prÃ©nom du client.
-`;
-}
 
 /**
  * Endpoint principal pour le Chatbot (ManyChat / Make / Custom Webhook)
- * ReÃ§oit : { userId, type: 'text'|'image'|'audio', content: 'texte ou URL' }
+ * Recoit : { userId, type: 'text'|'image'|'audio', content: 'texte ou URL' }
  */
 app.post('/webhook', async (req, res) => {
   const { userId, type, content, userName } = req.body;
@@ -112,18 +97,18 @@ app.post('/webhook', async (req, res) => {
 
     console.log(`[Webhook] Message received from ${userId} | Type: ${type}`);
 
-    // --- Ã‰tape 1 : Router et traiter selon le type de message ---
+    // --- Etape 1 : Router et traiter selon le type de message ---
     if (type === 'image') {
       const history = getHistory(userId);
       const systemPrompt = getSystemPrompt(session, catalog);
 
       const geminiReply = await callGeminiWithImage(history, systemPrompt, content);
 
-      if (geminiReply.startsWith('Désolée')) {
-        addToHistory(userId, 'user', '[Image envoyée]');
-        addToHistory(userId, 'system', "[Système] L'utilisateur a envoyé une photo mais l'analyse d'image est temporairement indisponible. Réponds en tant que Yasmine, demande poliment à l'utilisateur de décrire ce qu'il cherche ou ce qu'il a envoyé.");
+      if (geminiReply.startsWith('Desolee')) {
+        addToHistory(userId, 'user', '[Image envoyee]');
+        addToHistory(userId, 'system', "[Systeme] L'utilisateur a envoye une photo mais l'analyse d'image est temporairement indisponible. Reponds en tant que Yasmine, demande poliment a l'utilisateur de decrire ce qu'il cherche ou ce qu'il a envoye.");
       } else {
-        addToHistory(userId, 'user', '[Image envoyée]');
+        addToHistory(userId, 'user', '[Image envoyee]');
         addToHistory(userId, 'assistant', geminiReply);
         return res.json({
           reply: geminiReply,
@@ -132,36 +117,36 @@ app.post('/webhook', async (req, res) => {
         });
       }
     } else if (type === 'audio') {
-      // Message vocal -> Transcrire avec Whisper, puis envoyer le texte à DeepSeek
+      // Message vocal -> Transcrire avec Whisper, puis envoyer le texte a DeepSeek
       const transcription = await transcribeWithWhisper(content);
       console.log(`[Webhook] Whisper transcription: "${transcription}"`);
 
       if (transcription.startsWith('[')) {
-        addToHistory(userId, 'system', `[Système] L'utilisateur a envoyé un message vocal. ${transcription}. Réponds en tant que Yasmine, informe poliment que tu n'as pas pu comprendre le message et demande de réécrire en texte.`);
+        addToHistory(userId, 'system', `[Systeme] L'utilisateur a envoye un message vocal. ${transcription}. Reponds en tant que Yasmine, informe poliment que tu n'as pas pu comprendre le message et demande de reecrire en texte.`);
       } else {
         addToHistory(userId, 'user', `(Message vocal transcrit) : ${transcription}`);
       }
-      
+
     } else {
-      // Message texte normal -> L'ajouter à l'historique
+      // Message texte normal -> L'ajouter a l'historique
       addToHistory(userId, 'user', content);
     }
 
-    // --- Étape 2 : Appeler DeepSeek pour générer la réponse ---
+    // --- Etape 2 : Appeler DeepSeek pour generer la reponse ---
     const history = getHistory(userId);
     const systemPrompt = getSystemPrompt(session, catalog, userName);
     let rawReply = await callDeepSeek(history, systemPrompt);
 
     // Fallback automatique si DeepSeek est indisponible
-    if (rawReply === "Désolée, une erreur est survenue. Peux-tu reformuler ?" || rawReply === "Désolée, je n'ai pas pu générer de réponse.") {
+    if (rawReply === "Desolee, une erreur est survenue. Peux-tu reformuler ?" || rawReply === "Desolee, je n'ai pas pu generer de reponse.") {
       console.warn("[Webhook] DeepSeek failed, falling back to Gemini.");
       rawReply = await callGeminiText(history, systemPrompt);
     }
 
-    // Ajouter la réponse à l'historique
+    // Ajouter la reponse a l'historique
     addToHistory(userId, 'assistant', rawReply);
 
-    // Renvoyer la réponse
+    // Renvoyer la reponse
     return res.json({
       reply: rawReply
     });
@@ -172,17 +157,17 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// Endpoint pour rÃ©initialiser la session (utile pour retester)
+// Endpoint pour reinitialiser la session (utile pour retester)
 app.post('/webhook/reset', (req, res) => {
   const { userId } = req.body;
   if (!userId) return res.status(400).json({ error: "Missing userId" });
-  
+
   resetSession(userId);
   console.log(`[Webhook] Session reset for user ${userId}`);
   res.json({ success: true, message: `Session reset for ${userId}` });
 });
 
-// Endpoint pour mettre Ã  jour le catalogue depuis n8n
+// Endpoint pour mettre a jour le catalogue depuis n8n
 app.post('/api/catalog', (req, res) => {
   const newCatalog = req.body;
   if (!Array.isArray(newCatalog)) {
@@ -214,7 +199,7 @@ app.get('/', (req, res) => {
 // Activer le serveur (local) ou exporter pour Vercel
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`\nðŸš€ Yasmine Chatbot Backend running on http://localhost:${PORT}`);
+    console.log(`\n(v) Yasmine Chatbot Backend running on http://localhost:${PORT}`);
     console.log(`- Webhook Endpoint: POST http://localhost:${PORT}/webhook`);
     console.log(`- Reset Session Endpoint: POST http://localhost:${PORT}/webhook/reset`);
     console.log(`- Sync Catalog Endpoint: POST/GET http://localhost:${PORT}/api/catalog\n`);
@@ -222,4 +207,3 @@ if (!process.env.VERCEL) {
 }
 
 export default app;
-
