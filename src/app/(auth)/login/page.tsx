@@ -7,7 +7,6 @@ import { useAppStore } from "@/store/useAppStore";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 
 export default function LoginPage() {
-  const router = useRouter();
   const setUser = useAppStore((s) => s.setUser);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

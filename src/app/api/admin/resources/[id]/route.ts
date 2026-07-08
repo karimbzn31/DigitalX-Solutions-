@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 const ALLOWED_RESOURCE_FIELDS = [
-  "module_id", "type", "title", "description", "url", "content",
+  "module_id", "type", "title", "description", "url", "content", "file_url", "file_size",
 ];
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {

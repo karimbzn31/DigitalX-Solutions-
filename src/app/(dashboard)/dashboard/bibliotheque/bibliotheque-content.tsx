@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect, type ComponentType } from "react";
-import { Search, FileText, Code, File as FileIcon, Download, GitBranch, FolderOpen } from "lucide-react";
+import { Search, FileText, Code, File as FileIcon, Download, GitBranch, FolderOpen, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Resource {
   id: string; module_id: string; type: string; title: string;
   description: string; url: string; content: string;
+  file_url: string; file_size: number;
 }
 
 interface Module { id: string; title: string; title_short: string; }
@@ -17,6 +18,13 @@ const resourceTypeConfig: Record<string, { label: string; icon: ComponentType<{ 
   github: { label: "github", icon: GitBranch, color: "text-orange-400 bg-orange-500/10 border-orange-500/20" },
   code: { label: "Code", icon: Code, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
 };
+
+function formatFileSize(bytes: number): string {
+  if (bytes === 0) return "";
+  if (bytes < 1024) return `${bytes} o`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} Ko`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+}
 
 export default function BibliothequeContent() {
   const [resources, setResources] = useState<Resource[]>([]);
@@ -42,22 +50,47 @@ export default function BibliothequeContent() {
     return true;
   });
 
-  const handleDownload = (r: Resource) => {
-    if (r.type === "link" && r.url) {
+  const handleAccess = (r: Resource) => {
+    // 1. Fichier uploadé (Supabase Storage)
+    if (r.file_url) {
+      if (r.type === "pdf" || r.type === "file") {
+        // PDF/fichier → ouvre dans un nouvel onglet (téléchargement)
+        window.open(r.file_url, "_blank");
+      } else {
+        // Autres fichiers → ouvre dans un nouvel onglet
+        window.open(r.file_url, "_blank");
+      }
+      return;
+    }
+    // 2. Lien externe (GitHub, URL)
+    if (r.url) {
       window.open(r.url, "_blank");
       return;
     }
+    // 3. Contenu texte (prompt, code)
     if (r.content) {
-      const blob = new Blob([r.content], { type: "text/plain" });
+      const ext = r.type === "code" ? ".txt" : ".md";
+      const blob = new Blob([r.content], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${r.title.toLowerCase().replace(/\s+/g, "-")}.txt`;
+      a.download = `${r.title.toLowerCase().replace(/\s+/g, "-")}${ext}`;
       a.click();
       URL.revokeObjectURL(url);
-    } else if (r.url) {
-      window.open(r.url, "_blank");
     }
+  };
+
+  const getButtonLabel = (r: Resource): string => {
+    if (r.file_url) return "Télécharger";
+    if (r.type === "github") return "Voir sur GitHub";
+    if (r.url) return "Ouvrir";
+    if (r.content) return "Copier";
+    return "Télécharger";
+  };
+
+  const getButtonIcon = (r: Resource) => {
+    if (r.type === "github" || r.url) return ExternalLink;
+    return Download;
   };
 
   if (loading) {
@@ -98,6 +131,7 @@ export default function BibliothequeContent() {
           const config = resourceTypeConfig[r.type] || resourceTypeConfig.prompt;
           const Icon = config.icon;
           const mod = modules.find((m) => m.id === r.module_id);
+          const ButtonIcon = getButtonIcon(r);
           return (
             <div key={r.id} className="bg-surface/70 backdrop-blur-sm border border-white/[0.07] rounded-xl p-4 hover:border-violet/40 hover:-translate-y-0.5 transition-all duration-200 group">
               <div className="flex items-start gap-3">
@@ -108,15 +142,22 @@ export default function BibliothequeContent() {
                   <span className={cn("inline-block px-1.5 py-0.5 rounded text-[9px] font-medium uppercase border", config.color)}>
                     {config.label}
                   </span>
-                  <h3 className="text-sm font-medium text-star-white mt-1.5 leading-snug">{r.title}</h3>
+                  <h3 className="text-sm font-medium text-star-white mt-1.5 leading-snug flex items-center gap-2">
+                    {r.title}
+                    {r.file_url && r.file_size > 0 && (
+                      <span className="text-[9px] text-mist font-normal shrink-0">
+                        ({formatFileSize(r.file_size)})
+                      </span>
+                    )}
+                  </h3>
                   <p className="text-[11px] text-mist mt-1 line-clamp-2">{r.description}</p>
                   {mod && <span className="inline-block text-[10px] text-violet mt-2">Module · {mod.title_short}</span>}
                 </div>
               </div>
-              <button onClick={() => handleDownload(r)}
+              <button onClick={() => handleAccess(r)}
                 className="flex items-center justify-center gap-1.5 w-full mt-3 py-1.5 rounded-lg bg-violet/10 text-violet text-[11px] font-medium hover:bg-violet/20 transition-colors">
-                <Download className="w-3 h-3" />
-                {r.type === "link" ? "Ouvrir" : r.content ? "Copier" : "Télécharger"}
+                <ButtonIcon className="w-3 h-3" />
+                {getButtonLabel(r)}
               </button>
             </div>
           );

@@ -24,20 +24,20 @@ export async function POST(req: Request) {
   if (auth.error) return auth.error;
 
   const body = await req.json();
-  const { module_id, type, title, description, url, content } = body;
+  const { module_id, type, title, description, url, content, file_url, file_size } = body;
 
   if (!module_id || !type || !title) {
     return NextResponse.json({ error: "module_id, type et titre requis" }, { status: 400 });
   }
 
-  const validTypes = ["pdf", "code", "prompt", "link", "zip"];
+  const validTypes = ["pdf", "code", "prompt", "file", "github"];
   if (!validTypes.includes(type)) {
     return NextResponse.json({ error: "Type invalide" }, { status: 400 });
   }
 
   const { data, error } = await supabaseAdmin
     .from("resources")
-    .insert({ module_id, type, title, description, url, content })
+    .insert({ module_id, type, title, description, url, content, file_url, file_size })
     .select()
     .single();
 
