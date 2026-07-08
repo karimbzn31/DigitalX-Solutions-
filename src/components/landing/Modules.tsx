@@ -283,11 +283,11 @@ export function Modules() {
               Parcours 2026
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold tracking-tight text-star-white">
-              <span className="text-gradient">6 modules</span>. Une transformation complète.
+              <span className="text-gradient">6 formations</span>. Une transformation complète.
             </h2>
             <p className="mt-4 text-sm sm:text-base text-mist max-w-2xl mx-auto leading-relaxed">
               De l&apos;initiation à l&apos;IA jusqu&apos;au lancement de votre startup,
-              chaque module est conçu pour vous faire passer à l&apos;action.
+              chaque formation est conçue pour vous faire passer à l&apos;action.
             </p>
           </motion.div>
 
@@ -301,7 +301,7 @@ export function Modules() {
           >
             <div className="flex items-center gap-2 text-xs text-mist">
               <Layers className="w-4 h-4 text-violet" />
-              <span><strong className="text-star-white">{modules.length}</strong> modules</span>
+              <span><strong className="text-star-white">{modules.length}</strong> formations</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-mist">
               <BookOpen className="w-4 h-4 text-cyan-soft" />
