@@ -26,8 +26,8 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { module_id, type, title, description, url, content, file_url, file_size } = body;
 
-  if (!module_id || !type || !title) {
-    return NextResponse.json({ error: "module_id, type et titre requis" }, { status: 400 });
+  if (!type || !title) {
+    return NextResponse.json({ error: "type et titre requis" }, { status: 400 });
   }
 
   const validTypes = ["pdf", "code", "prompt", "file", "github"];

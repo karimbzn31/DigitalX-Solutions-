@@ -103,7 +103,10 @@ export default function AdminRessourcesPage() {
   };
 
   const handleSave = async () => {
-    if (!form.title || !form.module_id || !form.type) return;
+    if (!form.title || !form.type) {
+      alert("Titre et type sont requis");
+      return;
+    }
 
     // Pour les types qui nécessitent soit un fichier, soit une URL, soit du contenu
     if (form.type === "file" && !form.file_url && !form.url) {
