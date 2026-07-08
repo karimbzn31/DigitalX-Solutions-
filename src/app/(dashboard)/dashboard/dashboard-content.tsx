@@ -22,13 +22,6 @@ interface Mod {
   status: string; color_from: string; color_to: string;
 }
 
-function getLevel(progress: number): string {
-  if (progress >= 75) return "Architecte IA";
-  if (progress >= 50) return "Fondateur";
-  if (progress >= 25) return "Vibe Coder";
-  return "Apprenti IA";
-}
-
 export default function DashboardContent() {
   const user = useAppStore((s) => s.user);
   const [modules, setModules] = useState<Mod[]>([]);

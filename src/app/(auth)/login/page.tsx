@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAppStore } from "@/store/useAppStore";
@@ -21,7 +20,7 @@ export default function LoginPage() {
     if (!email || !password) return;
     setLoading(true);
 
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -36,6 +35,7 @@ export default function LoginPage() {
     const res = await fetch("/api/auth/profile");
 
     if (!res.ok) {
+      await supabase.auth.signOut();
       await supabase.auth.signOut();
       setError("Profil introuvable. Contacte le support.");
       setLoading(false);
