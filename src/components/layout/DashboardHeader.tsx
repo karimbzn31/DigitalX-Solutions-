@@ -10,7 +10,7 @@ import { LogoFull } from "@/components/shared/Logo";
 
 const breadcrumbLabels: Record<string, string> = {
   "/dashboard": "Accueil",
-  "/dashboard/formation": "Mes Formations",
+  "/dashboard/formation": "Nos Formations",
   "/dashboard/bibliotheque": "Bibliothèque",
   "/dashboard/communaute": "Communauté",
   "/dashboard/ai": "Assistant IA",
