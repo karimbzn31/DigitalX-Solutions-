@@ -122,12 +122,15 @@ export default function AdminRessourcesPage() {
       return;
     }
 
+    // Convertir module_id vide en null (évite l'erreur UUID)
+    const payload = { ...form, module_id: form.module_id || null };
+
     const url = editing ? `/api/admin/resources/${editing.id}` : "/api/admin/resources";
     const method = editing ? "PATCH" : "POST";
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(payload),
     });
 
     if (res.ok) {
