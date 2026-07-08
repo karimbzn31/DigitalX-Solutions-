@@ -165,7 +165,7 @@ CREATE POLICY "admins_delete_videos"
 CREATE TABLE IF NOT EXISTS resources (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   module_id UUID REFERENCES modules(id) ON DELETE CASCADE,
-  type TEXT NOT NULL CHECK (type IN ('pdf', 'code', 'prompt', 'file', 'github')),
+  type TEXT NOT NULL CHECK (type IN ('pdf', 'code', 'prompt', 'file', 'github', 'skill')),
   title TEXT NOT NULL,
   description TEXT DEFAULT '',
   url TEXT DEFAULT '',

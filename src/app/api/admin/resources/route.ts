@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "type et titre requis" }, { status: 400 });
   }
 
-  const validTypes = ["pdf", "code", "prompt", "file", "github"];
+  const validTypes = ["pdf", "code", "prompt", "file", "github", "skill"];
   if (!validTypes.includes(type)) {
     return NextResponse.json({ error: "Type invalide" }, { status: 400 });
   }

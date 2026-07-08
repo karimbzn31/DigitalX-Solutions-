@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, X, FileText, Code, File as FileIcon, GitBranch, FolderOpen, Edit3, Trash2, Upload, Download, Check } from "lucide-react";
+import { Plus, X, FileText, Code, File as FileIcon, GitBranch, FolderOpen, Edit3, Trash2, Upload, Download, Check, Zap, Sparkles } from "lucide-react";
 import { NebulaCard } from "@/components/shared/NebulaCard";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +12,7 @@ interface Resource {
 }
 
 const resourceTypes = [
+  { value: "skill", label: "Skills JARVIS", icon: Zap, color: "text-yellow-400" },
   { value: "pdf", label: "PDF", icon: FileIcon, color: "text-rose" },
   { value: "code", label: "Code", icon: Code, color: "text-emerald-400" },
   { value: "prompt", label: "Master Prompt", icon: FileText, color: "text-violet" },
@@ -109,7 +110,7 @@ export default function AdminRessourcesPage() {
     }
 
     // Pour les types qui nécessitent soit un fichier, soit une URL, soit du contenu
-    if (form.type === "file" && !form.file_url && !form.url) {
+    if ((form.type === "file" || form.type === "skill") && !form.file_url && !form.url) {
       alert("Veuillez uploader un fichier ou ajouter une URL");
       return;
     }
@@ -254,6 +255,9 @@ export default function AdminRessourcesPage() {
                       {r.url && r.type === "github" && (
                         <span className="text-[10px] text-orange-400/60">🐙 GitHub</span>
                       )}
+                      {r.type === "skill" && (
+                        <span className="text-[10px] text-yellow-400/60">⚡ Skill JARVIS</span>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -378,7 +382,7 @@ export default function AdminRessourcesPage() {
                 </div>
 
                 {/* Upload de fichier */}
-                {(form.type === "file" || form.type === "pdf" || form.type === "code") && (
+                {(form.type === "file" || form.type === "skill" || form.type === "pdf" || form.type === "code") && (
                   <div>
                     <label className="block text-white/50 text-xs mb-1.5">
                       Uploader un fichier
