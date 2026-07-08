@@ -52,6 +52,8 @@ export const useAppStore = create<AppState>()(
     {
       name: "dx-academy-store",
       partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
         sidebarCollapsed: state.sidebarCollapsed,
       }),
     }
