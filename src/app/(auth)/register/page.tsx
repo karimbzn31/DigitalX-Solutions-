@@ -45,7 +45,7 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push("/validation");
+    window.location.href = "/validation";
   };
 
   return (

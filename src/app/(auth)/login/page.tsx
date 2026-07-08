@@ -67,11 +67,12 @@ export default function LoginPage() {
     }
 
     if (profile?.status === "pending") {
-      router.push("/validation");
+      window.location.href = "/validation";
       return;
     }
 
-    router.push(profile.is_admin ? "/admin" : "/dashboard");
+    // Navigation forcée → évite le cache Next.js côté client
+    window.location.href = profile.is_admin ? "/admin" : "/dashboard";
   };
 
   return (
