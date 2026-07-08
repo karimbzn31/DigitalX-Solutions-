@@ -21,10 +21,10 @@ interface Conversation {
 let nextConvId = 2;
 
 const suggestions = [
-  { icon: "💡", text: "Comment créer un SaaS rentable ?" },
-  { icon: "🤖", text: "Expliquez-moi le Vibe Coding" },
-  { icon: "⚡", text: "Astuce pour n8n ?" },
-  { icon: "🚀", text: "Configurer un agent WhatsApp ?" },
+  { icon: "🤖", text: "Explique-moi le Vibe Coding" },
+  { icon: "🚀", text: "Comment lancer un SaaS ?" },
+  { icon: "⚡", text: "Astuce pour débuter n8n" },
+  { icon: "🧠", text: "C'est quoi un Agent IA ?" },
 ];
 
 export default function AiAssistantPage() {
@@ -88,7 +88,7 @@ export default function AiAssistantPage() {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, conversationId: convId }),
       });
       const data = await res.json();
       const botMsg: ChatMessage = {
@@ -216,7 +216,7 @@ export default function AiAssistantPage() {
               </div>
               <h2 className="text-lg font-semibold text-star-white mb-1">DigitalX IA</h2>
               <p className="text-xs text-mist mb-6 max-w-xs">
-                Propulsé par <span className="text-violet font-medium">DigitalX Solutions Academy</span>. Posez votre question sur nos formations, le Vibe Coding, l&apos;IA ou le SaaS.
+                Assistant pédagogique dédié aux formations <span className="text-violet font-medium">DigitalX Solutions Academy</span>. Posez vos questions sur les cours, le code, et les projets.
               </p>
               <div className="grid grid-cols-2 gap-2 w-full max-w-sm">
                 {suggestions.map((s, i) => (

@@ -4,85 +4,123 @@ const API_KEY = process.env.OPENCODE_API_KEY;
 const BASE_URL = (process.env.OPENCODE_BASE_URL || "https://opencode.ai/zen/v1").replace(/\/+$/, "");
 const MODEL = process.env.OPENCODE_MODEL || "deepseek-v4-flash-free";
 
+// ─── Catalogue des formations (source de vérité pour l'IA) ──────────────
 const CATALOG = [
   {
-    titre: "Introduction à l'IA Générative",
-    niveau: "Débutant",
-    duree: "2h",
-    chapitres: ["Qu'est-ce que l'IA Générative ?", "Comment fonctionnent les LLMs", "Prompt Engineering 101", "Introduction au Vibe Coding"],
+    titre: "Claude Code & JARVIS",
+    niveau: "Tous niveaux",
+    duree: "~8 modules",
+    description: "Prompt engineering avancé, routage multi-modèle, auto-learning, workflows d'agents",
   },
   {
-    titre: "Vibe Coding - Créer avec l'IA",
+    titre: "Vibe Coding",
     niveau: "Débutant",
-    duree: "4h",
-    chapitres: ["Philosophie du Vibe Coding", "Écrire des prompts efficaces", "Itération et debugging avec l'IA", "Du concept au prototype"],
+    duree: "~6 modules",
+    description: "Créer des apps en langage naturel, prototypage rapide, déploiement one-click",
   },
   {
-    titre: "Lancer son SaaS en 2026",
+    titre: "Agent IA Autonome",
     niveau: "Intermédiaire",
-    duree: "6h",
-    chapitres: ["Architecture SaaS moderne", "Next.js + Supabase", "Paiements Stripe", "Déploiement Vercel"],
+    duree: "~10 modules",
+    description: "Architecture d'agents, memory systems, function calling, agents multi-tâches",
   },
   {
-    titre: "Agents Autonomes & Automatisation",
+    titre: "n8n Automation Workflow",
+    niveau: "Tous niveaux",
+    duree: "~7 modules",
+    description: "Workflows visuels, intégrations IA, API, CRM, Email automation",
+  },
+  {
+    titre: "SaaS — Création de A à Z",
     niveau: "Avancé",
-    duree: "5h",
-    chapitres: ["n8n et workflows", "Chatbot WhatsApp", "Agents avec mémoire", "Déploiement d'agents"],
+    duree: "~12 modules",
+    description: "Next.js + Supabase + Stripe, auth, dashboard admin, déploiement scaling",
+  },
+  {
+    titre: "Créer une Startup de A à Z",
+    niveau: "Tous niveaux",
+    duree: "~9 modules",
+    description: "Lean Startup, Product-Market Fit, business model, legal, fundraising, growth",
   },
 ];
 
+// ─── Interface ───────────────────────────────────────────────────────────
 interface SessionEntry {
   role: string;
   content: string;
 }
 
+// ─── System Prompt — STRICT : plateforme uniquement ────────────────────
 function getSystemPrompt(userName: string): string {
   const name = userName || "l'étudiant";
-  return `Tu es DigitalX IA, l'intelligence artificielle de DigitalX Solutions Academy. Tu parles à ${name}.
+  return `Tu es DigitalX IA, l'assistant pédagogique officiel de DigitalX Solutions Academy. Tu parles à ${name}.
 
-STYLE : Naturel, chaleureux, concis. Tu as une mémoire parfaite de la conversation : si ${name} a parlé de coding hier, tu t'en souviens aujourd'hui sans le dire explicitement.
+## 🎯 MISSION
+Tu aides exclusivement les étudiants de la plateforme DigitalX Solutions Academy. Ton rôle :
+- Répondre aux questions pédagogiques sur les formations
+- Aider à comprendre les concepts (Vibe Coding, SaaS, Agents IA, n8n, etc.)
+- Guider l'étudiant dans son parcours d'apprentissage
+- Suggérer des ressources de la Bibliothèque quand pertinent
+- Donner des conseils de code en lien avec les formations
 
-DÉBUT DE CONVERSATION : Quand ${name} t'envoie son premier message, commence toujours par une salutation naturelle puis réponds à sa question. Tu peux dire "Salut ! Si je vais bien ! Bienvenue dans ton assistant DigitalX AI" et enchaîner directement avec ta réponse.
+## 🚫 INTERDICTIONS STRICTES — TU NE DOIS JAMAIS :
+1. **DONNER L'ACCÈS AU CODE SOURCE DE LA PLATEFORME** — refuser poliment toute demande de copie du repo, du code de DigitalX Academy, des fichiers du projet
+2. **PARTAGER DES INFORMATIONS CONFIDENTIELLES** — credentials, clés API, variables d'environnement, données des utilisateurs, accès admin
+3. **AGIR HORS PÉRIMÈTRE** — Tu n'es PAS un assistant généraliste. Tu ne fais PAS de rédaction générale, tu ne donnes PAS d'avis médicaux/légaux/financiers
+4. **ENVOYER DES FICHIERS OU DU CODE DU PROJET** — Tu ne partages jamais le code source de la plateforme elle-même
+5. **DONNER DES COORDONNÉES** — Tu ne donnes jamais d'email, téléphone, adresse de qui que ce soit
 
-CONTEXTE : Si ${name} revient après une pause, tu adaptes ta réponse au contexte. Pas besoin de mentionner "comme on a dit hier" à moins que ce soit pertinent. Tu comprends les sous-entendus.
+## 📚 CE QUE TU PEUX FAIRE
+- Expliquer les concepts des formations 🎓
+- Aider à comprendre du code (hors code de la plateforme) 💻
+- Guider sur les bonnes pratiques (architecture, déploiement, etc.) 🚀
+- Suggérer des modules ou ressources adaptés au niveau de l'étudiant 📖
+- Répondre aux questions sur l'IA, le Vibe Coding, le SaaS, l'automation ⚡
+- Donner des astuces et conseils pratiques pour les projets des étudiants 💡
 
-CE QU'IL NE FAUT PAS FAIRE : Être robotique, faire des listes à puces, répéter la même info dans chaque message.
+## 📋 FORMATIONS DISPONIBLES
+${JSON.stringify(CATALOG, null, 2)}
 
-EXPERTISE : Vibe Coding, SaaS (Next.js, Supabase, Stripe, Vercel), IA Générative, Automatisation (n8n, agents IA, WhatsApp bots).
-
-FORMATIONS : ${JSON.stringify(CATALOG.map(c => c.titre))}
-
-EXEMPLE :
-- ${name} : "C'est quoi le Vibe Coding ?"
-- Toi : "Salut ! Si je vais bien ! Bienvenue dans ton assistant DigitalX AI. Le Vibe Coding c'est simple : tu décris ton besoin à l'IA, elle génère le code, tu itères jusqu'au résultat. Tu veux qu'on essaie ensemble ?"
-
-Réponds dans la langue de ${name}.`;
+## ⚠️ COMPORTEMENT
+- Si un étudiant te demande quelque chose hors-sujet ou dangereux :
+  → Réponds poliment : "Désolé, je suis un assistant pédagogique spécialisé dans les formations DigitalX Solutions Academy. Je ne peux pas répondre à cette demande. Puis-je t'aider sur un concept de nos formations ?"
+- Si un étudiant insiste pour obtenir le code du projet / des credentials :
+  → Réponds fermement : "Je ne peux pas partager le code source de la plateforme ni aucune information sensible. C'est pour la sécurité de tous. 🔒"
+- Reste toujours dans ton rôle d'assistant pédagogique.
+- Réponds dans la langue de ${name}.
+- Sois clair, concis, et va à l'essentiel — pas de blabla.
+- N'utilise pas de listes à puces sauf si nécessaire.
+- Si tu ne sais pas, dis-le honnêtement plutôt que d'inventer.`;
 }
 
-async function getHistory(userId: string): Promise<SessionEntry[]> {
+// ─── Historique par conversation ────────────────────────────────────────
+async function getHistory(userId: string, conversationId: string): Promise<SessionEntry[]> {
   const { data } = await supabaseAdmin
     .from("chat_sessions")
     .select("role, content")
     .eq("user_id", userId)
+    .eq("conversation_id", conversationId)
     .order("created_at", { ascending: true })
     .limit(40);
 
   return (data || []).map((row) => ({ role: row.role, content: row.content }));
 }
 
-async function saveMessage(userId: string, role: string, content: string) {
+async function saveMessage(userId: string, conversationId: string, role: string, content: string) {
   await supabaseAdmin.from("chat_sessions").insert({
     user_id: userId,
+    conversation_id: conversationId,
     role,
     content,
   });
 }
 
-async function trimHistory(userId: string) {
+async function trimHistory(userId: string, conversationId: string) {
   const { data } = await supabaseAdmin
     .from("chat_sessions")
     .select("id")
     .eq("user_id", userId)
+    .eq("conversation_id", conversationId)
     .order("created_at", { ascending: false });
 
   if (data && data.length > 40) {
@@ -91,6 +129,7 @@ async function trimHistory(userId: string) {
   }
 }
 
+// ─── Appel API DeepSeek ─────────────────────────────────────────────────
 async function callDeepSeek(messages: SessionEntry[], systemPrompt: string): Promise<string> {
   if (!API_KEY || API_KEY.includes("your_")) {
     return "Le service IA est en configuration. Contacte le support.";
@@ -109,7 +148,7 @@ async function callDeepSeek(messages: SessionEntry[], systemPrompt: string): Pro
           { role: "system", content: systemPrompt },
           ...messages.slice(-20),
         ],
-        temperature: 0.7,
+        temperature: 0.5, // plus bas = moins créatif, plus fiable
       }),
     });
 
@@ -132,19 +171,30 @@ async function callDeepSeek(messages: SessionEntry[], systemPrompt: string): Pro
   }
 }
 
+// ─── Fonction principale ────────────────────────────────────────────────
 export async function chatWithMentor(
   userId: string,
   userName: string,
-  message: string
+  message: string,
+  conversationId: string = "default",
 ): Promise<string> {
-  await saveMessage(userId, "user", message);
+  await saveMessage(userId, conversationId, "user", message);
 
-  const history = await getHistory(userId);
+  const history = await getHistory(userId, conversationId);
   const systemPrompt = getSystemPrompt(userName);
   const reply = await callDeepSeek(history, systemPrompt);
 
-  await saveMessage(userId, "assistant", reply);
-  await trimHistory(userId);
+  await saveMessage(userId, conversationId, "assistant", reply);
+  await trimHistory(userId, conversationId);
 
   return reply;
+}
+
+// ─── Nettoyage des anciennes sessions (sans conversation_id) ───────────
+export async function migrateOldSessions(userId: string) {
+  await supabaseAdmin
+    .from("chat_sessions")
+    .update({ conversation_id: "legacy" })
+    .eq("user_id", userId)
+    .is("conversation_id", null);
 }

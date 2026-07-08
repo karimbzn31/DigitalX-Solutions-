@@ -21,13 +21,18 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { message } = await req.json();
+    const { message, conversationId } = await req.json();
     if (!message || !message.trim()) {
       return NextResponse.json({ error: "Message requis" }, { status: 400 });
     }
 
     const userName = user.user_metadata?.name || user.email || "Étudiant";
-    const reply = await chatWithMentor(user.id, userName, message.trim());
+    const reply = await chatWithMentor(
+      user.id,
+      userName,
+      message.trim(),
+      conversationId || "default"
+    );
     return NextResponse.json({ reply });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Erreur serveur";
