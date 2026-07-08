@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, type ComponentType } from "react";
-import { Search, FileText, Code, File as FileIcon, Download, GitBranch, FolderOpen, ExternalLink, Zap, Sparkles } from "lucide-react";
+import { Search, FileText, Code, File as FileIcon, GitBranch, FolderOpen, ExternalLink, Zap, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Resource {
@@ -103,11 +103,11 @@ export default function BibliothequeContent() {
 
   const getButtonLabel = (r: Resource): string => {
     if (r.type === "skill") return "⚡ Télécharger le Skill";
-    if (r.file_url) return "Télécharger";
+    if (r.file_url) return "Ouvrir";
     if (r.type === "github") return "Voir sur GitHub";
     if (r.url) return "Ouvrir";
     if (r.content) return "Copier";
-    return "Télécharger";
+    return "Ouvrir";
   };
 
   const isSkillFilter = typeFilter === "skill";
@@ -209,7 +209,7 @@ export default function BibliothequeContent() {
                 {isSkill ? (
                   <><Zap className="w-3 h-3" /> ⚡ Télécharger le Skill</>
                 ) : (
-                  <><Download className="w-3 h-3" /> {getButtonLabel(r)}</>
+                  <><ExternalLink className="w-3 h-3" /> {getButtonLabel(r)}</>
                 )}
               </button>
             </div>
