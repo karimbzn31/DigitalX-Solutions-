@@ -11,7 +11,7 @@ import { LogoFull } from "@/components/shared/Logo";
 
 const navItems = [
   { icon: Home, label: "Accueil", href: "/dashboard" },
-  { icon: BookOpen, label: "Ma Formation", href: "/dashboard/formation" },
+  { icon: BookOpen, label: "Mes Formations", href: "/dashboard/formation" },
   { icon: Library, label: "Bibliothèque", href: "/dashboard/bibliotheque" },
   { icon: Users, label: "Communauté", href: "/dashboard/communaute" },
   { icon: Bot, label: "DigitalX IA", href: "/dashboard/ai" },
