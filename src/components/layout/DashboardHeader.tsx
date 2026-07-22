@@ -1,30 +1,31 @@
 "use client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Bell, Search, Command, Zap, Flame } from "lucide-react";
+import { Bell, Zap, Flame } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
-import { useGamificationStore, getLevelTitle } from "@/store/useGamificationStore";
+import { useGamificationStore } from "@/store/useGamificationStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
-import { useSearchStore } from "@/store/useSearchStore";
+import { useTranslation } from "@/lib/useTranslation";
+import { LangSwitch } from "@/components/shared/LangSwitch";
 import { LogoFull } from "@/components/shared/Logo";
-
-const breadcrumbLabels: Record<string, string> = {
-  "/dashboard": "Accueil",
-  "/dashboard/formation": "Nos Formations",
-  "/dashboard/bibliotheque": "Bibliothèque",
-  "/dashboard/communaute": "Communauté",
-  "/dashboard/ai": "Assistant IA",
-  "/dashboard/certificats": "Certificats",
-  "/dashboard/parametres": "Paramètres",
-};
 
 export function DashboardHeader() {
   const pathname = usePathname();
   const user = useAppStore((s) => s.user);
   const unreadCount = useNotificationStore((s) => s.unreadCount);
-  const setSearchOpen = useSearchStore((s) => s.setOpen);
   const xp = useGamificationStore((s) => s.xp);
   const streak = useGamificationStore((s) => s.streak);
+  const { t } = useTranslation();
+
+  const breadcrumbLabels: Record<string, string> = {
+    "/dashboard": t("dashboard.accueil"),
+    "/dashboard/formation": t("dashboard.nosFormations"),
+    "/dashboard/bibliotheque": t("dashboard.bibliotheque"),
+    "/dashboard/communaute": t("dashboard.communaute"),
+    "/dashboard/ai": t("dashboard.assistantIA"),
+    "/dashboard/certificats": t("dashboard.certificats"),
+    "/dashboard/parametres": t("dashboard.parametres"),
+  };
 
   const currentLabel = breadcrumbLabels[pathname] || "Dashboard";
 
@@ -38,8 +39,9 @@ export function DashboardHeader() {
           <span className="text-sm text-star-white font-medium hidden sm:inline">{currentLabel}</span>
         </div>
 
-        <div className="flex items-center gap-3">
-          {streak > 0 && (
+        <div className="flex items-center gap-2">
+          <LangSwitch />
+            {streak > 0 && (
             <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-400 font-medium">
               <Flame className="w-3.5 h-3.5" />
               {streak}
@@ -52,15 +54,6 @@ export function DashboardHeader() {
               {xp} XP
             </div>
           )}
-
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-mist hover:text-star-white transition-colors border border-white/[0.06]"
-          >
-            <Search className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">Rechercher</span>
-            <kbd className="flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-mist"><Command className="w-2.5 h-2.5" />K</kbd>
-          </button>
 
           <button className="relative p-2 text-mist hover:text-star-white hover:bg-white/5 rounded-lg transition-colors">
             <Bell className="w-4 h-4" />

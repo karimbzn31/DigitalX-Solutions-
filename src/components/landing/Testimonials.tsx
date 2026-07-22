@@ -6,6 +6,7 @@ import { MagneticCard } from "@/components/shared/MagneticCard";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
 import { testimonials } from "@/lib/mock-data";
 import { getInitials } from "@/lib/utils";
+import { useTranslation } from "@/lib/useTranslation";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -18,13 +19,14 @@ const itemVariants = {
 };
 
 export function Testimonials() {
+  const { t } = useTranslation();
   return (
     <section className="py-24 lg:py-32 bg-surface/30 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="Témoignages"
-          title="Ils ont déjà fait le saut."
-          subtitle="Découvrez ce que nos apprenants disent de leur expérience."
+          eyebrow={t("testimonials.eyebrow")}
+          title={t("testimonials.titre")}
+          subtitle={t("testimonials.sousTitre")}
         />
 
         {/* Mobile: horizontal swipe */}

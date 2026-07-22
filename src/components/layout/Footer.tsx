@@ -2,30 +2,33 @@
 
 import Link from "next/link";
 import { Logo } from "@/components/shared/Logo";
-
-const footerLinks = {
-  formation: [
-    { label: "IA Gratuite", href: "/#modules" },
-    { label: "Vibe Coding", href: "/#modules" },
-    { label: "SaaS", href: "/#modules" },
-    { label: "Agents IA", href: "/#modules" },
-    { label: "No Code", href: "/#modules" },
-    { label: "Startup", href: "/#modules" },
-  ],
-  ressources: [
-    { label: "Blog", href: "/blog" },
-    { label: "FAQ", href: "/#faq" },
-    { label: "Contact", href: "/contact" },
-    { label: "À propos", href: "/#about" },
-  ],
-  legal: [
-    { label: "CGU", href: "/legal" },
-    { label: "Mentions légales", href: "/legal" },
-    { label: "Contact", href: "/contact" },
-  ],
-};
+import { useTranslation } from "@/lib/useTranslation";
+import type { TranslationKey } from "@/lib/translations";
 
 export function Footer() {
+  const { t, isAr } = useTranslation();
+
+  const footerLinks = {
+    formation: [
+      { label: t("footer.iaGratuite"), href: "/#modules" },
+      { label: t("footer.vibeCoding"), href: "/#modules" },
+      { label: t("footer.saas"), href: "/#modules" },
+      { label: t("footer.agentsIA"), href: "/#modules" },
+      { label: t("footer.noCode"), href: "/#modules" },
+      { label: t("footer.startup"), href: "/#modules" },
+    ],
+    ressources: [
+      { label: t("footer.blog"), href: "/blog" },
+      { label: t("footer.faq"), href: "/#faq" },
+      { label: t("footer.contact"), href: "/contact" },
+      { label: t("footer.aPropos"), href: "/#about" },
+    ],
+    legal: [
+      { label: t("footer.cgu"), href: "/legal" },
+      { label: t("footer.mentionsLegales"), href: "/legal" },
+      { label: t("footer.contact"), href: "/contact" },
+    ],
+  };
   return (
     <footer className="border-t border-white/5 bg-void">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -33,10 +36,10 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Logo size={28} />
-              <span className="font-display text-star-white font-semibold">DX Academy</span>
+              <span className={`${isAr ? "font-arabic" : "font-display"} text-star-white font-semibold`}>DX Academy</span>
             </Link>
-            <p className="text-sm text-mist leading-relaxed mb-6">
-              Transformez vos idées en startup grâce à l&apos;IA.
+            <p className={`text-sm text-mist leading-relaxed mb-6 ${isAr ? "font-arabic" : ""}`}>
+              {t("footer.tagline")}
             </p>
             <div className="flex items-center gap-4">
               {[
@@ -58,7 +61,7 @@ export function Footer() {
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
               <h3 className="text-xs font-medium text-mist capitalize mb-4">
-                {title}
+                {t(`footer.${title}` as TranslationKey)}
               </h3>
               <ul className="space-y-3">
                 {links.map((item) => (
@@ -77,8 +80,8 @@ export function Footer() {
           <p className="text-xs text-mist">
             &copy; {new Date().getFullYear()} DigitalXSolutions Academy
           </p>
-          <p className="text-xs text-mist">
-            Fait en Algérie · Ambition mondiale
+          <p className={`text-xs text-mist ${isAr ? "font-arabic" : ""}`}>
+            {t("footer.faitAlgerie")}
           </p>
         </div>
       </div>

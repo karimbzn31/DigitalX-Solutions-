@@ -4,15 +4,16 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Zap, Rocket, Bot, RefreshCw, Users } from "lucide-react";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { useTranslation } from "@/lib/useTranslation";
 import { MagneticCard } from "@/components/shared/MagneticCard";
 
-const features = [
-  { icon: Sparkles, title: "IA Gratuite & Illimitée", desc: "Modèles de pointe sans abonnement, accessibles à tout moment." },
-  { icon: Zap, title: "Vibe Coding", desc: "Développez 10x plus vite avec l'IA générative et le pair programming." },
-  { icon: Rocket, title: "Créer votre SaaS", desc: "De l'idée au produit en ligne. Stack technique, déploiement, scaling." },
-  { icon: Bot, title: "Agent IA Personnel", desc: "Créez des agents intelligents pour automatiser vos tâches." },
-  { icon: RefreshCw, title: "Mise à jour régulière", desc: "Contenu actualisé en continu pour suivre l'évolution rapide de l'IA." },
-  { icon: Users, title: "Communauté active", desc: "Échangez avec d'autres apprenants et obtenez du support." },
+const FEATURE_KEYS = [
+  { icon: Sparkles, titleKey: "features.f1t" as const, descKey: "features.f1d" as const },
+  { icon: Zap, titleKey: "features.f2t" as const, descKey: "features.f2d" as const },
+  { icon: Rocket, titleKey: "features.f3t" as const, descKey: "features.f3d" as const },
+  { icon: Bot, titleKey: "features.f4t" as const, descKey: "features.f4d" as const },
+  { icon: RefreshCw, titleKey: "features.f5t" as const, descKey: "features.f5d" as const },
+  { icon: Users, titleKey: "features.f6t" as const, descKey: "features.f6d" as const },
 ];
 
 const containerVariants = {
@@ -38,13 +39,20 @@ function FeatureCard({ icon: Icon, title, desc }: { icon: React.ElementType; tit
 }
 
 export function Features() {
+  const { t, isAr } = useTranslation();
+
+  const features = FEATURE_KEYS.map((f) => ({
+    icon: f.icon,
+    title: t(f.titleKey),
+    desc: t(f.descKey),
+  }));
   return (
     <section id="formation" className="py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          eyebrow="Ce qui vous attend"
-          title="Une formation pensée pour ceux qui veulent construire"
-          subtitle="Pas de théorie superflue. Chaque module vous amène à produire quelque chose de réel."
+          eyebrow={t("features.eyebrow")}
+          title={t("features.titre")}
+          subtitle={t("features.sousTitre")}
         />
 
         {/* Desktop: grille */}

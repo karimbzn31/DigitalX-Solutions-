@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/lib/useTranslation";
 import {
   Sparkles, ChevronRight, Layers, Star, Users, ArrowUpRight,
   CheckCircle, GraduationCap, Bot

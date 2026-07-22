@@ -4,8 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { NebulaButton } from "@/components/shared/NebulaButton";
+import { useTranslation } from "@/lib/useTranslation";
 
 export default function RegisterPage() {
+  const { t, isAr } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,7 +62,7 @@ export default function RegisterPage() {
           </div>
         )}
         <div className="space-y-2">
-          <label className="text-sm text-mist">Nom complet</label>
+          <label className="text-sm text-mist">{t("register.nom")}</label>
           <input
             type="text"
             placeholder="Votre nom"
@@ -70,7 +72,7 @@ export default function RegisterPage() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm text-mist">Email</label>
+          <label className="text-sm text-mist">{t("register.email")}</label>
           <input
             type="email"
             placeholder="vous@email.com"
@@ -80,7 +82,7 @@ export default function RegisterPage() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm text-mist">Mot de passe</label>
+          <label className="text-sm text-mist">{t("register.password")}</label>
           <input
             type="password"
             placeholder="Minimum 8 caractères"
@@ -95,9 +97,9 @@ export default function RegisterPage() {
       </form>
 
       <p className="text-center text-sm text-mist mt-6">
-        Déjà un compte ?{" "}
+        {t("register.dejaCompte")}{" "}
         <Link href="/login" className="text-violet hover:underline">
-          Se connecter
+          {t("register.connecter")}
         </Link>
       </p>
     </div>

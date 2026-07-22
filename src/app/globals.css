@@ -19,8 +19,16 @@
     scroll-behavior: smooth;
   }
 
+  html[dir="rtl"] {
+    text-align: right;
+  }
+
   body {
     @apply bg-void text-star-white antialiased font-sans;
+  }
+
+  html[dir="rtl"] body {
+    font-family: "Tajawal", "Inter", system-ui, sans-serif;
   }
 
   * {
@@ -238,6 +246,38 @@
   75% { transform: translate(-3%, 2%); }
   100% { transform: translate(-5%, -5%); }
 }
+
+/* ── RTL Overrides ───────────────────────────────────────────────────── */
+html[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .rtl-text {
+  font-family: "Tajawal", "Inter", system-ui, sans-serif;
+}
+
+/* Input text direction for RTL */
+html[dir="rtl"] input,
+html[dir="rtl"] textarea {
+  text-align: right;
+}
+
+html[dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Bidirectional margins/paddings helpers */
+html[dir="rtl"] .mr-2 { margin-left: 0.5rem; margin-right: 0; }
+html[dir="rtl"] .mr-3 { margin-left: 0.75rem; margin-right: 0; }
+html[dir="rtl"] .ml-2 { margin-right: 0.5rem; margin-left: 0; }
+html[dir="rtl"] .ml-auto { margin-right: auto; margin-left: 0; }
+html[dir="rtl"] .left-6 { right: 1.5rem; left: auto; }
+html[dir="rtl"] .right-6 { left: 1.5rem; right: auto; }
+html[dir="rtl"] .-translate-x-1\/2 { transform: translateX(50%); }
+html[dir="rtl"] .translate-x-0 { transform: translateX(0); }
+html[dir="rtl"] .border-l-2 { border-right-width: 2px; border-left-width: 0; }
+html[dir="rtl"] .-rotate-90 { transform: rotate(90deg); }
+html[dir="rtl"] .rotate-180 { transform: rotate(-180deg); }
 
 /* ---- Mobile optimizations ---- */
 @media (max-width: 767px) {

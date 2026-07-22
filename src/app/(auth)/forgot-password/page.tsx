@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { NebulaButton } from "@/components/shared/NebulaButton";
+import { useTranslation } from "@/lib/useTranslation";
 
 export default function ForgotPasswordPage() {
+  const { t, isAr } = useTranslation();
   const [sent, setSent] = useState(false);
 
   return (
@@ -19,7 +21,7 @@ export default function ForgotPasswordPage() {
 
       <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
         <div className="space-y-2">
-          <label className="text-sm text-mist">Email</label>
+          <label className="text-sm text-mist">{t("forgot.email")}</label>
           <input
             type="email"
             placeholder="vous@email.com"

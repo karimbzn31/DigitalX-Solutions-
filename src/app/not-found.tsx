@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { useTranslation } from "@/lib/useTranslation";
 
 export default function NotFound() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-void flex flex-col items-center justify-center px-6">
       <div className="text-center max-w-md">

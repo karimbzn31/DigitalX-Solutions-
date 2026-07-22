@@ -3,20 +3,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Menu, X, Search, Command } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useScrolled } from "@/hooks/useScrolled";
-import { useSearchStore } from "@/store/useSearchStore";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/useTranslation";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 import { Logo } from "@/components/shared/Logo";
-
-const links = [
-  { label: "Accueil", href: "/" },
-  { label: "Formation", href: "/#formation" },
-  { label: "Modules", href: "/#modules" },
-  { label: "Blog", href: "/blog" },
-  { label: "Tarifs", href: "/#pricing" },
-];
+import { LangSwitch } from "@/components/shared/LangSwitch";
 
 const menuVariants = {
   hidden: { opacity: 0 },
@@ -36,7 +29,15 @@ const linkItemVariants = {
 export function Navbar() {
   const scrolled = useScrolled(40);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const openSearch = () => useSearchStore.getState().setOpen(true);
+  const { t } = useTranslation();
+
+  const links = [
+    { label: t("nav.accueil"), href: "/" },
+    { label: t("nav.formation"), href: "/#formation" },
+    { label: t("nav.modules"), href: "/#modules" },
+    { label: t("nav.blog"), href: "/blog" },
+    { label: t("nav.tarifs"), href: "/#pricing" },
+  ];
 
   return (
     <motion.header
@@ -73,29 +74,19 @@ export function Navbar() {
           </nav>
 
           <div className="hidden md:flex items-center gap-2">
-            <button
-              onClick={openSearch}
-              aria-label="Rechercher"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-mist hover:text-star-white hover:bg-white/5 transition-colors border border-white/5"
-            >
-              <Search className="w-3.5 h-3.5" />
-              <span className="hidden lg:inline">Rechercher</span>
-              <kbd className="hidden lg:flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-mist">
-                <Command className="w-2.5 h-2.5" />K
-              </kbd>
-            </button>
+            <LangSwitch />
             <Link href="/login">
-              <NebulaButton variant="ghost" size="sm">Connexion</NebulaButton>
+              <NebulaButton variant="ghost" size="sm">{t("nav.connexion")}</NebulaButton>
             </Link>
             <Link href="/register">
-              <NebulaButton size="sm">Rejoindre</NebulaButton>
+              <NebulaButton size="sm">{t("nav.rejoindre")}</NebulaButton>
             </Link>
           </div>
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden relative z-[60] p-2 text-mist hover:text-star-white"
-            aria-label={mobileOpen ? "Fermer" : "Menu"}
+            aria-label={mobileOpen ? t("nav.fermer") : t("nav.menu")}
           >
             <motion.div
               animate={{ rotate: mobileOpen ? 90 : 0 }}
@@ -145,11 +136,14 @@ export function Navbar() {
                 className="mt-10 pt-8 border-t border-white/10"
               >
                 <div className="flex flex-col gap-3">
+                  <div className="flex justify-center mb-2">
+                    <LangSwitch />
+                  </div>
                   <Link href="/login" onClick={() => setMobileOpen(false)}>
-                    <NebulaButton variant="ghost" className="w-full">Connexion</NebulaButton>
+                    <NebulaButton variant="ghost" className="w-full">{t("nav.connexion")}</NebulaButton>
                   </Link>
                   <Link href="/register" onClick={() => setMobileOpen(false)}>
-                    <NebulaButton className="w-full">Rejoindre</NebulaButton>
+                    <NebulaButton className="w-full">{t("nav.rejoindre")}</NebulaButton>
                   </Link>
                 </div>
               </motion.div>

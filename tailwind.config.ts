@@ -27,6 +27,7 @@ const config: Config = {
         sans: ["Inter", "system-ui", "sans-serif"],
         display: ["Space Grotesk", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
+        arabic: ["Tajawal", "system-ui", "sans-serif"],
       },
       borderRadius: {
         DEFAULT: "0.75rem",

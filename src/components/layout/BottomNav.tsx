@@ -3,17 +3,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, BookOpen, Bot, Award, Library } from "lucide-react";
-
-const items = [
-  { icon: Home, label: "Accueil", href: "/dashboard" },
-  { icon: BookOpen, label: "Formation", href: "/dashboard/formation" },
-  { icon: Library, label: "Bibliothèque", href: "/dashboard/bibliotheque" },
-  { icon: Bot, label: "IA", href: "/dashboard/ai" },
-  { icon: Award, label: "Certificats", href: "/dashboard/certificats" },
-];
+import { useTranslation } from "@/lib/useTranslation";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useTranslation();
+
+  const items = [
+    { icon: Home, label: t("dashboard.accueil"), href: "/dashboard" },
+    { icon: BookOpen, label: t("dashboard.mesFormations"), href: "/dashboard/formation" },
+    { icon: Library, label: t("dashboard.bibliotheque"), href: "/dashboard/bibliotheque" },
+    { icon: Bot, label: t("dashboard.digitalXIA"), href: "/dashboard/ai" },
+    { icon: Award, label: t("dashboard.certificats"), href: "/dashboard/certificats" },
+  ];
 
   return (
     <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl border-t border-white/5 safe-area-bottom">

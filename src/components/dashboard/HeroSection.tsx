@@ -2,6 +2,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/useTranslation";
 
 interface Particle {
   x: number;
@@ -105,6 +106,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ name = "Apprenant", level = "Apprenti IA", progress = 0 }: HeroSectionProps) {
+  const { t } = useTranslation();
   const greeting = getGreeting();
   const quote = useMemo(() => quotes[Math.floor(Math.random() * quotes.length)], []);
 

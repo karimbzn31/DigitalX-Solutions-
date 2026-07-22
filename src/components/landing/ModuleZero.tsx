@@ -1,8 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
+import { useTranslation } from "@/lib/useTranslation";
 
-const words = ["Transformez", "vos idées", "en startup grâce à l'IA"];
+const WORD_KEYS = ["moduleZero.w1", "moduleZero.w2", "moduleZero.w3"] as const;
 
 const wordVariants = {
   hidden: { y: 40, opacity: 0 },
@@ -14,6 +15,8 @@ const wordVariants = {
 };
 
 export function ModuleZero() {
+  const { t, isAr } = useTranslation();
+  const words = WORD_KEYS.map((k) => t(k));
   return (
     <section className="relative py-24 lg:py-32 overflow-hidden">
       <div
@@ -78,10 +81,10 @@ export function ModuleZero() {
             <p className="text-sm font-medium text-star-white mb-4">Ce que tu obtiens gratuitement :</p>
             <div className="space-y-4">
               {[
-                { icon: "🤖", title: "Modèles IA puissants", desc: "Accès gratuit à des modèles comme Claude Code grâce à notre stratégie" },
-                { icon: "🧩", title: "Agents IA autonomes", desc: "Crée des agents qui travaillent pour toi 24h/24" },
-                { icon: "⚙️", title: "Automatisation complète", desc: "Maîtrise N8N, Instagram, Facebook, WhatsApp" },
-                { icon: "🚀", title: "Lance tes propres SaaS", desc: "Apprends à créer, déployer et monétiser" },
+                { icon: "🤖", title: t("moduleZero.item1t"), desc: t("moduleZero.item1d") },
+                { icon: "🧩", title: t("moduleZero.item2t"), desc: t("moduleZero.item2d") },
+                { icon: "⚙️", title: t("moduleZero.item3t"), desc: t("moduleZero.item3d") },
+                { icon: "🚀", title: t("moduleZero.item4t"), desc: t("moduleZero.item4d") },
               ].map((item) => (
                 <div key={item.title} className="flex items-start gap-3">
                   <span className="text-xl mt-0.5 shrink-0">{item.icon}</span>
@@ -107,7 +110,7 @@ export function ModuleZero() {
                 500 000 DA
               </p>
               <p className="text-sm text-mist leading-relaxed">
-                Des projets qui te rapportent un revenu réel. Pas de la théorie, des résultats.
+                {t("moduleZero.revenu")}
               </p>
             </div>
           </motion.div>

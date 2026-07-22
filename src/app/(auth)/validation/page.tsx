@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useAppStore } from "@/store/useAppStore";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 import { Sparkles, PartyPopper, Lock } from "lucide-react";
+import { useTranslation } from "@/lib/useTranslation";
 
 function Sparkle() {
   const style = {
@@ -28,6 +29,7 @@ function Sparkle() {
 }
 
 export default function ValidationPage() {
+  const { t, isAr } = useTranslation();
   const router = useRouter();
   const setUser = useAppStore((s) => s.setUser);
   const [code, setCode] = useState("");
@@ -110,7 +112,7 @@ export default function ValidationPage() {
   };
 
   return (
-    <div className="text-center space-y-8">
+    <div className={`text-center space-y-8 ${isAr ? "font-arabic" : ""}`}>
       <style>{`
         @keyframes sparkle {
           0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
@@ -131,11 +133,11 @@ export default function ValidationPage() {
           </div>
 
           <h1 className="font-display text-2xl md:text-3xl font-bold text-star-white mb-3">
-            Bienvenue à <span className="bg-gradient-to-r from-violet via-magenta to-rose bg-clip-text text-transparent">DigitalXSolutions Academy</span>
+            {t("validation.bienvenue", { name: "DigitalXSolutions Academy" })}
           </h1>
 
           <p className="text-base text-mist max-w-md mx-auto leading-relaxed">
-            Là où ton avenir t&apos;attend ✨
+            {t("validation.description")}
           </p>
 
           <div className="mt-8 p-5 rounded-xl bg-void/50 border border-white/[0.06]">
@@ -143,12 +145,10 @@ export default function ValidationPage() {
               <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
                 <Lock className="w-4 h-4 text-amber-400" />
               </div>
-              <h2 className="text-sm font-semibold text-star-white">Compte en attente de validation</h2>
+              <h2 className="text-sm font-semibold text-star-white">{t("validation.compteEnAttente")}</h2>
             </div>
             <p className="text-sm text-mist leading-relaxed">
-              Ton compte <span className="text-star-white font-medium">{email}</span> a bien été créé mais n&apos;est pas encore actif.
-              Une fois ton paiement confirmé, notre équipe te enverra un code de validation par email.
-              Saisis-le ci-dessous pour activer ton accès à la formation. 🚀
+              {t("validation.explication", { email })}
             </p>
           </div>
 
@@ -160,10 +160,10 @@ export default function ValidationPage() {
             )}
 
             <div className="space-y-2">
-              <label className="text-sm text-mist">Code de validation</label>
+              <label className="text-sm text-mist">{t("validation.codeValidation")}</label>
               <input
                 type="text"
-                placeholder="Entrez votre code"
+                placeholder={t("validation.entrezCode")}
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-lg bg-void border border-white/10 text-star-white text-sm placeholder:text-mist/40 focus:outline-none focus:border-violet transition-colors text-center font-mono text-lg tracking-widest"
@@ -175,17 +175,17 @@ export default function ValidationPage() {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Sparkles className="w-4 h-4 animate-pulse" />
-                  Validation...
+                  {t("validation.validationEnCours")}
                 </span>
               ) : (
-                "Activer mon compte"
+                t("validation.activerCompte")
               )}
             </NebulaButton>
           </form>
 
           <div className="mt-6">
             <button onClick={handleLogout} className="text-xs text-mist hover:text-rose transition-colors">
-              Se déconnecter
+              {t("validation.seDeconnecter")}
             </button>
           </div>
         </div>

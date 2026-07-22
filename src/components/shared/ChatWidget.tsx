@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAppStore } from "@/store/useAppStore";
 import { Bot, User, Send, X, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/useTranslation";
 
 interface Msg {
   id: string;
@@ -11,10 +12,11 @@ interface Msg {
 }
 
 export function ChatWidget() {
+  const { t } = useTranslation();
   const user = useAppStore((s) => s.user);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { id: "welcome", role: "assistant", content: `Salut ${user?.name?.split(" ")[0] || "toi"} ! Je suis le mentor DigitalX Solutions Academy. Pose-moi des questions sur le Vibe Coding, l'IA, le SaaS ou les formations.` },
+    { id: "welcome", role: "assistant", content: t("chat.welcome", { name: user?.name?.split(" ")[0] || "toi" }) },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -125,7 +127,7 @@ export function ChatWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Pose ta question..."
+                placeholder={t("chat.placeholder")}
                 rows={1}
                 className="flex-1 bg-void/80 border border-white/10 rounded-xl py-2 px-3 text-xs text-star-white placeholder:text-mist resize-none focus:outline-none focus:border-violet/50 transition-colors max-h-20"
                 style={{ minHeight: "34px" }}

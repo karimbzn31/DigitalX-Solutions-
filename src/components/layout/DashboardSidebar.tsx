@@ -7,17 +7,8 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAppStore } from "@/store/useAppStore";
+import { useTranslation } from "@/lib/useTranslation";
 import { LogoFull } from "@/components/shared/Logo";
-
-const navItems = [
-  { icon: Home, label: "Accueil", href: "/dashboard" },
-  { icon: BookOpen, label: "Nos Formations", href: "/dashboard/formation" },
-  { icon: Library, label: "Bibliothèque", href: "/dashboard/bibliotheque" },
-  { icon: Users, label: "Communauté", href: "/dashboard/communaute" },
-  { icon: Bot, label: "DigitalX IA", href: "/dashboard/ai" },
-  { icon: Award, label: "Certificats", href: "/dashboard/certificats" },
-  { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
-];
 
 const levelBadges = {
   "0": "Apprenti IA",
@@ -41,8 +32,19 @@ export function DashboardSidebar() {
   const setUser = useAppStore((s) => s.setUser);
   const collapsed = useAppStore((s) => s.sidebarCollapsed);
   const setCollapsed = useAppStore((s) => s.setSidebarCollapsed);
+  const { t, isAr } = useTranslation();
   const handleLogout = async () => { await supabase.auth.signOut(); setUser(null); router.push("/login"); };
   const level = getLevel(user?.totalProgress ?? 0);
+
+  const navItems = [
+    { icon: Home, label: t("dashboard.accueil"), href: "/dashboard" },
+    { icon: BookOpen, label: t("dashboard.nosFormations"), href: "/dashboard/formation" },
+    { icon: Library, label: t("dashboard.bibliotheque"), href: "/dashboard/bibliotheque" },
+    { icon: Users, label: t("dashboard.communaute"), href: "/dashboard/communaute" },
+    { icon: Bot, label: t("dashboard.digitalXIA"), href: "/dashboard/ai" },
+    { icon: Award, label: t("dashboard.certificats"), href: "/dashboard/certificats" },
+    { icon: Settings, label: t("dashboard.parametres"), href: "/dashboard/parametres" },
+  ];
 
   return (
     <aside className={cn(
@@ -65,7 +67,7 @@ export function DashboardSidebar() {
               {user?.initials || "?"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-star-white font-medium truncate">{user?.name || "Utilisateur"}</p>
+              <p className="text-sm text-star-white font-medium truncate">{user?.name || t("param.utilisateur")}</p>
               <span className="inline-block text-[10px] px-2 py-0.5 rounded-full bg-violet/20 text-violet font-medium">{level}</span>
             </div>
           </div>
@@ -84,7 +86,7 @@ export function DashboardSidebar() {
             )}
           >
             <Shield className="w-4 h-4 shrink-0" />
-            <span className={cn(collapsed && "hidden group-hover:inline")}>Admin</span>
+            <span className={cn(collapsed && "hidden group-hover:inline")}>{t("dashboard.admin")}</span>
           </Link>
         )}
         {navItems.map((item) => {
@@ -110,7 +112,7 @@ export function DashboardSidebar() {
       <div className={cn("p-3 border-t border-white/5", collapsed && "hidden group-hover:block")}>
         <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2 text-sm text-mist hover:text-rose hover:bg-rose/5 rounded-xl transition-colors w-full">
           <LogOut className="w-4 h-4 shrink-0" />
-          <span className={cn(collapsed && "hidden group-hover:inline")}>Se déconnecter</span>
+          <span className={cn(collapsed && "hidden group-hover:inline")}>{t("dashboard.seDeconnecter")}</span>
         </button>
       </div>
     </aside>

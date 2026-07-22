@@ -5,8 +5,9 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { NebulaButton } from "@/components/shared/NebulaButton";
 import { NebulaBadge } from "@/components/shared/NebulaBadge";
+import { useTranslation } from "@/lib/useTranslation";
 
-const words = ["L'Intelligence Artificielle", "n'est plus l'avenir.", "Elle est le présent."];
+const words = ["hero.ligne1", "hero.ligne2", "hero.ligne3"] as const;
 
 const wordVariants = {
   hidden: { y: 40, opacity: 0 },
@@ -134,6 +135,7 @@ export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
+  const { t, isAr } = useTranslation();
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -181,19 +183,19 @@ export function Hero() {
         </motion.div>
 
         <h1 className="font-display text-4xl sm:text-5xl md:text-7xl xl:text-8xl font-bold tracking-tight leading-[0.95] text-center max-w-5xl">
-          {words.map((word, i) => (
+          {words.map((key, i) => (
             <motion.span
-              key={word}
+              key={key}
               custom={i}
               initial="hidden"
               animate="visible"
               variants={wordVariants}
-              className="block text-star-white"
+              className={`block text-star-white ${isAr ? "font-arabic" : ""}`}
             >
               {i === 2 ? (
-                <span className="text-gradient">{word}</span>
+                <span className="text-gradient">{t(key)}</span>
               ) : (
-                word
+                t(key)
               )}
             </motion.span>
           ))}
@@ -203,16 +205,13 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-sm sm:text-base md:text-lg text-mist text-center max-w-3xl mt-4 md:mt-8 leading-relaxed px-2"
+          className={`text-sm sm:text-base md:text-lg text-mist text-center max-w-3xl mt-4 md:mt-8 leading-relaxed px-2 ${isAr ? "font-arabic" : ""}`}
         >
           <span className="block md:hidden">
-            DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
-            de l&apos;Intelligence Artificielle accessibles à tous les Algériens.
+            {t("hero.descMobile")}
           </span>
           <span className="hidden md:block">
-            DigitalX Solutions Academy est une communauté privée dédiée à rendre les technologies
-            de l&apos;Intelligence Artificielle accessibles à tous les Algériens. Apprenez à maîtriser
-            les outils, les méthodes et les compétences qui façonnent déjà le monde de demain.
+            {t("hero.descDesktop")}
           </span>
         </motion.p>
 
@@ -224,12 +223,12 @@ export function Hero() {
         >
           <Link href="/register" className="w-full sm:w-auto">
             <NebulaButton size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              🚀 Accéder à l&apos;académie →
+              {t("nav.accederAcademie")}
             </NebulaButton>
           </Link>
           <Link href="#formation" className="w-full sm:w-auto">
             <NebulaButton variant="secondary" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-sm md:text-base">
-              📋 Voir les formations
+              {t("nav.voirFormations")}
             </NebulaButton>
           </Link>
         </motion.div>
@@ -251,7 +250,7 @@ export function Hero() {
             ))}
           </div>
           <span className="text-center sm:text-left">
-            ★★★★★ <strong className="text-star-white">1 200+ apprenants</strong> · Algérie & international
+            ★★★★★ <strong className="text-star-white">{t("hero.apprenants", { count: "1 200+" })}</strong>
           </span>
         </motion.div>
 
@@ -285,7 +284,7 @@ export function Hero() {
             ))}
           </div>
           <p className="text-[10px] md:text-xs text-mist/30 text-center mt-5">
-            + 30 autres outils et technologies au programme
+            {t("hero.plusOutils")}
           </p>
         </motion.div>
       </div>

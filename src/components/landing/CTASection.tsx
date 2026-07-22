@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { NebulaButton } from "@/components/shared/NebulaButton";
+import { useTranslation } from "@/lib/useTranslation";
 
 function CTAFloatingParticles() {
   return (
@@ -52,6 +53,7 @@ function CTAGrid() {
 }
 
 export function CTASection() {
+  const { t } = useTranslation();
   return (
     <section className="relative py-32 overflow-hidden bg-void">
       {/* Background glow */}
@@ -73,14 +75,14 @@ export function CTASection() {
         >
           <div className="flex items-center justify-center gap-3 mb-8">
             <span className="h-px w-12 bg-gradient-to-r from-transparent to-violet/50" />
-            <span className="text-xs text-mist/50 tracking-widest uppercase">Action</span>
+            <span className="text-xs text-mist/50 tracking-widest uppercase">{t("cta.action")}</span>
             <span className="h-px w-12 bg-gradient-to-l from-transparent to-violet/50" />
           </div>
 
           <h2 className="font-display text-5xl md:text-7xl font-bold tracking-tight leading-[0.9] whitespace-pre-line text-star-white">
-            {"Prêt à construire\n"}
-            <span className="text-gradient text-glow">le futur</span>
-            {" ?"}
+            {t("cta.titre1") + "\n"}
+            <span className="text-gradient text-glow">{t("cta.titre2")}</span>
+            {t("cta.titre3")}
           </h2>
 
           <p className="mt-6 text-base text-mist max-w-xl mx-auto leading-relaxed">
@@ -91,18 +93,18 @@ export function CTASection() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/register">
               <NebulaButton size="lg" className="px-10 py-4 text-base nebula-glow">
-                Commencer maintenant →
+                {t("cta.btn")}
               </NebulaButton>
             </Link>
             <Link href="/contact">
               <NebulaButton variant="secondary" size="lg" className="px-10 py-4 text-base">
-                Nous contacter
+                {t("cta.contact")}
               </NebulaButton>
             </Link>
           </div>
 
           <p className="mt-6 text-sm text-mist">
-            ✦ Algérie · Et au-delà ✦
+            {t("cta.footer")}
           </p>
         </motion.div>
       </div>
