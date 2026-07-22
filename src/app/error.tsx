@@ -1,5 +1,4 @@
 "use client";
-import { useTranslation } from "@/lib/useTranslation";
 
 export default function Error({
   error,
